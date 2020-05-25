@@ -1,0 +1,77 @@
+version: '3.7'
+
+services:
+  ### Frontend Application #############################
+  client:
+    image: ${PROJECT}_client:${GIT_LOCAL_BRANCH}
+    container_name: ${PROJECT}-client
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+    volumes:
+      # Binds the application folder from the host inside the container for fast changes
+      - ./client:/usr/src/app
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /usr/src/app/node_modules
+    depends_on:
+      - server
+    networks:
+      - frontend
+
+  ### Backend Application #############################
+  server:
+    image: ${PROJECT}-server:${GIT_LOCAL_BRANCH}
+    container_name: ${PROJECT}-server
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    environment:
+      - DB_SERVER=${DB_SERVER}
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+      - "9229:9229"
+    volumes:
+      # Binds the application folder from the host inside the container for fast changes
+      - ./server:/usr/src/app
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongodb
+    networks:
+      - frontend
+
+  ### MongoDB #############################
+  mongodb:
+    container_name: ${PROJECT}-mongodb
+    image: mongo:3.6-xenial
+    restart: always
+    expose:
+      - "27017"
+    ports:
+        - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    volumes:
+      - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
+      - ets-mongo-data-configdb:/data/configdb
+      - ets-mongo-data-db:/data/db
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: "bridge"
+
+volumes:
+    ets-mongo-data-configdb:
+    ets-mongo-data-db:

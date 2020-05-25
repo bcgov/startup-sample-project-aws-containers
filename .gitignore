@@ -1,0 +1,34 @@
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+startup-sample-project*.zip
+
+# Dependencies
+node_modules
+
+# Client
+client/.pnp
+client/.pnp.js
+client/build
+
+# Server
+server/*.pdf
+server/pdfs/*
+
+# Misc.
+docs
+Dockerrun.aws.json
+audit-report.*
+.DS_Store
+.ebextensions/*
+!.ebextensions/.keep
+.env
+test-results
+bcfs-web-*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.idea
+.vscode
+.eslintcache

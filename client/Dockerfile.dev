@@ -1,0 +1,16 @@
+FROM node:12
+
+MAINTAINER FreshWorks <web@freshworks.io>
+
+ENV PATH $PATH:/usr/src/app/node_modules/.bin
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+EXPOSE 4000
+
+CMD [ "npm", "run", "start" ]

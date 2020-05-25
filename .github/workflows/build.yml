@@ -1,0 +1,54 @@
+name: Build and Deploy to Dev
+
+on:
+  push:
+    tags:
+      - 'dev'
+
+env:
+  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  PROJECT: enhanced-travel-screening
+  DEPLOY_ENV: enhanced-travel-screening-dev
+  REGION: ca-central-1
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: NPM Audit
+        run: |
+          cd "$GITHUB_WORKSPACE/client" && npm audit --audit-level=moderate --production
+          cd "$GITHUB_WORKSPACE/server" && npm audit --audit-level=moderate
+          cd "$GITHUB_WORKSPACE"
+
+  deploy:
+    name: Deploy to Dev
+    needs: test
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Build Image
+        run: make pipeline-build
+
+      - name: Push Image to ECR
+        run: make gh-pipeline-push
+
+      - name: Creating EB Deployment Artifact
+        run: make gh-pipeline-deploy-prep
+
+      - name: Deploying Version to EB
+        run: make gh-pipeline-deploy-version
