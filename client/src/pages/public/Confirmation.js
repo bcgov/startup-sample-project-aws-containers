@@ -24,14 +24,14 @@ export default ({ location: { state } }) => {
   const { id, isolationPlanStatus } = state || { id: null };
 
   useEffect(() => {
-    window.snowplow('trackSelfDescribingEvent', {
-      schema: 'iglu:ca.bc.gov.enhanced_travel/results/jsonschema/1-0-0',
-        data: {
-          status: isolationPlanStatus? 'success': 'fail',
-          confirmation_code: id
-        }
-      }
-    );
+    // window.snowplow('trackSelfDescribingEvent', {
+    //   schema: 'iglu:ca.bc.gov.startup-sample-project/results/jsonschema/1-0-0',
+    //     data: {
+    //       status: isolationPlanStatus? 'success': 'fail',
+    //       confirmation_code: id
+    //     }
+    //   }
+    // );
   });
 
   // const genPDF = async () => {

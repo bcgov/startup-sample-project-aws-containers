@@ -2,7 +2,7 @@ const databaseSuffix = process.env.NODE_ENV === 'test' ? 'test' : process.env.DB
 
 module.exports = [
   {
-    TableName: `ets-users-${databaseSuffix}`,
+    TableName: `ssp-users-${databaseSuffix}`,
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],
@@ -15,7 +15,7 @@ module.exports = [
     },
   },
   {
-    TableName: `ets-forms-${databaseSuffix}`,
+    TableName: `ssp-forms-${databaseSuffix}`,
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],
@@ -28,7 +28,7 @@ module.exports = [
     },
   },
   {
-    TableName: `ets-servicebc-${databaseSuffix}`,
+    TableName: `ssp-servicebc-${databaseSuffix}`,
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],

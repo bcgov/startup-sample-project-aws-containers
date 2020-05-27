@@ -1,13 +1,13 @@
 openapi: 3.0.1
 info:
-  title: Enhanced Traveller Screening
-  description: Spec for BC Enhanced Traveller Screening API
+  title: Startup Sample Project
+  description: Spec for BC Gov Startup Sample Project Screening API
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: https://travelscreening.gov.bc.ca/api/v1
+- url: https://startup-sample-project.gov.bc.ca/api/v1
 paths:
   /form:
     post:
