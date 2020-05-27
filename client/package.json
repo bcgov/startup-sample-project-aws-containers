@@ -1,5 +1,5 @@
 {
-  "name": "enhanced-travel-fe",
+  "name": "sample-startup-project",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://server:80",

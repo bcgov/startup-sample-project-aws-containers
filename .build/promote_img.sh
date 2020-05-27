@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROFILE=covid
-PROJECT=enhanced-travel-screening
+PROJECT=startup-sample-project
 PROMOTE_FROM_TAG=9327e64
 PROMOTE_TO_TAG=9327e64-prod
 

@@ -16,7 +16,7 @@ endef
 ##############################################################
 # Define default environment variables for local development #
 ##############################################################
-export PROJECT := $(or $(PROJECT),ets)
+export PROJECT := $(or $(PROJECT),ssp)
 export DB_USER := $(or $(DB_USER),development)
 export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
@@ -175,7 +175,7 @@ pipeline-promote-staging:
 	@aws --profile $(PROFILE) configure set region $(REGION)
 	@aws --profile $(PROFILE) s3 cp $(call deployTag)_staging.zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag)_staging.zip
 	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag)_staging.zip"
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name enhanced-travel-screening-staging --version-label $(call deployTag)
+	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name startup-sample-project-staging --version-label $(call deployTag)
 
 pipeline-promote-prod:
 	@echo "+\n++ Promoting to Elasticbeanstalk [PRODUCTION]...\n+"
@@ -183,7 +183,7 @@ pipeline-promote-prod:
 	@aws --profile $(PROFILE) configure set region $(REGION)
 	@aws --profile $(PROFILE) s3 cp $(call deployTag)_prod.zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag)_prod.zip
 	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag)_prod.zip"
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name enhanced-travel-screening-prod --version-label $(call deployTag)
+	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name startup-sample-project-prod --version-label $(call deployTag)
 
 ##########################################
 # Git tagging aliases #

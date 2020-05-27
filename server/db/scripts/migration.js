@@ -17,9 +17,9 @@ const db = new AWS.DynamoDB();
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 
 // DynamoDB
-const usersTable = `ets-users-${databaseSuffix}`;
-const formsTable = `ets-forms-${databaseSuffix}`;
-const serviceBCTable = `ets-servicebc-${databaseSuffix}`;
+const usersTable = `ssp-users-${databaseSuffix}`;
+const formsTable = `ssp-forms-${databaseSuffix}`;
+const serviceBCTable = `ssp-servicebc-${databaseSuffix}`;
 
 const keypress = async () => {
   process.stdin.setRawMode(false);

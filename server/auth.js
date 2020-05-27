@@ -54,7 +54,7 @@ const strategyOpt = {
 
 // JWT auth methods using Bearer token
 
-// General ETS endpoints strategy (for users without specific type)
+// General SSP endpoints strategy (for users without specific type)
 passport.use('jwt', new JwtStrategy(strategyOpt,
   async (payload, done) => {
     if (!payload.type) {

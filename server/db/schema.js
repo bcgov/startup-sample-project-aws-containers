@@ -3,9 +3,9 @@
  */
 
 const collections = {
-  FORMS: 'ets-forms',
-  PHAC: 'ets-phac',
-  USERS: 'ets-users',
+  FORMS: 'ssp-forms',
+  PHAC: 'ssp-phac',
+  USERS: 'ssp-users',
 };
 
 const schema = [

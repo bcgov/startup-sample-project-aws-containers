@@ -37,7 +37,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
       await (async (ms = 10000) => new Promise((resolve) => setTimeout(resolve, ms)))();
       const salt = randomBytes(16).toString('hex');
       const item = {
-        TableName: `ets-users-${databaseSuffix}`,
+        TableName: `ssp-users-${databaseSuffix}`,
         Item: {
           id: 'username',
           password: hashPassword('password', salt),
@@ -55,7 +55,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports = {
   db: dbClient,
-  usersTable: `ets-users-${databaseSuffix}`,
-  formsTable: `ets-forms-${databaseSuffix}`,
-  serviceBCTable: `ets-servicebc-${databaseSuffix}`,
+  usersTable: `ssp-users-${databaseSuffix}`,
+  formsTable: `ssp-forms-${databaseSuffix}`,
+  serviceBCTable: `ssp-servicebc-${databaseSuffix}`,
 };
