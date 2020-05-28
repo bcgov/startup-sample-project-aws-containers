@@ -1,12 +1,12 @@
 # Sample Startup Project
 
-## A starter greeting template for AWS deployments
+## A starter greeting template for cloud demo deployments
 
 ---
 
 ## Introduction
 
-Welcome to your AWS project.  This is a basic starter project with a NodeJS app connected to a DynamoDB database for you to modify and expand to fit your needs.
+Welcome to your new project.  This is a basic starter project with a NodeJS app connected to a DynamoDB database for you to modify and expand to fit your needs.
 
 ## License
 
