@@ -21,48 +21,11 @@ const useStyles = makeStyles((theme) => ({
 export default ({ location: { state } }) => {
 
   const classes = useStyles();
-  const { id, isolationPlanStatus } = state || { id: null };
+  const { id } = state || { id: null };
 
   useEffect(() => {
-    // window.snowplow('trackSelfDescribingEvent', {
-    //   schema: 'iglu:ca.bc.gov.startup-sample-project/results/jsonschema/1-0-0',
-    //     data: {
-    //       status: isolationPlanStatus? 'success': 'fail',
-    //       confirmation_code: id
-    //     }
-    //   }
-    // );
+    // Snowplow goes here
   });
-
-  // const genPDF = async () => {
-  //   const response = await fetch(`/api/v1/pdf`, {
-  //     headers: {
-  //       'Accept': 'application/pdf',
-  //       'Content-type': 'application/json',
-  //     },
-  //     method: 'POST',
-  //     body: JSON.stringify({ id, accessToken })
-  //   });
-  //   if (response.ok) {
-  //     const blob = await response.blob()
-  //     const pdfBlob = new Blob([blob], {type: "application/pdf"})
-  //     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-  //       window.navigator.msSaveOrOpenBlob(pdfBlob);
-  //       return;
-  //     }
-  //     // For other browsers:
-  //     // Create a link pointing to the ObjectURL containing the blob.
-  //     const data = window.URL.createObjectURL(pdfBlob);
-  //     const link = document.createElement('a');
-  //     link.href = data;
-  //     link.download = `screeningReport-${id}.pdf`;
-  //     link.click();
-  //     setTimeout(function(){
-  //       // For Firefox it is necessary to delay revoking the ObjectURL
-  //       window.URL.revokeObjectURL(data);
-  //     }, 100);
-  //   }
-  // }
 
   return (
     <Page>
@@ -81,72 +44,7 @@ export default ({ location: { state } }) => {
               <Typography variant="h6">
                 Thank you. Your form has been submitted.
               </Typography>
-              <Typography variant="h6">
-                DO NOT CLOSE THIS PAGE.
-              </Typography>
             </Box>
-            <Card variant="outlined">
-              <CardContent>
-                <Grid container>
-                  <Grid item xs={12}>
-                    <Box padding="0" paddingTop="0">
-                      <Typography variant="h5">
-                        Proceed to the provincial check point, if available at your location, where you may be asked to confirm how you will comply with the provincial order to self isolate.
-                      </Typography>
-                      <Typography variant="subtitle1">
-                        You may be asked to present your confirmation number.
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Hidden smDown>
-                    <Grid item md={3}></Grid>
-                  </Hidden>
-                  <Grid item xs={12} md={6}>
-                    {
-                      isolationPlanStatus
-                        ?
-                          <Card style={{ margin: "15px" }}>
-                            <CardContent>
-                              <Typography variant="subtitle1">Confirmation Number</Typography>
-                              <Typography variant="h2" style={{ color: "#16C92E" }}>
-                                {id}
-                              </Typography>
-                              <Grid container style={{ marginTop: "1rem" }}>
-                                {/* <Grid item xs={6}>
-                                  <img src={Health} alt="health status" />
-                                  <Typography variant="subtitle1">Health Status Complete</Typography>
-                                </Grid> */}
-                                <Grid item xs={12}>
-                                  <img src={PlanPass} alt="Isolation plan" style={{ width: "128px"}} />
-                                  <Typography variant="subtitle1" style={{ marginTop: "0.5rem" }}>Isolation Plan Status</Typography>
-                                </Grid>
-                              </Grid>
-                            </CardContent>
-                          </Card>
-                        :
-                        <Card style={{ margin: '15px', color: 'white', backgroundColor: '#002C71' }}>
-                          <CardContent>
-                            <Typography variant="subtitle1" style={{ marginTop: "16px", color: 'white' }}>Confirmation Number</Typography>
-                            <Typography variant="h2" style={{ color: 'white' }}>
-                              {id}
-                            </Typography>
-                            <Grid container style={{ marginTop: "1rem" }}>
-                              {/* <Grid item xs={6}>
-                                <img src={Health} alt="health status" />
-                                <Typography variant="subtitle1">Health Status Complete</Typography>
-                              </Grid> */}
-                              <Grid item xs={12}>
-                                <img src={PlanFail} alt="Isolation plan" style={{ width: "128px" }} />
-                                <Typography variant="subtitle1" style={{ marginTop: "16px", color: 'white' }}>Isolation Plan Status</Typography>
-                              </Grid>
-                            </Grid>
-                          </CardContent>
-                        </Card>
-                    }
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
           </Grid>
         }
       </Grid>
