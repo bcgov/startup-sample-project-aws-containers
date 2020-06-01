@@ -1,6 +1,4 @@
 const AWS = require('aws-sdk');
-const { randomBytes } = require('crypto');
-const { hashPassword } = require('../auth.js');
 const schema = require('./schema.js');
 
 // Run DynamoDB locally: docker run -p 8000:8000 amazon/dynamodb-local
@@ -35,17 +33,6 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
       });
       console.log('Waiting 10s for tables to be created');
       await (async (ms = 10000) => new Promise((resolve) => setTimeout(resolve, ms)))();
-      const salt = randomBytes(16).toString('hex');
-      const item = {
-        TableName: `ssp-users-${databaseSuffix}`,
-        Item: {
-          id: 'username',
-          password: hashPassword('password', salt),
-          salt,
-        },
-      };
-      console.log(`Creating user with ID ${item.Item.id} in table ${item.TableName}`);
-      await dbClient.put(item).promise();
     } catch (error) {
       console.error(`Failed to create tables and/or user ${error}`);
     }
@@ -55,7 +42,5 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports = {
   db: dbClient,
-  usersTable: `ssp-users-${databaseSuffix}`,
-  formsTable: `ssp-forms-${databaseSuffix}`,
-  serviceBCTable: `ssp-servicebc-${databaseSuffix}`,
+  greetingsTable: `ssp-greetings-${databaseSuffix}`,
 };

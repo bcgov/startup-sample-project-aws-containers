@@ -3,31 +3,14 @@
  */
 
 const collections = {
-  FORMS: 'ssp-forms',
-  PHAC: 'ssp-phac',
-  USERS: 'ssp-users',
+  GREETINGS: 'ssp-greetings',
 };
 
 const schema = [
   {
-    collection: collections.USERS,
+    collection: collections.GREETINGS,
     indexes: [
-      { key: 'username', options: { unique: true } },
-    ],
-  },
-  {
-    collection: collections.PHAC,
-    indexes: [
-      { key: 'id', options: { unique: true } },
-    ],
-  },
-  {
-    collection: collections.FORMS,
-    indexes: [
-      { key: 'id', options: { unique: true } },
-      { key: 'lastName', options: {} },
-      { key: 'createdAt', options: {} },
-      { key: 'serviceResponse.processedAt', options: {} },
+      { key: 'greetings', options: { unique: true } },
     ],
   },
 ];
