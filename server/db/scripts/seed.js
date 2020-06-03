@@ -1,8 +1,6 @@
 /* eslint-disable */
-const { randomBytes } = require('crypto');
-const { hashPassword } = require('../../auth.js');
 const { dbClient } = require('../db.js');
-const { schema, collections } = require('../schema.js');
+const { schema } = require('../schema.js');
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 
@@ -47,30 +45,6 @@ const nodeEnv = process.env.NODE_ENV || 'development';
             // order (1) or descending order (-1)
             await schemaItemCollection.createIndex({ [index.key]: 1 }, index.options);
           }
-        }
-      }
-
-      // Create local user if needed
-      if (nodeEnv === 'development') {
-        console.log('Verifying user');
-
-        const usersCollection = dbClient.db.collection(collections.USERS);
-        const defaultUser = await usersCollection.findOne({ username: 'username' });
-
-        // Creates default user
-        if (!defaultUser) {
-          const salt = randomBytes(16).toString('hex');
-          console.log('Creating default username');
-
-          const queryResult = await usersCollection.insertOne({
-            username: 'username',
-            password: hashPassword('password', salt),
-            salt,
-          });
-
-          console.log(`Created user 'username' with ID ${queryResult.insertedId}`);
-        } else {
-          console.log('Default username exists', defaultUser._id);
         }
       }
 

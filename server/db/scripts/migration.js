@@ -17,9 +17,7 @@ const db = new AWS.DynamoDB();
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 
 // DynamoDB
-const usersTable = `ssp-users-${databaseSuffix}`;
-const formsTable = `ssp-forms-${databaseSuffix}`;
-const serviceBCTable = `ssp-servicebc-${databaseSuffix}`;
+const greetingsTable = `ssp-greetings-${databaseSuffix}`;
 
 const keypress = async () => {
   process.stdin.setRawMode(false);
@@ -32,126 +30,50 @@ const keypress = async () => {
   }));
 };
 
-async function migrateUsers() {
-  const usersCollection = dbClient.db.collection(collections.USERS);
+async function migrateGreetings() {
+  const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
 
   // This could be improved by using a paginated scan but
   // considering we have less than 2MB of data, this should be okay
   console.log('Loading DynamoDB users into memory...');
-  const dynamoUsers = await dynamoClient.scan({
-    TableName: usersTable,
+  const dynamoGreetings = await dynamoClient.scan({
+    TableName: greetingsTable,
   }).promise();
 
-  console.log('\nMigrating users...');
-  const totalUsers = dynamoUsers.Count;
-  let processedUsers = 0;
-  let addedUsers = 0;
-  let redundantUsers = 0;
-  let failedUsers = 0;
+  console.log('\nMigrating greetings...');
+  const totalGreetings = dynamoUsers.Count;
+  let processedGreetings = 0;
+  let addedGreetings = 0;
+  let redundantGreetings = 0;
+  let failedGreetings = 0;
 
   if (dynamoUsers.Items) {
-    for (const item of dynamoUsers.Items) {
+    for (const item of dynamoGreetings.Items) {
       try {
         // Check if user exists in MongoDB
-        await usersCollection.insertOne(
+        await greetingsCollection.insertOne(
           {
-            username: item.id,
-            password: item.password,
-            salt: item.salt,
+            greeting: item.id,
           },
         );
 
-        addedUsers += 1;
+        addedGreetings += 1;
       } catch (err) {
         // Failed due to duplicated Key
         if (err.code === 11000) {
-          redundantUsers += 1;
+          redundantGreetings += 1;
         } else {
           console.log('Failed to migrate item: ', item, err);
-          failedUsers += 1;
+          failedGreetings += 1;
         }
       }
 
-      processedUsers += 1;
+      processedGreetings += 1;
     }
   }
 
-  console.log('User Migration summary\n', {
-    totalUsers, processedUsers, addedUsers, redundantUsers, failedUsers,
-  });
-}
-
-async function migrateForms() {
-  const formsCollection = dbClient.db.collection(collections.FORMS);
-
-  // This could be improved by using a paginated scan but
-  // considering we have less than 2MB of data, this should be okay
-  console.log('Loading DynamoDB forms into memory...');
-  const dynamoForms = await dynamoClient.scan({
-    TableName: formsTable,
-  }).promise();
-
-  console.log('Loading DynamoDB serviceBC items into memory...');
-  const dynamoServiceQuery = await dynamoClient.scan({
-    TableName: serviceBCTable,
-  }).promise();
-
-  const dynamoServiceBCItems = dynamoServiceQuery.Items || [];
-
-  console.log('\nMigrating forms...');
-  const total = dynamoForms.Count;
-  let processed = 0;
-  let added = 0;
-  let redundant = 0;
-  let failed = 0;
-
-  const currentDate = new Date().toISOString();
-
-  if (dynamoForms.Items) {
-    for (const item of dynamoForms.Items) {
-      try {
-        const { created_at, updated_at, ...formData } = item;
-
-        // Try to find serviceBC for request
-        const serviceBCTransactionsForForm = dynamoServiceBCItems.filter((serviceBCItem) => serviceBCItem.confirmationId === formData.id);
-
-        // Convert current BC transaction format
-        const serviceBCTransactions = serviceBCTransactionsForForm.map((item) => ({
-          ...(item.serviceBCId && {serviceBCId: item.serviceBCId}),
-          ...(item.errorDetails && {errorDetails: item.errorDetails}),
-          processedAt: item.createdAt,
-          status: item.status,
-        }));
-
-        const formDate = serviceBCTransactions.length > 0 ? serviceBCTransactions[0].processedAt : currentDate;
-
-        // Check if user exists in MongoDB
-        await formsCollection.insertOne(
-          {
-            ...formData,
-            serviceBCTransactions,
-            createdAt: created_at || updated_at || formDate || currentDate,
-            updatedAt: updated_at || created_at || formDate || currentDate,
-          },
-        );
-
-        added += 1;
-      } catch (err) {
-        // Failed due to duplicated Key
-        if (err.code === 11000) {
-          redundant += 1;
-        } else {
-          console.log('Failed to migrate item: ', item, err);
-          failed += 1;
-        }
-      }
-
-      processed += 1;
-    }
-  }
-
-  console.log('Forms Migration summary\n', {
-    total, processed, added, redundant, failed,
+  console.log('Greeting Migration summary\n', {
+    totalGreetings, processedGreetings, addedGreetings, redundantGreetings, failedGreetings,
   });
 }
 
@@ -189,8 +111,7 @@ async function migrateForms() {
       return process.exit();
     }
 
-    await migrateUsers();
-    await migrateForms();
+    await migrateGreetings();
 
     process.exit();
   } catch (err) {

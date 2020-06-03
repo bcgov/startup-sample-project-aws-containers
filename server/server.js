@@ -4,9 +4,8 @@ const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
-const postServiceItem = require('./utils/ServiceBC.js');
 const {
-  validate, FormSchema, DeterminationSchema, PhacSchema,
+  validate, GreetingSchema,
 } = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
@@ -40,18 +39,13 @@ const generateUniqueHexId = async (collection) => {
   return randomHexId;
 };
 
-// Login using username and password, receive JWT
-app.post(`${apiBaseUrl}/login`,
-  passport.authenticate('login', { session: false }),
-  (req, res) => res.json({ token: req.user.token }));
-
-// Create new form, not secured
-app.post(`${apiBaseUrl}/form`,
+// Choose and save greeting
+app.post(`${apiBaseUrl}/greeting`,
   asyncMiddleware(async (req, res) => {
     const scrubbed = scrubObject(req.body);
-    await validate(FormSchema, scrubbed); // Validate submitted form against schema
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-    const id = await generateUniqueHexId(formsCollection);
+    await validate(GreetingSchema, scrubbed); // Validate submitted form against schema
+    const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
+    const id = await generateUniqueHexId(greetingsCollection);
 
     // Boolean indicating if user really have an isolation plan
     const isolationPlanStatus = scrubbed.accomodations
@@ -68,8 +62,6 @@ app.post(`${apiBaseUrl}/form`,
       updatedAt: currentIsoDate,
     };
 
-    // Post to ServicesBC and cache status of the submission
-    const serviceResponse = await postServiceItem(formItem);
 
     await formsCollection.insertOne({
       ...formItem,
@@ -86,98 +78,19 @@ app.post(`${apiBaseUrl}/form`,
     return res.json({ id, isolationPlanStatus });
   }));
 
-// Create new form, not secured
-app.post(`${apiBaseUrl}/phac/submission`,
-  passport.authenticate('jwt-phac', { session: false }),
-  asyncMiddleware(async (req, res) => {
-    await validate(PhacSchema, req.body); // Validate submitted submissions against schema
-    const phacCollection = dbClient.db.collection(collections.PHAC);
-    const id = await generateUniqueHexId(phacCollection);
 
-    const currentIsoDate = new Date().toISOString();
-    const phacItems = req.body.map((item) => ({
-      ...item,
-      id,
-      createdAt: currentIsoDate,
-      updatedAt: currentIsoDate,
-    }));
-
-    await phacCollection.insertMany(phacItems);
-
-    const idMap = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
-
-    return res.json(idMap);
-  }));
-
-// Edit existing form
-app.patch(`${apiBaseUrl}/form/:id`,
-  passport.authenticate('jwt', { session: false }),
-  asyncMiddleware(async (req, res) => {
-    await validate(DeterminationSchema, req.body);
-    const { id } = req.params;
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-    const currentDate = new Date().toISOString();
-
-    const { notes } = await formsCollection.findOne({ id });
-
-    await formsCollection.updateOne(
-      { id }, // Query
-      { // UpdateQuery
-        $set: {
-          notes: req.body.notes,
-          determination: req.body.determination,
-          updatedAt: currentDate,
-        },
-      },
-    );
-
-    const notesLog = notes !== req.body.notes ? ' and new notes' : '';
-    logger.info(`Form ${id} updated by "${req.user.id}" with determination "${req.body.determination}"${notesLog}`, currentDate);
-
-    return res.json({ id });
-  }));
-
-// Get existing form by ID
-app.get(`${apiBaseUrl}/form/:id`,
+// Get existing greeting
+app.get(`${apiBaseUrl}/greeting/:id`,
   passport.authenticate('jwt', { session: false }),
   asyncMiddleware(async (req, res) => {
     const { id } = req.params;
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-    const formItem = await formsCollection.findOne({ id });
+    const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
+    const greetingItem = await greetingsCollection.findOne({ id });
 
-    if (!formItem) return res.status(404).json({ error: `No submission with ID ${id}` });
+    if (!greetingItem) return res.status(404).json({ error: `No submission with ID ${id}` });
 
-    return res.json(formItem);
+    return res.json(greetingItem);
   }));
-
-// get travellers by last name (partial match)
-app.get(`${apiBaseUrl}/last-name/:lname`,
-  passport.authenticate('jwt', { session: false }),
-  asyncMiddleware(async (req, res) => {
-    const { lname } = req.params;
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-
-    const forms = await formsCollection.find({
-      // i: for substring search, case insensitive
-      // ^: match results that starts with
-      lastName: { $regex: new RegExp(`^${lname}`, 'i') },
-    }).toArray();
-
-    if (forms.length === 0) return res.status(404).json({ error: `No traveller found with last name ${lname}` });
-
-    const travellers = forms.map((form) => {
-      // Remove serviceTransactions from return query
-      const { serviceTransactions, ...formData } = form;
-      return formData;
-    });
-
-    return res.json({ travellers });
-  }));
-
-// Validate JWT
-app.get(`${apiBaseUrl}/validate`,
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => res.json({}));
 
 // Client app
 if (process.env.NODE_ENV === 'production') {
