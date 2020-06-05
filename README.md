@@ -23,3 +23,18 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+
+## Amazon Web Services Terraform Deployment
+
+### Deployment Steps
+
+1. Build the docker image: ``docker build -t startup-sample .``
+2. Create a repository for the image. ``aws ecr create-repository --region ca-central-1 --repository-name startup-sample``
+3. Tag the docker image with the url of the repository from the previous step. ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+4. Push the image to ECR: ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+5. ``cd terraform/aws``
+6. terraform apply
+7. You will be prompted for the ``client_app_image``. Provide the value from the previous step. ex: ``<<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+
+In the server.js file, ``app.use(requireHttps);`` is commented out until HTTPS and Amazon Certificate Manager (ACM) are added to the Terraform.
