@@ -45,7 +45,7 @@ const Greeter = ({ isDisabled, submitLoading, submitError }) => {
               <Button
                 type="submit"
                 loading={submitLoading}
-                disabled={'' == values.greeting}
+                disabled={'' === values.greeting}
                 size="large"
                 text="Submit"
               />

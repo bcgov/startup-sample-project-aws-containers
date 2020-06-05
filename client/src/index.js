@@ -10,7 +10,7 @@ import 'react-app-polyfill/ie11';
 
 import { Routes, Theme } from './constants';
 
-import { PrivateRoute, PublicRoute } from './components/generic';
+import { PublicRoute } from './components/generic';
 
 const Form = lazy(() => import('./pages/public/Form'));
 const Confirmation = lazy(() => import('./pages/public/Confirmation'));
