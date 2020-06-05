@@ -30,11 +30,12 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 ### Deployment Steps
 
 1. Build the docker image: ``docker build -t startup-sample .``
-2. Create a repository for the image. ``aws ecr create-repository --region ca-central-1 --repository-name startup-sample``
-3. Tag the docker image with the url of the repository from the previous step. ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
-4. Push the image to ECR: ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
-5. ``cd terraform/aws``
-6. terraform apply
-7. You will be prompted for the ``client_app_image``. Provide the value from the previous step. ex: ``<<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+2. Login to ECR. ``aws ecr get-login --no-include-email --region ca-central-1``. This command outputs a docker login command. Copy, paste, and execute the entire output.
+3. Create a repository for the image. ``aws ecr create-repository --region ca-central-1 --repository-name startup-sample``
+4. Tag the docker image with the url of the repository from the previous step. ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+5. Push the image to ECR: ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+6. ``cd terraform/aws``
+7. terraform apply
+8. You will be prompted for the ``client_app_image``. Provide the value from the previous step. ex: ``<<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
 
 In the server.js file, ``app.use(requireHttps);`` is commented out until HTTPS and Amazon Certificate Manager (ACM) are added to the Terraform. 
