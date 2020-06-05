@@ -11,7 +11,7 @@ servers:
 paths:
   /form:
     post:
-      summary: Submit a new form on behalf of a traveller
+      summary: Submit a new form greeting selection
       requestBody:
         description: Form data
         content:
@@ -32,131 +32,11 @@ components:
   schemas:
     Form:
       required:
-      - ableToIsolate
-      - accomodations
-      - additionalTravellers
-      - address
-      - arrival
-      - certified
-      - city
-      - dob
-      - firstName
-      - includeAdditionalTravellers
-      - isolationPlan
-      - lastName
-      - province
-      - supplies
-      - telephone
-      - transportation
+      - greeting
       type: object
       properties:
-        firstName:
+        greeting:
           type: string
-        lastName:
-          type: string
-        telephone:
-          type: string
-        email:
-          type: string
-          pattern: ^.+@.+\..+$
-        address:
-          type: string
-        city:
-          type: string
-        province:
-          type: string
-          enum:
-          - Alberta
-          - British Columbia
-          - Manitoba
-          - New Brunswick
-          - Newfoundland and Labrador
-          - Nova Scotia
-          - Ontario
-          - Prince Edward Island
-          - Québec
-          - Saskatchewan
-          - Nunavut
-          - Northwest Territories
-          - Yukon
-          - Other
-        postalCode:
-          type: string
-        dob:
-          type: string
-          format: date
-          pattern: ^\d{4}\/\d{2}\/\d{2}$
-        includeAdditionalTravellers:
-          type: boolean
-        additionalTravellers:
-          type: array
-          description: Must be empty if includeAdditionalTravellers is false
-          minItems: 0
-          maxItems: 10
-          items:
-            type: object
-            required:
-            - dob
-            - firstName
-            - lastName
-            properties:
-              firstName:
-                type: string
-              lastName:
-                type: string
-              dob:
-                type: string
-                format: date
-                pattern: ^\d{4}\/\d{2}\/\d{2}$
-        arrival:
-          type: object
-          required:
-          - by
-          - date
-          - from
-          properties:
-            date:
-              type: string
-              format: date
-              pattern: ^\d{4}\/\d{2}\/\d{2}$
-            by:
-              type: string
-            from:
-              type: string
-            flight:
-              type: string
-        accomodations:
-          type: boolean
-        isolationPlan:
-          type: object
-          description: Must be null if accomodations is false
-          nullable: true
-          required:
-          - address
-          - city
-          - type
-          properties:
-            city:
-              type: string
-            address:
-              type: string
-            type:
-              type: string
-        supplies:
-          type: boolean
-        ableToIsolate:
-          type: boolean
-        transportation:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-            enum:
-            - taxi
-            - personal
-            - public
-        certified:
-          type: boolean
     Response:
       type: object
       properties:
