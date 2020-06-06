@@ -35,7 +35,8 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 4. Tag the docker image with the url of the repository from the previous step. ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
 5. Push the image to ECR: ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
 6. ``cd terraform/aws``
-7. terraform apply
-8. You will be prompted for the ``client_app_image``. Provide the value from the previous step. ex: ``<<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+7. ``terraform init``
+8. ``terraform apply``
+9. You will be prompted for the ``client_app_image``. Provide the value from the previous step. ex: ``<<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
 
 In the server.js file, ``app.use(requireHttps);`` is commented out until HTTPS and Amazon Certificate Manager (ACM) are added to the Terraform. 
