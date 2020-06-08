@@ -5,7 +5,11 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = "172.17.0.0/16"
+  cidr_block           = "172.17.0.0/16"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = local.common_tags
 }
 
 # Create var.az_count private subnets, each in a different AZ
@@ -14,6 +18,8 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
   availability_zone = data.aws_availability_zones.available.names[count.index]
   vpc_id            = aws_vpc.main.id
+
+  tags = local.common_tags
 }
 
 # Create var.az_count public subnets, each in a different AZ
@@ -23,11 +29,15 @@ resource "aws_subnet" "public" {
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   vpc_id                  = aws_vpc.main.id
   map_public_ip_on_launch = true
+
+  tags = local.common_tags
 }
 
 # Internet Gateway for the public subnet
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
+
+  tags = local.common_tags
 }
 
 # Route the public subnet traffic through the IGW
@@ -42,12 +52,16 @@ resource "aws_eip" "gw" {
   count      = var.az_count
   vpc        = true
   depends_on = [aws_internet_gateway.gw]
+
+  tags = local.common_tags
 }
 
 resource "aws_nat_gateway" "gw" {
   count         = var.az_count
   subnet_id     = element(aws_subnet.public.*.id, count.index)
   allocation_id = element(aws_eip.gw.*.id, count.index)
+
+  tags = local.common_tags
 }
 
 # Create a new route table for the private subnets, make it route non-local traffic through the NAT gateway to the internet
@@ -67,3 +81,29 @@ resource "aws_route_table_association" "private" {
   subnet_id      = element(aws_subnet.private.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
+
+
+# resource "aws_vpc_endpoint" "ecr_api" {
+#   count              = var.az_count
+#   vpc_id             = aws_vpc.main.id
+#   service_name       = "com.amazonaws.${var.aws_region}.ecr.api"
+#   subnet_ids         = [element(aws_subnet.private.*.id, count.index)]
+#   security_group_ids = [aws_security_group.vpc_endpoints.id]
+#   vpc_endpoint_type  = "Interface"
+#   private_dns_enabled= true
+
+#   tags = local.common_tags
+# }
+
+
+# resource "aws_vpc_endpoint" "ecr_dkr" {
+#   count              = var.az_count
+#   vpc_id             = aws_vpc.main.id
+#   service_name       = "com.amazonaws.${var.aws_region}.ecr.dkr"
+#   subnet_ids         = [element(aws_subnet.private.*.id, count.index)]
+#   security_group_ids = [aws_security_group.vpc_endpoints.id]
+#   vpc_endpoint_type  = "Interface"
+#   private_dns_enabled= true
+
+#   tags = local.common_tags
+# }

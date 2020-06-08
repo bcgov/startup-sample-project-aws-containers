@@ -17,6 +17,8 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = var.ecs_task_execution_role_name
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+
+  tags = local.common_tags
 }
 
 # ECS task execution role policy attachment
@@ -44,6 +46,8 @@ resource "aws_iam_role" "sample_app_container_role" {
   ]
 }
 EOF
+
+tags = local.common_tags
 }
 
 resource "aws_iam_role_policy" "sample_app_container_cwlogs" {
@@ -88,5 +92,5 @@ resource "aws_iam_role_policy" "sample_app_container_secrets" {
       }
     ]
   }
-  EOF
+  EOF  
 }

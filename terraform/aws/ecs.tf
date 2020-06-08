@@ -3,6 +3,8 @@
 resource "aws_ecs_cluster" "main" {
   name                = "sample-cluster"
   capacity_providers  = ["FARGATE_SPOT"]
+
+  tags = local.common_tags
 }
 
 data "template_file" "sample_app" {
@@ -34,6 +36,8 @@ resource "aws_ecs_task_definition" "app" {
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
   container_definitions    = data.template_file.sample_app.rendered
+
+  tags = local.common_tags
 }
 
 
@@ -60,5 +64,7 @@ resource "aws_ecs_service" "main" {
   }
 
   depends_on = [aws_alb_listener.front_end, aws_iam_role_policy_attachment.ecs_task_execution_role]
+
+  
 }
 
