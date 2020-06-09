@@ -31,12 +31,32 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 
 :warning: If you are using AWS Temporary Credentials, it is best to refresh them so they don't expire before the Terraform completes.
 
-1. Build the docker image: ``docker build -t startup-sample .``
-2. Login to ECR. ``aws ecr get-login --no-include-email --region ca-central-1``. This command outputs a docker login command. Copy, paste, and execute the entire output.
-3. Create a repository for the image. ``aws ecr create-repository --region ca-central-1 --repository-name startup-sample``
-4. Ensure that the ECS Service Role exists. ``aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com`` (this only needs to be done once)
-5. Tag the docker image with the url of the repository from the previous step. ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
-6. Push the image to ECR: ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+1. Build the docker image: 
+
+   ``docker build -t startup-sample .``
+
+2. Login to ECR:
+
+   ``aws ecr get-login --no-include-email --region ca-central-1``. 
+   
+   This command outputs a docker login command. Copy, paste, and execute the entire output.
+
+3. Create a repository for the image:
+
+   ``aws ecr create-repository --region ca-central-1 --repository-name startup-sample``
+
+4. Ensure that the ECS Service Role exists:
+
+   ``aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com`` (this only needs to be done once)
+
+5. Tag the docker image with the url of the repository from the previous step:
+
+   ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+
+6. Push the image to ECR:
+
+   ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+
 7. ``cd terraform/aws``
 8. ``terraform init``
 9. ``terraform apply``
