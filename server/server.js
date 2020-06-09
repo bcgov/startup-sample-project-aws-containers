@@ -46,48 +46,35 @@ app.post(`${apiBaseUrl}/greeting`,
     await validate(GreetingSchema, scrubbed); // Validate submitted form against schema
     const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
     const id = await generateUniqueHexId(greetingsCollection);
-
-    // Boolean indicating if user really have an isolation plan
-    const isolationPlanStatus = scrubbed.accomodations
-      && scrubbed.ableToIsolate && scrubbed.supplies;
-
+    
     const currentIsoDate = new Date().toISOString();
-    const formItem = {
+    const greetingItem = {
       ...scrubbed,
       id,
-      isolationPlanStatus,
-      determination: null,
-      notes: null,
       createdAt: currentIsoDate,
       updatedAt: currentIsoDate,
     };
 
+    logger.info('Saving to db: ' + JSON.stringify(greetingItem));
 
-    await formsCollection.insertOne({
-      ...formItem,
-      // Following NoSQL recommendation, in this case, we want to store
-      // BC Services transactional data on the form itself
-      serviceBCTransactions: [
-        {
-          ...serviceResponse,
-          processedAt: new Date().toISOString(),
-        },
-      ],
+    const greeting = req.body["greeting"];
+    await greetingsCollection.insertOne({ 
+      ...greetingItem,
     });
 
-    return res.json({ id, isolationPlanStatus });
+    return res.json({ id, greeting});
   }));
 
 
 // Get existing greeting
-app.get(`${apiBaseUrl}/greeting/:id`,
+app.get(`${apiBaseUrl}/greeting/:latest`,
   passport.authenticate('jwt', { session: false }),
   asyncMiddleware(async (req, res) => {
-    const { id } = req.params;
+    
     const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
-    const greetingItem = await greetingsCollection.findOne({ id });
+    const greetingItem = await greetingsCollection.findOne({ id }, {sort:{$natural:-1}});
 
-    if (!greetingItem) return res.status(404).json({ error: `No submission with ID ${id}` });
+    if (!greetingItem) return res.status(404).json({ error: `No submissions exist yet` });
 
     return res.json(greetingItem);
   }));

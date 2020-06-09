@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 
 
@@ -42,6 +43,9 @@ export default ({ location: { state } }) => {
             </Box>
           </Grid>
         }
+        <span className={classes.button}>
+          <Link to="/" >Greeting Selection</Link>
+        </span>
       </Grid>
     </Page>
   )

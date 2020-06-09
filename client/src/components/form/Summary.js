@@ -5,7 +5,7 @@ const Summary = () => {
   return (
     <Fragment>
       <Typography variant="h2" color="primary" gutterBottom>
-        Greeting goes here
+        Simple Demo App
       </Typography>
       <Typography variant="body1" paragraph>
         In order to get you started in your journey, we've provided you a small demonstration app.

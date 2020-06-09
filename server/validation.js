@@ -27,7 +27,7 @@ const yup = require('yup');
 //   Array.isArray(a) && new Set(a).size === a.length
 // );
 
-const FormSchema = yup.object().noUnknown().shape({
+const GreetingSchema = yup.object().noUnknown().shape({
   // Greeting
   greeting: yup.string().required('Greeting selection is required'),
 });
@@ -35,5 +35,5 @@ const FormSchema = yup.object().noUnknown().shape({
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  FormSchema, validate,
+  GreetingSchema, validate,
 };
