@@ -17,26 +17,27 @@ const Form = ({ initialValues = null, isDisabled, confirmationNumber = null, isP
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState(false);
   const formValues = initialValues ? initialValues : {
-
     // Greeter
-    greeting: '',
+    greeting: 'Hello',
   };
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     const modifiedValues = handleSubmission(values);
-    const response = await fetch('/api/v1/form', {
+    const response = await fetch('/api/v1/greeting', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify({ ...modifiedValues }),
     });
     if (response.ok) {
-      const { id, isolationPlanStatus, error } = await response.json();
+      const { id, greeting, error } = await response.json();
       if (error) {
         setSubmitError(error.message || 'Failed to submit this form');
       } else {
-        history.push(Routes.Confirmation, { id, isolationPlanStatus });
-        return;
+        history.push(Routes.Confirmation, { id, greeting });
+        formValues.id = id;
+        formValues.greeting = greeting;
+        return RenderForm({formValues, isDisabled, confirmationNumber, isPdf, submitLoading, submitError, handleSubmit});
       }
     } else {
       setSubmitError(response.error || response.statusText || 'Server error');
@@ -44,6 +45,11 @@ const Form = ({ initialValues = null, isDisabled, confirmationNumber = null, isP
     setSubmitLoading(false);
   };
 
+  return RenderForm({formValues, isDisabled, confirmationNumber, isPdf, submitLoading, submitError, handleSubmit});
+};
+
+
+const RenderForm = ({ formValues = null, isDisabled, confirmationNumber = null, isPdf = false, submitLoading, submitError, handleSubmit=()=>{} }) => {
   return (
     <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
 
@@ -68,7 +74,7 @@ const Form = ({ initialValues = null, isDisabled, confirmationNumber = null, isP
           >
             <FormikForm>
               <Grid container spacing={2}>
-                {!isDisabled && <Greeter submitLoading={submitLoading} submitError={submitError} />}
+                {!isDisabled && <Greeter last_greeting={formValues.greeting} submitLoading={submitLoading} submitError={submitError} />}
               </Grid>
             </FormikForm>
           </Formik>

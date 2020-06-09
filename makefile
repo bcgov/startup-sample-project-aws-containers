@@ -73,6 +73,9 @@ local-client-workspace:
 local-server-workspace: 
 	@docker exec -it $(PROJECT)-server bash
 
+local-database-workspace: 
+	@docker exec -it $(PROJECT)-mongodb bash
+
 local-db-seed:
 	@docker exec -it $(PROJECT)-server npm run db:seed
 

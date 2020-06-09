@@ -8,7 +8,7 @@ import { Divider } from '../generic';
 import { RenderSelectField } from '../fields';
 import { Button } from '../generic';
 
-const Greeter = ({ isDisabled, submitLoading, submitError }) => {
+const Greeter = ({ isDisabled, last_greeting, submitLoading, submitError }) => {  
   const { values } = useFormikContext();
   return (
     <Grid item xs={12}>
@@ -16,7 +16,7 @@ const Greeter = ({ isDisabled, submitLoading, submitError }) => {
 
         {/** Title */}
         <Grid item xs={12}>
-          <Typography variant="subtitle1">Your choice</Typography>
+          <Typography variant="subtitle1">{last_greeting}, select your favorite greeting</Typography>
           <Divider />
         </Grid>
 
@@ -59,10 +59,10 @@ const Greeter = ({ isDisabled, submitLoading, submitError }) => {
             </Grid>
           </Grid>
         </Grid>
-
       </Grid>
     </Grid>
   );
 };
+
 
 export { Greeter };
