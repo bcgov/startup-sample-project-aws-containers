@@ -81,29 +81,3 @@ resource "aws_route_table_association" "private" {
   subnet_id      = element(aws_subnet.private.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
-
-
-# resource "aws_vpc_endpoint" "ecr_api" {
-#   count              = var.az_count
-#   vpc_id             = aws_vpc.main.id
-#   service_name       = "com.amazonaws.${var.aws_region}.ecr.api"
-#   subnet_ids         = [element(aws_subnet.private.*.id, count.index)]
-#   security_group_ids = [aws_security_group.vpc_endpoints.id]
-#   vpc_endpoint_type  = "Interface"
-#   private_dns_enabled= true
-
-#   tags = local.common_tags
-# }
-
-
-# resource "aws_vpc_endpoint" "ecr_dkr" {
-#   count              = var.az_count
-#   vpc_id             = aws_vpc.main.id
-#   service_name       = "com.amazonaws.${var.aws_region}.ecr.dkr"
-#   subnet_ids         = [element(aws_subnet.private.*.id, count.index)]
-#   security_group_ids = [aws_security_group.vpc_endpoints.id]
-#   vpc_endpoint_type  = "Interface"
-#   private_dns_enabled= true
-
-#   tags = local.common_tags
-# }

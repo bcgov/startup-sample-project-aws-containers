@@ -31,7 +31,7 @@ variable "client_app_port" {
 
 variable "client_app_count" {
   description = "Number of docker containers to run"
-  default     = 2
+  default     = 1
 }
 
 variable "client_container_name" {
@@ -65,6 +65,11 @@ variable "db_instance_type" {
 variable "db_cluster_name" {
   description = "Name of the cluster"
   default     = "sample-db"
+}
+
+variable "db_cluster_number_instances" {
+  description = "The number of instances in the cluster"
+  default     = 1
 }
 
 variable "db_port" {

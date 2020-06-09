@@ -8,7 +8,7 @@ resource "aws_docdb_subnet_group" "default" {
 }
 
 resource "aws_docdb_cluster_instance" "cluster_instances" {
-  count              = 2
+  count              = var.db_cluster_number_instances
   identifier         = "${var.db_cluster_name}-${count.index}"
   cluster_identifier = aws_docdb_cluster.docdb.id
   instance_class     = var.db_instance_type
