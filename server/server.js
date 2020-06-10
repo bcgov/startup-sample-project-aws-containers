@@ -68,15 +68,14 @@ app.post(`${apiBaseUrl}/greeting`,
 
 // Get existing greeting
 app.get(`${apiBaseUrl}/greeting/:latest`,
-  passport.authenticate('jwt', { session: false }),
   asyncMiddleware(async (req, res) => {
     
     const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
-    const greetingItem = await greetingsCollection.findOne({ id }, {sort:{$natural:-1}});
+    const greetingItems = await greetingsCollection.find({}, {sort:{$natural:-1}, limit: 10}).toArray();
+    
+    logger.info('Reading from db: ' + JSON.stringify(greetingItems));
 
-    if (!greetingItem) return res.status(404).json({ error: `No submissions exist yet` });
-
-    return res.json(greetingItem);
+    return res.json({greetingItems});
   }));
 
 // Client app
