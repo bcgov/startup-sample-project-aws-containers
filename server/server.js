@@ -14,7 +14,7 @@ const logger = require('./logger.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-app.use(requireHttps);
+//app.use(requireHttps);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
