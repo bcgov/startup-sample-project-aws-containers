@@ -30,7 +30,7 @@ const Greeter = ({ isDisabled, submitLoading, submitError }) => {
             options={[
               { value: 'Aloha', label: 'Aloha' },
               { value: 'Bonjour', label: 'Bonjour' },
-              { value: 'GreetingsAndSalutations', label: 'Greetings and salutations' },
+              { value: 'Greetings and salutations', label: 'Greetings and salutations' },
               { value: 'Hello', label: 'Hello' },
               { value: 'Howdy', label: 'Howdy' },
               { value: 'Konichiwa', label: 'Konichiwa' },
