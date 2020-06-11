@@ -1,6 +1,6 @@
 FROM node:12
 
-MAINTAINER FreshWorks <web@freshworks.io>
+LABEL maintainer="BC Gov https://github.com/bcgov/startup-sample-project"
 
 ENV PATH $PATH:/usr/src/app/node_modules/.bin
 
