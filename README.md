@@ -8,6 +8,25 @@
 
 Welcome to your new project.  This is a basic starter project with a NodeJS app connected to a DynamoDB database for you to modify and expand to fit your needs.
 
+## Setup
+
+```shell script
+// provision DB (documentDB) etc. via Terraform
+// create EB app in web ui 
+#  - application name: ssp
+#  - platform : Docker Multi
+# - Application Code: Sample Application
+# - select vpc and private subnets
+# Note: env will be called Ssp-env
+// edit .env with S3 bucket, AWS creds, REGION and PROFILE, DEPLOY_ENV
+make setup-aws-profile
+make create-ecr-repos
+make pipeline-build
+make pipeline-push
+ make pipeline-deploy-prep
+ make pipeline-deploy-version
+```
+
 ## License
 
     Copyright 2020 Province of British Columbia

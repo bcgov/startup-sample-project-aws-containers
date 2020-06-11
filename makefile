@@ -67,10 +67,10 @@ close-local: ## -- Target : Closes the local development containers.
 	@echo "+\n++ Make: Closing local container ...\n+"
 	@docker-compose -f docker-compose.dev.yml down
 
-local-client-workspace: 
+local-client-workspace:
 	@docker exec -it $(PROJECT)-client bash
 
-local-server-workspace: 
+local-server-workspace:
 	@docker exec -it $(PROJECT)-server bash
 
 local-database-workspace: 
@@ -105,7 +105,7 @@ create-ecr-repos:
 
 setup-development-env:
 	@echo "+\n++ Make: Preparing project for dev environment...\n+"
-	@cp .config/.env.dev ./.env
+	@cp .config/.env.example ./.env
 
 
 ##########################################
