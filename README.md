@@ -35,9 +35,11 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 
    ``docker build -t startup-sample .``
 
-2. Login to ECR:
+2. Login to ECR: 
 
-   ``aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com``
+   ``set AWSACCOUNTID=<<AWS ACCOUNTID>>``
+
+   ``aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin $AWSACCOUNTID.dkr.ecr.ca-central-1.amazonaws.com``
    
 
 3. Create a repository for the image:
@@ -50,17 +52,16 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 
 5. Tag the docker image with the url of the repository from the previous step:
 
-   ``docker tag startup-sample <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+   ``docker tag startup-sample $AWSACCOUNTID.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
 
 6. Push the image to ECR:
 
-   ``docker push <<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+   ``docker push $AWSACCOUNTID.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
 
 7. ``cd terraform/aws``
 8. ``terraform init``
-9. ``terraform apply``
-10. You will be prompted for the ``client_app_image``. Provide the value from the previous step. ex: ``<<AWS ACCOUNTID>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``. Alternatively, add it to the command ``-var client_app_image=<<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
-11. The output will display a URL to the Application Load Balancer. Note that it will take several seconds before the load balancer registers the container as healthy. To check the status, navigate to [LoadBalancerTargetGroups](https://ca-central-1.console.aws.amazon.com/ec2/v2/home?region=ca-central-1#TargetGroups:sort=targetGroupName), select the 'startup-sample-group' and look for the 'healthy' status.
+9. ``terraform apply -var client_app_image=$AWSACCOUNTID.dkr.ecr.ca-central-1.amazonaws.com/startup-sample``
+10. The output will display a URL to the Application Load Balancer. Note that it will take several seconds before the load balancer registers the container as healthy. To check the status, navigate to [LoadBalancerTargetGroups](https://ca-central-1.console.aws.amazon.com/ec2/v2/home?region=ca-central-1#TargetGroups:sort=targetGroupName), select the 'startup-sample-group' and look for the 'healthy' status.
 
 In the server.js file, ``app.use(requireHttps);`` is commented out until HTTPS and Amazon Certificate Manager (ACM) are added to the Terraform. 
 
