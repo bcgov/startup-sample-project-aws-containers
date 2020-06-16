@@ -46,7 +46,7 @@ app.post(`${apiBaseUrl}/greeting`,
     await validate(GreetingSchema, scrubbed); // Validate submitted form against schema
     const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
     const id = await generateUniqueHexId(greetingsCollection);
-    
+
     const currentIsoDate = new Date().toISOString();
     const greetingItem = {
       ...scrubbed,
@@ -58,7 +58,7 @@ app.post(`${apiBaseUrl}/greeting`,
     logger.info('Saving to db: ' + JSON.stringify(greetingItem));
 
     const greeting = req.body["greeting"];
-    await greetingsCollection.insertOne({ 
+    await greetingsCollection.insertOne({
       ...greetingItem,
     });
 
@@ -69,10 +69,10 @@ app.post(`${apiBaseUrl}/greeting`,
 // Get existing greeting
 app.get(`${apiBaseUrl}/greeting/:latest`,
   asyncMiddleware(async (req, res) => {
-    
+
     const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
-    const greetingItems = await greetingsCollection.find({}, {sort:{$natural:-1}, limit: 10}).toArray();
-    
+    const greetingItems = await greetingsCollection.find({}, {limit: 10}).toArray();
+
     logger.info('Reading from db: ' + JSON.stringify(greetingItems));
 
     return res.json({greetingItems});

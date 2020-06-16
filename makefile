@@ -7,7 +7,7 @@ export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
 # original IMAGE_TAG=${DEPLOY_DATE}-${COMMIT_SHA}
-export IMAGE_TAG=${COMMIT_SHA}
+export IMAGE_TAG=${COMMIT_SHA}-${DEPLOY_DATE}
 
 define deployTag
 "${PROJECT}-${DEPLOY_DATE}"
@@ -121,19 +121,15 @@ pipeline-build:
 	@echo "Building images with: $(GIT_LOCAL_BRANCH)"
 	@docker-compose -f docker-compose.yml build
 
-pipeline-push:
+pipeline-push: setup-aws-profile
 	@echo "+\n++ Pushing image to container registry...\n+"
 	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@export DEPLOYMENT_IMAGE="$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
+	@echo "DEPLOYMENT_IMAGE is $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)\n+"
 
 pipeline-deploy-version:
 	@echo "+\n++ Deploying to ECS...\n+"
-# 	@aws --profile $(PROFILE) configure set region $(REGION)
-# 	@aws --profile $(PROFILE) s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
-# 	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
-# 	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
 	@terraform apply --var app_image=... // re-runs plan now that image is defined...should be no-op for most things, except ECS task, service, and some other bits.
 
 pipeline-healthcheck:
