@@ -1,5 +1,5 @@
 # Client
-FROM node:12 AS client
+FROM node:12-alpine AS client
 
 # Build client
 WORKDIR /client

@@ -6,8 +6,7 @@ export $(shell sed 's/=.*//' .env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
-# original IMAGE_TAG=${DEPLOY_DATE}-${COMMIT_SHA}
-export IMAGE_TAG=${COMMIT_SHA}
+export IMAGE_TAG=${COMMIT_SHA}-${DEPLOY_DATE}
 
 define deployTag
 "${PROJECT}-${DEPLOY_DATE}"
@@ -17,10 +16,15 @@ endef
 # Define default environment variables for local development #
 ##############################################################
 export PROJECT := $(or $(PROJECT),ssp)
+export PROFILE := $(or $(PROFILE),ssp-dev)
 export DB_USER := $(or $(DB_USER),development)
 export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
+
+
+export ACCOUNT_ID := $(shell aws sts get-caller-identity | jq '.Account')
+export DEPLOYMENT_IMAGE := "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
 
 #################
 # Status Output #
@@ -31,12 +35,9 @@ print-status:
 	@echo " | Current Settings                                        | "
 	@echo " +---------------------------------------------------------+ "
 	@echo " | ACCOUNT ID: $(ACCOUNT_ID) "
-	@echo " | S3 BUCKET: $(S3_BUCKET) "
 	@echo " | PROJECT: $(PROJECT) "
 	@echo " | REGION: $(REGION) "
 	@echo " | PROFILE: $(PROFILE) "
-	@echo " | DEPLOY ENV: $(DEPLOY_ENV) "
-	@echo " | MERGE BRANCH: $(MERGE_BRANCH) "
 	@echo " | GIT LOCAL BRANCH: $(GIT_LOCAL_BRANCH) "
 	@echo " | COMMIT_SHA: $(COMMIT_SHA) "
 	@echo " | IMAGE_TAG: $(IMAGE_TAG) "
@@ -67,13 +68,13 @@ close-local: ## -- Target : Closes the local development containers.
 	@echo "+\n++ Make: Closing local container ...\n+"
 	@docker-compose -f docker-compose.dev.yml down
 
-local-client-workspace: 
+local-client-workspace:
 	@docker exec -it $(PROJECT)-client bash
 
-local-server-workspace: 
+local-server-workspace:
 	@docker exec -it $(PROJECT)-server bash
 
-local-database-workspace: 
+local-database-workspace:
 	@docker exec -it $(PROJECT)-mongodb bash
 
 local-db-seed:
@@ -90,22 +91,28 @@ local-server-tests:
 # Utility commands #
 ####################
 
+check_aws_login:
+	@echo AWS ACCOUNT_ID: ${ACCOUNT_ID}
+
+setup-image-repository: check_aws_login
+	@cd terraform/ecr && terraform init && terraform apply
+
+# Provision required infrastructure/services for deployment in AWS.
+setup-aws-infrastructure: pipeline-push
+	@echo "Provisioning services in AWS...\n+"
+	@terraform init terraform/aws
+	@terraform apply -var client_app_image=$(DEPLOYMENT_IMAGE) terraform/aws
+
 # Set an AWS profile for pipeline
 setup-aws-profile:
 	@echo "+\n++ Make: Setting AWS Profile...\n+"
 	@aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID) --profile $(PROFILE)
 	@aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY) --profile $(PROFILE)
-
-# Generates ECR (Elastic Container Registry) repos, given the proper credentials
-create-ecr-repos:
-	@echo "+\n++ Creating EC2 Container repositories...\n+"
-	@$(shell aws ecr get-login --no-include-email --profile $(PROFILE) --region $(REGION))
-	@aws ecr create-repository --profile $(PROFILE) --region $(REGION) --repository-name $(PROJECT) || :
-	@aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --profile $(PROFILE) --region $(REGION)
+	@aws configure set aws_session_token $(AWS_SESSION_TOKEN) --profile $(PROFILE)
 
 setup-development-env:
 	@echo "+\n++ Make: Preparing project for dev environment...\n+"
-	@cp .config/.env.dev ./.env
+	@cp .config/.env.example ./.env
 
 
 ##########################################
@@ -117,24 +124,16 @@ pipeline-build:
 	@echo "Building images with: $(GIT_LOCAL_BRANCH)"
 	@docker-compose -f docker-compose.yml build
 
-pipeline-push:
-	@echo "+\n++ Pushing image to Dockerhub...\n+"
-	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
+pipeline-push: setup-aws-profile setup-image-repository
+	@echo "+\n++ Pushing image to container registry...\n+"
 	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-
-pipeline-deploy-prep:
-	@echo "+\n++ Creating Dockerrun.aws.json file...\n+"
-	@.build/build_dockerrun.sh > Dockerrun.aws.json
+	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(DEPLOYMENT_IMAGE)
+	@docker push $(DEPLOYMENT_IMAGE)
+	@echo "DEPLOYMENT_IMAGE is $(DEPLOYMENT_IMAGE)"
 
 pipeline-deploy-version:
-	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
-	@zip -r $(call deployTag).zip  Dockerrun.aws.json
-	@aws --profile $(PROFILE) configure set region $(REGION)
-	@aws --profile $(PROFILE) s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
-	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
+	@echo "+\n++ Deploying to ECS...\n+"
+	@terraform apply --var app_image=... // re-runs plan now that image is defined...should be no-op for most things, except ECS task, service, and some other bits.
 
 pipeline-healthcheck:
 	@aws --profile $(PROFILE) elasticbeanstalk describe-environments --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --query 'Environments[*].{Status: Status, Health: Health}'
