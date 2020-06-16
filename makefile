@@ -22,6 +22,9 @@ export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
+
+# export ACCOUNT_ID := $(aws sts get-caller-identity | jq '.Account')
+
 #################
 # Status Output #
 #################
@@ -73,7 +76,7 @@ local-client-workspace:
 local-server-workspace:
 	@docker exec -it $(PROJECT)-server bash
 
-local-database-workspace: 
+local-database-workspace:
 	@docker exec -it $(PROJECT)-mongodb bash
 
 local-db-seed:
@@ -90,18 +93,19 @@ local-server-tests:
 # Utility commands #
 ####################
 
+# Provision required infrastructure/services for deployment in AWS.
+setup-aws-infrastructure:
+	@echo "Provisioning services in AWS...\n+"
+	@terraform init terraform/aws
+# 	@todo add client_app_image var to below
+	@terraform apply terraform/aws
+
 # Set an AWS profile for pipeline
 setup-aws-profile:
 	@echo "+\n++ Make: Setting AWS Profile...\n+"
 	@aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID) --profile $(PROFILE)
 	@aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY) --profile $(PROFILE)
-
-# Generates ECR (Elastic Container Registry) repos, given the proper credentials
-create-ecr-repos:
-	@echo "+\n++ Creating EC2 Container repositories...\n+"
-	@$(shell aws ecr get-login --no-include-email --profile $(PROFILE) --region $(REGION))
-	@aws ecr create-repository --profile $(PROFILE) --region $(REGION) --repository-name $(PROJECT) || :
-	@aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --profile $(PROFILE) --region $(REGION)
+	@aws configure set aws_session_token $(AWS_SESSION_TOKEN) --profile $(PROFILE)
 
 setup-development-env:
 	@echo "+\n++ Make: Preparing project for dev environment...\n+"
@@ -118,23 +122,19 @@ pipeline-build:
 	@docker-compose -f docker-compose.yml build
 
 pipeline-push:
-	@echo "+\n++ Pushing image to Dockerhub...\n+"
-	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
+	@echo "+\n++ Pushing image to container registry...\n+"
 	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-
-pipeline-deploy-prep:
-	@echo "+\n++ Creating Dockerrun.aws.json file...\n+"
-	@.build/build_dockerrun.sh > Dockerrun.aws.json
+	@export DEPLOYMENT_IMAGE="$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
 
 pipeline-deploy-version:
-	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
-	@zip -r $(call deployTag).zip  Dockerrun.aws.json
-	@aws --profile $(PROFILE) configure set region $(REGION)
-	@aws --profile $(PROFILE) s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
-	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
+	@echo "+\n++ Deploying to ECS...\n+"
+# 	@aws --profile $(PROFILE) configure set region $(REGION)
+# 	@aws --profile $(PROFILE) s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
+# 	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
+# 	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
+	@terraform apply --var app_image=... // re-runs plan now that image is defined...should be no-op for most things, except ECS task, service, and some other bits.
 
 pipeline-healthcheck:
 	@aws --profile $(PROFILE) elasticbeanstalk describe-environments --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --query 'Environments[*].{Status: Status, Health: Health}'

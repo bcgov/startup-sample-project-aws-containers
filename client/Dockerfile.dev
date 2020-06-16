@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:12-alpine
 
 LABEL maintainer="BC Gov https://github.com/bcgov/startup-sample-project"
 

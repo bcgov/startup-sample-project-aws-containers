@@ -11,12 +11,12 @@ resource "aws_cloudwatch_log_group" "sample_log_group" {
 
 resource "aws_cloudwatch_log_group" "sample_logs" {
   name = "/ecs/sample-client-app"
-  retention_in_days = 30  
+  retention_in_days = 30
 
   tags = local.common_tags
 }
 
-resource "aws_cloudwatch_log_stream" "sample_log_stream" {
-  name           = "sample-log-stream"
-  log_group_name = aws_cloudwatch_log_group.sample_log_group.name  
-}
+//resource "aws_cloudwatch_log_stream" "sample_log_stream" {
+//  name           = "sample-log-stream"
+//  log_group_name = aws_cloudwatch_log_group.sample_log_group.name
+//}

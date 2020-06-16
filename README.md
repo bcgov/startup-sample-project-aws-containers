@@ -10,21 +10,28 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 
 ## Setup
 
+### One-time Setup
 ```shell script
-// provision DB (documentDB) etc. via Terraform
-// create EB app in web ui 
-#  - application name: ssp
-#  - platform : Docker Multi
-# - Application Code: Sample Application
-# - select vpc and private subnets
-# Note: env will be called Ssp-env
-// edit .env with S3 bucket, AWS creds, REGION and PROFILE, DEPLOY_ENV
+# setup development environment
+make setup-development-env
+# - edit .env and provide values for REGION, PROFILE, DEPLOY_ENV
+# - login to AWS console and get temporary credentials for cli
+# provision infrastructure (one-time)
+# @todo we need to specify an image path, but will this work when there's no image, or should we separate out the ecs task and invoke that only at deployment time?
+make setup-aws-infrastructure
+```
+
+### Application Deployment
+```shell script
+# login to AWS console and get temporary credentials for cli
+# Create/update local AWS profile with current credentials 
 make setup-aws-profile
-make create-ecr-repos
+# build Docker image locally
 make pipeline-build
+# push image to ECR
 make pipeline-push
- make pipeline-deploy-prep
- make pipeline-deploy-version
+# how to trigger deployment of new version?
+
 ```
 
 ## License
