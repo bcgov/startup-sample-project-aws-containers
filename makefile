@@ -6,7 +6,6 @@ export $(shell sed 's/=.*//' .env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
-# original IMAGE_TAG=${DEPLOY_DATE}-${COMMIT_SHA}
 export IMAGE_TAG=${COMMIT_SHA}-${DEPLOY_DATE}
 
 define deployTag
@@ -17,13 +16,15 @@ endef
 # Define default environment variables for local development #
 ##############################################################
 export PROJECT := $(or $(PROJECT),ssp)
+export PROFILE := $(or $(PROFILE),ssp-dev)
 export DB_USER := $(or $(DB_USER),development)
 export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
 
-# export ACCOUNT_ID := $(aws sts get-caller-identity | jq '.Account')
+export ACCOUNT_ID := $(shell aws sts get-caller-identity | jq '.Account')
+export DEPLOYMENT_IMAGE := "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
 
 #################
 # Status Output #
@@ -34,12 +35,9 @@ print-status:
 	@echo " | Current Settings                                        | "
 	@echo " +---------------------------------------------------------+ "
 	@echo " | ACCOUNT ID: $(ACCOUNT_ID) "
-	@echo " | S3 BUCKET: $(S3_BUCKET) "
 	@echo " | PROJECT: $(PROJECT) "
 	@echo " | REGION: $(REGION) "
 	@echo " | PROFILE: $(PROFILE) "
-	@echo " | DEPLOY ENV: $(DEPLOY_ENV) "
-	@echo " | MERGE BRANCH: $(MERGE_BRANCH) "
 	@echo " | GIT LOCAL BRANCH: $(GIT_LOCAL_BRANCH) "
 	@echo " | COMMIT_SHA: $(COMMIT_SHA) "
 	@echo " | IMAGE_TAG: $(IMAGE_TAG) "
@@ -93,12 +91,17 @@ local-server-tests:
 # Utility commands #
 ####################
 
+check_aws_login:
+	@echo AWS ACCOUNT_ID: ${ACCOUNT_ID}
+
+setup-image-repository: check_aws_login
+	@cd terraform/ecr && terraform init && terraform apply
+
 # Provision required infrastructure/services for deployment in AWS.
-setup-aws-infrastructure:
+setup-aws-infrastructure: pipeline-push
 	@echo "Provisioning services in AWS...\n+"
 	@terraform init terraform/aws
-# 	@todo add client_app_image var to below
-	@terraform apply terraform/aws
+	@terraform apply -var client_app_image=$(DEPLOYMENT_IMAGE) terraform/aws
 
 # Set an AWS profile for pipeline
 setup-aws-profile:
@@ -121,12 +124,12 @@ pipeline-build:
 	@echo "Building images with: $(GIT_LOCAL_BRANCH)"
 	@docker-compose -f docker-compose.yml build
 
-pipeline-push: setup-aws-profile
+pipeline-push: setup-aws-profile setup-image-repository
 	@echo "+\n++ Pushing image to container registry...\n+"
 	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@echo "DEPLOYMENT_IMAGE is $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)\n+"
+	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(DEPLOYMENT_IMAGE)
+	@docker push $(DEPLOYMENT_IMAGE)
+	@echo "DEPLOYMENT_IMAGE is $(DEPLOYMENT_IMAGE)"
 
 pipeline-deploy-version:
 	@echo "+\n++ Deploying to ECS...\n+"

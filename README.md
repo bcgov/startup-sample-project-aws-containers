@@ -1,12 +1,26 @@
 # Sample Startup Project
 
-## A starter greeting template for cloud demo deployments
+## A starter greeting template for cloud demo deployments. It's essentially a fancier "Hello World" app.
 
 ---
 
 ## Introduction
 
-Welcome to your new project.  This is a basic starter project with a NodeJS app connected to a DynamoDB database for you to modify and expand to fit your needs.
+Welcome to your new project.  This is a basic starter project with a NodeJS app connected to a database for you to modify and expand to fit your needs.  It provides scripts for developing and running locally, as well as "Infrastructure-as-Code" using Terraform to allow the app to be easily deployed to public cloud environments.  Currently, AWS is supported, but support for other cloud targets may be added in the future. 
+
+
+## Prerequisites
+
+In order to develop or run the app locally, you will need:
+
+- a `bash`-like terminal environment; testing has primarily been done using MacOS Catalina
+- `make`
+- `Docker`
+
+In order to deploy to AWS, you will also need:
+
+- `terraform` 12 or newer
+- access to an AWS account and mechanism to get temporary (STS) credentials   
 
 ## Setup
 
@@ -14,25 +28,56 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 ```shell script
 # setup development environment
 make setup-development-env
-# - edit .env and provide values for REGION, PROFILE, DEPLOY_ENV
-# - login to AWS console and get temporary credentials for cli
-# provision infrastructure (one-time)
-# @todo we need to specify an image path, but will this work when there's no image, or should we separate out the ecs task and invoke that only at deployment time?
+```
+
+### Build and Run Locally using Docker
+```
+make local
+```
+
+### Deploy to AWS
+
+##### Build Deployment Image
+
+The image that is built using the local build step is not intended for remote deployment, so before we can deploy to a remote environment, we need to build an suitable image.  The command below will do this.
+
+```shell script
+make pipeline-build
+```
+
+#### Provision Image Repository
+
+Once we have a deployment image, we need to push the image to repository where the runtime container engine will be able to access it, so we need to create a repository.  The command below will set up a repository for us.
+
+> You will need to *Log into AWS* before running the command below and make your credentials visible to your command shell via environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN`.
+
+>_Note_: The `make` command below calls `terraform` behind the scenes and you will be prompted whether to proceed with creation of the repository.  Answer `yes' at the prompt to proceed.  
+
+```shell script
+make setup-image-repository
+```
+
+#### Push image
+
+Next, we can push the image to the repository that was created above using the command below.
+
+```shell script
+make pipeline-push
+```
+
+#### Provision AWS infrastructure and Deploy App
+
+The next step is to provision the services that are needed to run the app in AWS.  The command below will do this by calling Terraform.  When the procedure is completed, it will have created all the services, and the application will be deployed. 
+
+> _Note_: You may wish to "refresh" your AWS crednetials (login in again using AWS console and update environment variables) at this point, as the provisioning step takes some time and credentials are time-bound. 
+
+> _Note_: You will see some of the steps you completed are run again.  These are mostly "no-ops" and shouldn't add much time to the process. Nothing to see here...
+
+```shell script
 make setup-aws-infrastructure
 ```
 
-### Application Deployment
-```shell script
-# login to AWS console and get temporary credentials for cli
-# Create/update local AWS profile with current credentials 
-make setup-aws-profile
-# build Docker image locally
-make pipeline-build
-# push image to ECR
-make pipeline-push
-# how to trigger deployment of new version?
-
-```
+Once the process completes, it will print a URL that can be pasted into your browser.  It make take a few moments, but you will be able to access to app at the printed URL.
 
 ## License
 
