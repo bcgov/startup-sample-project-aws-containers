@@ -37,9 +37,8 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 
 2. Login to ECR:
 
-   ``aws ecr get-login --no-include-email --region ca-central-1``. 
+   ``aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin <<AWS ACCOUNTID>>.dkr.ecr.ca-central-1.amazonaws.com``
    
-   This command outputs a docker login command. Copy, paste, and execute the entire output.
 
 3. Create a repository for the image:
 
