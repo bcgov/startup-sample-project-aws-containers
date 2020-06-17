@@ -54,27 +54,4 @@ resource "aws_security_group" "ecs_tasks" {
 }
 
 
-# DocumentDB Security Group: Edit to restrict access to the application
-resource "aws_security_group" "docdb" {
-  name        = "sample-documentdb-security-group"
-  description = "controls access to the db"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    protocol          = "tcp"
-    from_port         = var.db_port
-    to_port           = var.db_port
-    security_groups   = [aws_security_group.ecs_tasks.id]
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.common_tags
-}
-
 

@@ -19,36 +19,14 @@
         "hostPort": ${app_port}
       }
     ],
-    "environment": [
-      {
-        "name": "DB_SERVER",
-        "value": "${db_server}"
-      },
-      {
-        "name": "DB_PORT",
-        "value": "${db_port}"
-      },
-      {
-        "name": "DB_USER",
-        "value": "${db_user}"
-       },
+    "environment": [  
       {
         "name": "DB_NAME",
         "value": "${db_name}"
       },
       {
-        "name": "DB_AWS_TLS_ENABLED",
-        "value": "${db_tls}"
-      },
-      {
         "name": "AWS_REGION",
         "value": "${aws_region}"
-      }
-    ],
-    "secrets": [
-      {
-        "name": "DB_PASSWORD",
-        "valueFrom": "${secret_key}"
       }
     ]
   }

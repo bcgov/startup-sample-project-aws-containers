@@ -1,6 +1,7 @@
 const app = require('./server.js');
 const logger = require('./logger.js');
-const { dbClient } = require('./db');
+let dbClient = null;
+if ('development' === process.env.NODE_ENV) dbClient = require('./db').dbClient;
 
 const port = 80;
 
@@ -9,8 +10,8 @@ let server;
 
 // shut down server
 async function shutdown() {
-  await dbClient.disconnect();
-
+  if ('development' === process.env.NODE_ENV) await dbClient.disconnect();
+  
   if (server) {
     server.close((err) => {
       if (err) {
@@ -37,7 +38,7 @@ process.on('SIGTERM', () => {
 // Start server
 (async () => {
   try {
-    await dbClient.connect();
+    if ('development' === process.env.NODE_ENV) await dbClient.connect();
     server = app.listen(port, async () => {
       logger.info(`Listening on port ${port}`);
     });
