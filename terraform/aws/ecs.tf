@@ -18,6 +18,7 @@ data "template_file" "sample_app" {
     aws_region        = var.aws_region
     container_name    = var.client_container_name
     db_name           = var.db_name
+    log_group         = aws_cloudwatch_log_group.sample_logs.name
   }
 }
 
