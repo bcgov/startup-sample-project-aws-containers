@@ -8,10 +8,6 @@ export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
 export IMAGE_TAG=${COMMIT_SHA}-${DEPLOY_DATE}
 
-define deployTag
-"${PROJECT}-${DEPLOY_DATE}"
-endef
-
 ##############################################################
 # Define default environment variables for local development #
 ##############################################################
@@ -22,8 +18,11 @@ export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
+define deployTag
+"${PROJECT}-${DEPLOY_DATE}"
+endef
 
-export ACCOUNT_ID := $(shell aws sts get-caller-identity | jq '.Account')
+export ACCOUNT_ID := $(shell aws sts get-caller-identity 2>/dev/null | jq '.Account')
 export DEPLOYMENT_IMAGE := "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
 
 #################

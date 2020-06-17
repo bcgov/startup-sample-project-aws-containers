@@ -7,14 +7,19 @@ const requireHttps = require('./require-https.js');
 const {
   validate, GreetingSchema,
 } = require('./validation.js');
-const { dbClient, collections } = require('./db');
+let dbClient = null;
+let collections = null;
+let dynamodbClient = null;
+if ('development' === process.env.NODE_ENV) dbClient = require('./db').dbClient;
+if ('development' === process.env.NODE_ENV) collections = require('./db').collections;
+if ('development' !== process.env.NODE_ENV) dynamodbClient = require('./db').dynamodbClient;
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const logger = require('./logger.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-//app.use(requireHttps);
+if ('true' === process.env.HTTPS) app.use(requireHttps);;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
@@ -42,40 +47,52 @@ const generateUniqueHexId = async (collection) => {
 // Choose and save greeting
 app.post(`${apiBaseUrl}/greeting`,
   asyncMiddleware(async (req, res) => {
-    const scrubbed = scrubObject(req.body);
-    await validate(GreetingSchema, scrubbed); // Validate submitted form against schema
-    const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
-    const id = await generateUniqueHexId(greetingsCollection);
-
-    const currentIsoDate = new Date().toISOString();
-    const greetingItem = {
-      ...scrubbed,
-      id,
-      createdAt: currentIsoDate,
-      updatedAt: currentIsoDate,
-    };
-
-    logger.info('Saving to db: ' + JSON.stringify(greetingItem));
-
-    const greeting = req.body["greeting"];
-    await greetingsCollection.insertOne({
-      ...greetingItem,
-    });
-
-    return res.json({ id, greeting});
+    if ('development' === process.env.NODE_ENV) {
+      const scrubbed = scrubObject(req.body);
+      await validate(GreetingSchema, scrubbed); // Validate submitted form against schema
+      const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
+      const id = await generateUniqueHexId(greetingsCollection);
+      const currentIsoDate = new Date().toISOString();
+      const greetingItem = {
+        ...scrubbed,
+        id,		
+        createdAt: currentIsoDate,
+        updatedAt: currentIsoDate,
+      };
+  
+      logger.info('Saving to db: ' + JSON.stringify(greetingItem));
+  
+      const greeting = req.body["greeting"];
+      await greetingsCollection.insertOne({
+        ...greetingItem,
+      });		
+  
+      return res.json({ id, greeting});
+    } else {
+      logger.info('Saving to db: ' + JSON.stringify(req.body));
+  
+      const greeting = req.body["greeting"];
+      const result = await dynamodbClient.addGreeting(greeting);
+      const id = result.id;
+      
+      return res.json({ id, greeting});
+    }
   }));
 
 
 // Get existing greeting
 app.get(`${apiBaseUrl}/greeting/:latest`,
   asyncMiddleware(async (req, res) => {
-
-    const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
-    const greetingItems = await greetingsCollection.find({}, {limit: 10}).toArray();
-
-    logger.info('Reading from db: ' + JSON.stringify(greetingItems));
-
-    return res.json({greetingItems});
+    if ('development' === process.env.NODE_ENV) {
+      const greetingsCollection = dbClient.db.collection(collections.GREETINGS);
+      const greetingItems = await greetingsCollection.find({}, {sort:{$natural:-1}, limit: 10}).toArray();
+      logger.info('Reading from db: ' + JSON.stringify(greetingItems));
+      return res.json({greetingItems});
+    } else {
+      const greetingItems = await dynamodbClient.getGreetings();
+      logger.info('Reading from db: ' + JSON.stringify(greetingItems));
+      return res.json({greetingItems});
+    }
   }));
 
 // Client app
