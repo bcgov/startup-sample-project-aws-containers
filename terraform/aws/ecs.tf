@@ -1,14 +1,19 @@
 # ecs.tf
 
+resource "aws_iam_service_linked_role" "service-linked-role" {
+	aws_service_name = "ecs.amazonaws.com"
+}
+
 resource "aws_ecs_cluster" "main" {
   name                = "sample-cluster"
   capacity_providers  = ["FARGATE_SPOT"]
 
   tags = local.common_tags
+  depends_on = [aws_iam_service_linked_role.service-linked-role]
 }
 
 data "template_file" "sample_app" {
-  template = file("./templates/ecs/sample.json.tpl")
+  template = file("${path.module}/templates/ecs/sample.json.tpl")
   
   vars = {
     app_image         = var.client_app_image
@@ -16,13 +21,14 @@ data "template_file" "sample_app" {
     fargate_cpu       = var.fargate_cpu
     fargate_memory    = var.fargate_memory
     aws_region        = var.aws_region
-    container_name    = var.client_container_name,
-    db_name           = var.db_name,
+    container_name    = var.client_container_name
+    db_name           = var.db_name
     log_group         = aws_cloudwatch_log_group.sample_logs.name
   }
 }
 
 resource "aws_ecs_task_definition" "app" {
+	count                    = local.create_ecs_service
   family                   = "sample-app-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.sample_app_container_role.arn
