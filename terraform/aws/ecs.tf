@@ -42,6 +42,8 @@ resource "aws_ecs_service" "main" {
   task_definition = aws_ecs_task_definition.app[count.index].arn
   desired_count   = var.client_app_count
   launch_type     = "FARGATE"
+  enable_ecs_managed_tags = true
+  propagate_tags = "TASK_DEFINITION"
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
@@ -56,4 +58,6 @@ resource "aws_ecs_service" "main" {
   }
 
   depends_on = [aws_alb_listener.front_end, aws_iam_role_policy_attachment.ecs_task_execution_role]
+
+  tags = local.common_tags
 }

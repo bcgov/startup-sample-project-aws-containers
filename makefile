@@ -99,8 +99,11 @@ setup-image-repository: check_aws_login
 # Provision required infrastructure/services for deployment in AWS.
 setup-aws-infrastructure: pipeline-push
 	@echo "Provisioning services in AWS...\n+"
+	@aws ecs put-account-setting --name containerInstanceLongArnFormat --value enabled
+	@aws ecs put-account-setting --name serviceLongArnFormat --value enabled
+	@aws ecs put-account-setting --name taskLongArnFormat --value enabled
 	@terraform init terraform/aws
-	@terraform apply -var client_app_image=$(DEPLOYMENT_IMAGE) terraform/aws
+	@terraform apply -var client_app_image=$(DEPLOYMENT_IMAGE) -var budget_amount=10 terraform/aws
 
 # Set an AWS profile for pipeline
 setup-aws-profile:
