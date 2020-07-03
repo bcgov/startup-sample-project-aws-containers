@@ -65,3 +65,12 @@ variable "repository_name" {
   type = string
   default = "ssp"
 }
+
+variable "budget_amount" {
+  description = "The amount of spend for the budget. Example: enter 10 to represent $10"
+}
+
+variable "budget_tag" {
+  description = "The Cost Allocation Tag that will be used to build the monthly budget. "
+  default     = "Project=Startup Sample"
+}
