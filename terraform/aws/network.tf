@@ -81,3 +81,31 @@ resource "aws_route_table_association" "private" {
   subnet_id      = element(aws_subnet.private.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
+
+
+
+resource "aws_vpc_endpoint" "dynamodb" {
+  vpc_id       = aws_vpc.main.id
+  service_name = "com.amazonaws.${var.aws_region}.dynamodb"
+
+  route_table_ids = aws_route_table.private[*].id
+
+
+  tags = local.common_tags
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.endpoints.id
+  ]
+
+  subnet_ids = aws_subnet.private[*].id
+
+  private_dns_enabled = true
+
+  tags = local.common_tags
+}
