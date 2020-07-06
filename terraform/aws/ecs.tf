@@ -3,6 +3,12 @@
 resource "aws_ecs_cluster" "main" {
   name                = "sample-cluster"
   capacity_providers  = ["FARGATE_SPOT"]
+  
+  default_capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"
+    weight = 100
+  }
+
 
   tags = local.common_tags
 }
@@ -41,10 +47,16 @@ resource "aws_ecs_service" "main" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app[count.index].arn
   desired_count   = var.client_app_count
-  launch_type     = "FARGATE"
+  #launch_type     = "FARGATE"
   enable_ecs_managed_tags = true
   propagate_tags = "TASK_DEFINITION"
 
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"
+    weight = 100
+  }
+
+  
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
     subnets          = aws_subnet.private.*.id
