@@ -96,11 +96,21 @@ check_aws_login:
 setup-image-repository: check_aws_login
 	@cd terraform/ecr && terraform init && terraform apply
 
+setup-aws-ecs-linked-role: check_aws_login
+	@echo "Creating ECS service linked role."
+	-@aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
+
 # Provision required infrastructure/services for deployment in AWS.
-setup-aws-infrastructure: pipeline-push
+setup-aws-infrastructure: pipeline-push setup-aws-ecs-linked-role
 	@echo "Provisioning services in AWS...\n+"
 	@terraform init terraform/aws
 	@terraform apply -var client_app_image=$(DEPLOYMENT_IMAGE) terraform/aws
+
+# De-provision infrastructure/services in AWS.
+cleanup-aws-infrastructure: check_aws_login
+	@echo "De-provisioning services in AWS...\n+"
+	@terraform init terraform/aws
+	@terraform destroy terraform/aws
 
 # Set an AWS profile for pipeline
 setup-aws-profile:

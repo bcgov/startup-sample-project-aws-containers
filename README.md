@@ -72,14 +72,24 @@ make pipeline-push
 
 The next step is to provision the services that are needed to run the app in AWS.  The command below will do this by calling Terraform.  When the procedure is completed, it will have created all the services, and the application will be deployed.
 
-> _Note_: You may wish to "refresh" your AWS crednetials (login in again using AWS console and update environment variables) at this point, as the provisioning step takes some time and credentials are time-bound.
+> _Note_: You may wish to "refresh" your AWS credentials (login in again using AWS console and update environment variables) at this point, as the provisioning step takes some time and credentials are time-bound.
 > _Note_: You will see some of the steps you completed are run again.  These are mostly "no-ops" and shouldn't add much time to the process. Nothing to see here...
 
 ```shell script
 make setup-aws-infrastructure
 ```
 
-Once the process completes, it will print a URL that can be pasted into your browser.  It make take a few moments, but you will be able to access to app at the printed URL.
+Once the process completes, it will print a URL that can be pasted into your browser.  It may take a few moments, but you will be able to access to app at the printed URL.
+
+#### Cleanup/Teardown
+
+The task of decommissioning the app and its infrastructure, can be done in one step as shown below.
+
+
+```shell script
+make cleanup-aws-infrastructure
+```
+ 
 
 ## License
 

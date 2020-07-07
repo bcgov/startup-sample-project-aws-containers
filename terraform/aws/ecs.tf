@@ -9,7 +9,7 @@ resource "aws_ecs_cluster" "main" {
 
 data "template_file" "sample_app" {
   template = file("${path.module}/templates/ecs/sample.json.tpl")
-  
+
   vars = {
     app_image         = var.client_app_image
     app_port          = var.client_app_port
@@ -42,8 +42,9 @@ resource "aws_ecs_service" "main" {
   task_definition = aws_ecs_task_definition.app[count.index].arn
   desired_count   = var.client_app_count
   launch_type     = "FARGATE"
+  health_check_grace_period_seconds = 60
 
-  network_configuration {
+	network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
     subnets          = aws_subnet.private.*.id
     assign_public_ip = false
