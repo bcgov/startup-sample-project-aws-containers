@@ -8,8 +8,7 @@ resource "aws_ecs_cluster" "main" {
     capacity_provider = "FARGATE_SPOT"
     weight = 100
   }
-
-
+  
   tags = local.common_tags
 }
 
@@ -46,8 +45,7 @@ resource "aws_ecs_service" "main" {
   name            = "sample-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app[count.index].arn
-  desired_count   = var.client_app_count
-  #launch_type     = "FARGATE"
+  desired_count   = var.client_app_count  
   enable_ecs_managed_tags = true
   propagate_tags = "TASK_DEFINITION"
   health_check_grace_period_seconds = 60
@@ -61,7 +59,7 @@ resource "aws_ecs_service" "main" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
-    subnets          = aws_subnet.private.*.id
+    subnets          = data.aws_subnet_ids.privateapp.ids
     assign_public_ip = false
   }
 

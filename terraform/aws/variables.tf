@@ -33,7 +33,7 @@ variable "client_app_port" {
 
 variable "client_app_count" {
   description = "Number of docker containers to run"
-  default     = 1
+  default     = 2
 }
 
 variable "client_container_name" {
@@ -74,4 +74,9 @@ variable "budget_amount" {
 variable "budget_tag" {
   description = "The Cost Allocation Tag that will be used to build the monthly budget. "
   default     = "Project=Startup Sample"
+}
+
+variable "alb_cert_domain" {
+  description = "The domain of cert to use for the internal ALB"
+  default     = "*.example.ca"
 }
