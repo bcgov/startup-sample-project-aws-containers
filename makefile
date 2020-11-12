@@ -2,6 +2,8 @@
 
 -include .env
 
+UNAME := $(shell uname)
+
 export $(shell sed 's/=.*//' .env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
@@ -45,33 +47,41 @@ print-status:
 # If no .env file exists in the project root dir, run `make setup-development-env` and fill in credentials
 pipeline-deploy-dev: | pipeline-build pipeline-push pipeline-deploy-prep pipeline-deploy-version
 
-local:  | build-local run-local ## Task-Alias -- Run the steps for local development
+local:  | local-build local-run local-logs ## Task-Alias -- Run the steps for local development
 
 #####################
 # Local Development #
 #####################
 
-build-local: ## -- Target : Builds the local development containers.
+local-build: ## -- Target : Builds the local development containers.
 	@echo "+\n++ Make: Building local Docker image ...\n+"
 	@docker-compose -f docker-compose.dev.yml build
 
-run-local: ## -- Target : Runs the local development containers.
+local-run: ## -- Target : Runs the local development containers.
 	@echo "+\n++ Make: Running locally ...\n+"
-	@docker-compose -f docker-compose.dev.yml up
+	@docker-compose -f docker-compose.dev.yml up -d
 
-run-local-db: ## -- Target : Runs the local development containers.
+local-run-db: ## -- Target : Runs the local development containers.
 	@echo "+\n++ Make: Running db locally ...\n+"
 	@docker-compose -f docker-compose.dev.yml up mongodb
 
-close-local: ## -- Target : Closes the local development containers.
+local-close: ## -- Target : Closes the local development containers.
 	@echo "+\n++ Make: Closing local container ...\n+"
 	@docker-compose -f docker-compose.dev.yml down
 
+local-restart: ## -- Target : Closes the local development containers.
+	@echo "+\n++ Make: Closing local container ...\n+"
+	@docker-compose -f docker-compose.dev.yml restart
+
+local-logs: ## -- Target : tail logs from local development containers.
+	@echo "+\n++ Make: Running locally ...\n+"
+	@docker-compose -f docker-compose.dev.yml logs -f
+
 local-client-workspace:
-	@docker exec -it $(PROJECT)-client bash
+	@docker exec -it $(PROJECT)-client sh
 
 local-server-workspace:
-	@docker exec -it $(PROJECT)-server bash
+	@docker exec -it $(PROJECT)-server sh
 
 local-database-workspace:
 	@docker exec -it $(PROJECT)-mongodb bash
@@ -85,6 +95,24 @@ local-db-migration:
 local-server-tests:
 	@docker exec -it $(PROJECT)-server npm test
 
+local-setup:
+	@echo "+\n++ Make: Installing system dependencies...\n+"
+ifeq ($(UNAME), Linux)
+	@.config/local/linux.sh
+endif
+ifeq ($(UNAME), Darwin)
+	@.config/local/darwin.sh
+endif
+
+#######################
+# VS Code Development #
+#######################
+
+vscode:
+	@code .
+
+vscode-copy-config:
+	@mkdir -p .vscode && cp -a .config/vscode/* .vscode/
 
 ####################
 # Utility commands #
