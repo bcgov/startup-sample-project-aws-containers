@@ -2,7 +2,7 @@
 
 ## A starter greeting template for cloud demo deployments
 
-It's essentially a fancier "Hello World" app.
+It's essentially a fancier "Hello World" app.  This demo app is current WIP and not to be considered a reference architecture yet.  The Cloud Pathfinder team intends to provide a proper CI/CD pattern and clean up rough edges.  For now it has been used internally for testing purposes.  Stay tuned we intend to have this improved soon.
 
 ---
 
