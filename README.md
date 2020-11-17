@@ -1,5 +1,7 @@
 # Sample Startup Project
 
+[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
 ## A starter greeting template for cloud demo deployments
 
 It's essentially a fancier "Hello World" app.
