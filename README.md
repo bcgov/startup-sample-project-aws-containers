@@ -1,5 +1,7 @@
 # Sample Startup Project
 
+[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
 ## A starter greeting template for cloud demo deployments
 
 It's essentially a fancier "Hello World" app.  This demo app is current WIP and not to be considered a reference architecture yet.  The Cloud Pathfinder team intends to provide a proper CI/CD pattern and clean up rough edges.  For now it has been used internally for testing purposes.  Stay tuned we intend to have this improved soon.
@@ -14,7 +16,7 @@ Welcome to your new project.  This is a basic starter project with a NodeJS app 
 
 In order to develop or run the app locally, you will need:
 
-- a `bash`-like terminal environment; testing has primarily been done using MacOS Catalina
+- a `bash`-like terminal environment; testing has primarily been done using MacOS Catalina, Ubuntu Linux, and Windows 10 (WSL2)
 - `make`
 - `Docker`
 
@@ -26,17 +28,46 @@ In order to deploy to AWS, you will also need:
 
 ## Setup
 
+### Install Prerequisites
+
+```bash
+# MacOS and Ubuntu 20.04, Windows 10 (WSL2 - Ubuntu 20.04), if make is installed
+make local-setup
+```
+
+```bash
+# MacOS, if make is not installed
+./.config/local/darwin.sh
+```
+
+```bash
+# Ubuntu 20.04, Windows 10 (WSL2 - Ubuntu 20.04), if make is not installed
+./.config/local/linux.sh
+```
+
 ### One-time Setup
 
-```shell script
+```bash
 # setup development environment
 make setup-development-env
 ```
 
 ### Build and Run Locally using Docker
 
-```shell script
+```bash
 make local
+```
+
+### VS Code
+
+```bash
+# initialize vscode project config
+make vscode-copy-config
+```
+
+```bash
+# open the project in vscode
+make vscode
 ```
 
 ### Deploy to AWS
@@ -85,11 +116,9 @@ Once the process completes, it will print a URL that can be pasted into your bro
 
 The task of decommissioning the app and its infrastructure, can be done in one step as shown below.
 
-
 ```shell script
 make cleanup-aws-infrastructure
 ```
- 
 
 ## License
 
