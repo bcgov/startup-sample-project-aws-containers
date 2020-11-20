@@ -20,10 +20,6 @@ export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
-define deployTag
-"${PROJECT}-${DEPLOY_DATE}"
-endef
-
 export ACCOUNT_ID := $(shell aws sts get-caller-identity 2>/dev/null | jq '.Account')
 export DEPLOYMENT_IMAGE := "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
 
@@ -174,63 +170,3 @@ pipeline-push: setup-aws-profile setup-image-repository
 pipeline-deploy-version:
 	@echo "+\n++ Deploying to ECS...\n+"
 	@terraform apply --var app_image=... // re-runs plan now that image is defined...should be no-op for most things, except ECS task, service, and some other bits.
-
-pipeline-healthcheck:
-	@aws --profile $(PROFILE) elasticbeanstalk describe-environments --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --query 'Environments[*].{Status: Status, Health: Health}'
-
-##########################################
-# GH deployment commands #
-##########################################
-
-gh-pipeline-push:
-	@echo "+\n++ Pushing image to Dockerhub...\n+"
-	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
-	@aws --region $(REGION) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-
-gh-pipeline-deploy-prep:
-	@echo "+\n++ Creating Dockerrun.aws.json file...\n+"
-	@.build/build_dockerrun.sh > Dockerrun.aws.json
-
-gh-pipeline-deploy-version:
-	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
-	@zip -r $(call deployTag).zip  Dockerrun.aws.json
-	@aws configure set region $(REGION)
-	@aws s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
-	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
-	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
-
-##########################################
-# IMG Promotion commands #
-##########################################
-pipeline-promote-prep:
-	@echo "--------------------------------------------------------------------------------";
-	@echo "NOTE: This requires the PROMOTE_FROM_TAG and PROMOTE_TO_TAG be set in .build/image_promote.sh"
-	@echo "--------------------------------------------------------------------------------";
-	@echo "\nPromoting to Image Registry...\n"
-	@.build/promote_img.sh
-
-pipeline-promote-staging:
-	@echo "+\n++ Promoting to Elasticbeanstalk [STAGING]...\n+"
-	@zip -r $(call deployTag)_staging.zip  Dockerrun.aws.json
-	@aws --profile $(PROFILE) configure set region $(REGION)
-	@aws --profile $(PROFILE) s3 cp $(call deployTag)_staging.zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag)_staging.zip
-	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag)_staging.zip"
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name startup-sample-project-staging --version-label $(call deployTag)
-
-pipeline-promote-prod:
-	@echo "+\n++ Promoting to Elasticbeanstalk [PRODUCTION]...\n+"
-	@zip -r $(call deployTag)_prod.zip  Dockerrun.aws.json
-	@aws --profile $(PROFILE) configure set region $(REGION)
-	@aws --profile $(PROFILE) s3 cp $(call deployTag)_prod.zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag)_prod.zip
-	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag)_prod.zip"
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name startup-sample-project-prod --version-label $(call deployTag)
-
-##########################################
-# Git tagging aliases #
-##########################################
-
-tag-dev:
-	@git tag -fa dev -m "Deploying $(BRANCH):$(IMAGE_TAG) to dev env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/dev:refs/tags/dev

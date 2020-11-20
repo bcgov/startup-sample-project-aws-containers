@@ -72,6 +72,8 @@ make vscode
 
 ### Deploy to AWS
 
+The process for deployment to AWS is a work in progress. This section outlines the process that is used for development and experimentation.
+
 #### Build Deployment Image
 
 The image that is built using the local build step is not intended for remote deployment, so before we can deploy to a remote environment, we need to build an suitable image.  The command below will do this.

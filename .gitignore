@@ -1,9 +1,3 @@
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-startup-sample-project*.zip
-
 # Dependencies
 node_modules
 
@@ -18,11 +12,8 @@ server/pdfs/*
 
 # Misc.
 docs
-Dockerrun.aws.json
 audit-report.*
 .DS_Store
-.ebextensions/*
-!.ebextensions/.keep
 .env
 test-results
 bcfs-web-*
@@ -32,8 +23,6 @@ yarn-error.log*
 .idea
 .vscode
 .eslintcache
-
-
 
 # Local .terraform directories
 **/.terraform/*
