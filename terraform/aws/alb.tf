@@ -6,15 +6,15 @@ resource "aws_alb" "main" {
   internal        = true
   security_groups = [aws_security_group.lb.id]
 
-  tags = local.common_tags  
+  tags = local.common_tags
 }
 
 resource "aws_alb_target_group" "app" {
-  name        = "sample-target-group"
-  port        = var.client_app_port
-  protocol    = "HTTP"
-  vpc_id      = data.aws_vpc.main.id
-  target_type = "ip"
+  name                 = "sample-target-group"
+  port                 = var.client_app_port
+  protocol             = "HTTP"
+  vpc_id               = data.aws_vpc.main.id
+  target_type          = "ip"
   deregistration_delay = 30
 
   health_check {
@@ -42,7 +42,7 @@ resource "aws_alb_listener" "front_end" {
   default_action {
     target_group_arn = aws_alb_target_group.app.id
     type             = "forward"
-  }  
+  }
 }
 
 # Find a certificate that is issued

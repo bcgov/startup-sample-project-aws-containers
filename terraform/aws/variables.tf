@@ -7,12 +7,12 @@ variable "aws_region" {
 
 variable "ecs_task_execution_role_name" {
   description = "ECS task execution role name"
-  default = "startupSampleEcsTaskExecutionRole"
+  default     = "startupSampleEcsTaskExecutionRole"
 }
 
 variable "ecs_auto_scale_role_name" {
   description = "ECS auto scale role Name"
-  default = "startupSampleEcsAutoScaleRole"
+  default     = "startupSampleEcsAutoScaleRole"
 }
 
 variable "az_count" {
@@ -22,8 +22,8 @@ variable "az_count" {
 
 variable "client_app_image" {
   description = "Docker image to run in the ECS cluster. _Note_: there is a blank default value, which will cause service and task resource creation to be supressed unless an image is specified."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "client_app_port" {
@@ -37,8 +37,8 @@ variable "client_app_count" {
 }
 
 variable "client_container_name" {
-    description = "Client container name"
-    default = "sample-client-app"
+  description = "Client container name"
+  default     = "sample-client-app"
 }
 
 variable "health_check_path" {
@@ -56,19 +56,19 @@ variable "fargate_memory" {
 }
 
 variable "db_name" {
-  description  = "DynamoDB DB Name"
-  default      = "ssp-greetings"
+  description = "DynamoDB DB Name"
+  default     = "ssp-greetings"
 }
 
 variable "repository_name" {
   description = "Name for the container repository to be provisioned."
-  type = string
-  default = "ssp"
+  type        = string
+  default     = "ssp"
 }
 
 variable "budget_amount" {
   description = "The amount of spend for the budget. Example: enter 100 to represent $100"
-  default = "100"
+  default     = "100"
 }
 
 variable "budget_tag" {

@@ -5,7 +5,7 @@ resource "aws_dynamodb_table" "startup_sample_table" {
   range_key      = "createdAt"
   read_capacity  = 1
   write_capacity = 1
-  
+
   attribute {
     name = "pid"
     type = "S"
@@ -16,5 +16,5 @@ resource "aws_dynamodb_table" "startup_sample_table" {
     type = "S"
   }
 
-   tags = local.common_tags
+  tags = local.common_tags
 }
