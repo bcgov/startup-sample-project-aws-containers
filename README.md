@@ -114,6 +114,12 @@ make setup-aws-infrastructure
 
 Once the process completes, it will print a URL that can be pasted into your browser.  It may take a few moments, but you will be able to access to app at the printed URL.
 
+To deploy a specfic version of the container image:
+
+```bash
+make pipeline-deploy-version DEPLOYMENT_IMAGE=<CONTAINER_REGISTRY_URL/IMAGE_NAME:TAG>
+```
+
 #### Cleanup/Teardown
 
 The task of decommissioning the app and its infrastructure, can be done in one step as shown below.

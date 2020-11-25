@@ -21,7 +21,7 @@ export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
 export ACCOUNT_ID := $(shell aws sts get-caller-identity 2>/dev/null | jq '.Account')
-export DEPLOYMENT_IMAGE := "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)"
+export DEPLOYMENT_IMAGE := $(or $(DEPLOYMENT_IMAGE),$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG))
 
 #################
 # Status Output #
@@ -169,4 +169,4 @@ pipeline-push: setup-aws-profile setup-image-repository
 
 pipeline-deploy-version:
 	@echo "+\n++ Deploying to ECS...\n+"
-	@terraform apply --var app_image=... // re-runs plan now that image is defined...should be no-op for most things, except ECS task, service, and some other bits.
+	@terraform apply -var client_app_image=$(DEPLOYMENT_IMAGE) terraform/aws
