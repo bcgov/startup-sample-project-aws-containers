@@ -112,7 +112,7 @@ The next step is to provision the services that are needed to run the app in AWS
 make setup-aws-infrastructure
 ```
 
-Once the process completes, it will print a URL `alb_hostname` that will be needed in oder to create your request for a public url with the CloudOps team.
+Once the process completes, it will print a URL `alb_hostname` that will be needed in order to create your request for a public url with the CloudOps team.
 
 To deploy a specfic version of the container image:
 
