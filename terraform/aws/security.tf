@@ -4,7 +4,7 @@
 resource "aws_security_group" "lb" {
   name        = "sample-load-balancer-security-group"
   description = "controls access to the ALB"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
 
   ingress {
     protocol    = "tcp"
@@ -34,7 +34,7 @@ resource "aws_security_group" "lb" {
 resource "aws_security_group" "ecs_tasks" {
   name        = "sample-ecs-tasks-security-group"
   description = "allow inbound access from the ALB only"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
 
   ingress {
     protocol        = "tcp"
@@ -58,13 +58,13 @@ resource "aws_security_group" "ecs_tasks" {
 resource "aws_security_group" "endpoints" {
   name        = "sample-endpoints-security-group"
   description = "allow inbound access"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
 
   ingress {
-    protocol        = "tcp"
-    from_port       = 443
-    to_port         = 443
-    cidr_blocks     = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

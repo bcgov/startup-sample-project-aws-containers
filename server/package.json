@@ -25,6 +25,7 @@
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
     "puppeteer": "2.1.1",
+    "serve-favicon": "^2.5.0",
     "winston": "3.2.1",
     "winston-cloudwatch": "2.3.2",
     "yup": "0.28.3"

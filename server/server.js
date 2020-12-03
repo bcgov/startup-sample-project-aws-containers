@@ -1,4 +1,5 @@
 const express = require('express');
+const favicon = require('serve-favicon')
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
@@ -22,6 +23,7 @@ const app = express();
 if ('true' === process.env.HTTPS) app.use(requireHttps);;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(favicon(path.join(__dirname, '../client/build', 'favicon.ico')))
 
 // Remove empty strings (DynamoDB doesn't accept)
 const scrubObject = (obj) => {

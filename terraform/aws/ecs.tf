@@ -1,14 +1,13 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "main" {
-  name                = "sample-cluster"
-  capacity_providers  = ["FARGATE_SPOT"]
+  name               = "sample-cluster"
+  capacity_providers = ["FARGATE_SPOT"]
 
   default_capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
-    weight = 100
+    weight            = 100
   }
-
 
   tags = local.common_tags
 }
@@ -17,13 +16,14 @@ data "template_file" "sample_app" {
   template = file("${path.module}/templates/ecs/sample.json.tpl")
 
   vars = {
-    app_image         = var.client_app_image
-    app_port          = var.client_app_port
-    fargate_cpu       = var.fargate_cpu
-    fargate_memory    = var.fargate_memory
-    aws_region        = var.aws_region
-    container_name    = var.client_container_name
-    db_name           = var.db_name
+    app_name       = "sample-app"
+    app_image      = var.client_app_image
+    app_port       = var.client_app_port
+    fargate_cpu    = var.fargate_cpu
+    fargate_memory = var.fargate_memory
+    aws_region     = var.aws_region
+    container_name = var.client_container_name
+    db_name        = var.db_name
   }
 }
 
@@ -42,26 +42,25 @@ resource "aws_ecs_task_definition" "app" {
 }
 
 resource "aws_ecs_service" "main" {
-  count           = local.create_ecs_service
-  name            = "sample-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.app[count.index].arn
-  desired_count   = var.client_app_count
-  #launch_type     = "FARGATE"
-  enable_ecs_managed_tags = true
-  propagate_tags = "TASK_DEFINITION"
+  count                             = local.create_ecs_service
+  name                              = "sample-service"
+  cluster                           = aws_ecs_cluster.main.id
+  task_definition                   = aws_ecs_task_definition.app[count.index].arn
+  desired_count                     = var.client_app_count
+  enable_ecs_managed_tags           = true
+  propagate_tags                    = "TASK_DEFINITION"
   health_check_grace_period_seconds = 60
 
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
-    weight = 100
+    weight            = 100
   }
 
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
-    subnets          = aws_subnet.private.*.id
+    subnets          = data.aws_subnet_ids.privateapp.ids
     assign_public_ip = false
   }
 
