@@ -89,6 +89,6 @@ jobs:
         id: plan
         run: |
           echo "account_name = ${GITHUB_REF#refs/*/}" > terraform/aws/gh.auto.tfvars
-          echo "client_app_image = ${{ steps.prep.outputs.tag }}" >> terraform/aws/gh.auto.tfvars
+          echo -e "client_app_image = ${{ steps.prep.outputs.tag }}\n" >> terraform/aws/gh.auto.tfvars
           export TF_WORKSPACE=${GITHUB_REF#refs/*/}
           terraform plan terraform/aws 
