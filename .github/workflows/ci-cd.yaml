@@ -113,8 +113,8 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           PLAN: "${{ steps.plan.outputs.stdout }}"
-          SUCCSESS: "\u2705"
-          FAILURE: "\u274C"
+          SUCCSESS: '\u2705'
+          FAILURE: '\u274C'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
