@@ -26,7 +26,7 @@ jobs:
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
-          TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo  ${BRANCH})
+          TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo ${BRANCH})
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
             TF_WORKSPACE=prod
@@ -96,16 +96,44 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        # if: ${{ github.event_name == 'pull_request' }}
+        # if: github.event_name == 'pull_request'
         run: |
           echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-          terraform plan ${{ env.TF_SRC_PATH }}
+          terraform plan -no-color ${{ env.TF_SRC_PATH }}
+        continue-on-error: true
+
+      - name: Update Pull Request
+        uses: actions/github-script@0.9.0
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style \`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization \`${{ steps.init.outcome }}\`
+            #### Terraform Plan \`${{ steps.plan.outcome }}\`
+            <details><summary>Show Plan</summary>
+            \`\`\`${process.env.PLAN}\`\`\`
+            </details>
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+              
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
       
       # - name: Terraform Apply
       #   id: apply
-      #   if: ${{ github.event_name != 'pull_request' }}
+      #   if: github.event_name != 'pull_request'
       #   run: |
       #     echo "account_name = \"${GITHUB_REF#refs/*/}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
       #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
