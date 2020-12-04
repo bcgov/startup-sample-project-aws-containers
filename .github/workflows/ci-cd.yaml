@@ -88,6 +88,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan terraform/aws \
-            -var account_name=${GITHUB_REF#refs/*/}
-            -var client_app_image=${{ steps.prep.outputs.tag }}
+          terraform plan \
+            -var account_name=${GITHUB_REF#refs/*/} \
+            -var client_app_image=${{ steps.prep.outputs.tag }} \
+            terraform/aws 
