@@ -22,5 +22,9 @@ COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY server/. .
 
+FROM server as test
+RUN npm run test
+
+FROM server as runtime
 EXPOSE 80
 CMD [ "npm", "run", "start" ]
