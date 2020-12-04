@@ -3,13 +3,11 @@ provider "aws" {
   version = "~> 3.11"
 
   assume_role {
-    role_arn = "arn:aws:iam::${local.account_id}:role/BCGOV_${var.account_name}_Automation_Admin_Role"
+    role_arn = "arn:aws:iam::${var.target_aws_account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role"
   }
 }
 
 locals {
-  account_id = var.account_id[var.account_name]
-
   //Put all common tags here
   common_tags = {
     Project     = "Startup Sample"

@@ -1,18 +1,11 @@
 # variables.tf
 
-variable "account_name" {
-  description = "AWS workload account name"
+variable "target_env" {
+  description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
 }
 
-variable "account_id" {
-  type = map
-  default = {
-    "dev"     = "813318847992"
-    "test"    = "287566111173"
-    "sandbox" = "016328607553"
-    "unlass"  = "111576486857"
-  }
-  description = "Map AWS workload account name to account id"
+variable "target_aws_account_id" {
+  description = "AWS workload account id"
 }
 
 variable "aws_region" {
