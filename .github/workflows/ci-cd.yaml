@@ -1,0 +1,87 @@
+name: CI/CD
+on:
+  push:
+    branches: [dev, test, main]
+    tags: ['*']
+  pull_request:
+jobs:       
+  push_to_registry:
+    name: Build, Test and Push to GHCR
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      
+      - name: Prepare
+        id: prep
+        run: |
+          REGISTRY=docker.pkg.github.com
+          DOCKER_IMAGE=${REGISTRY}/${{ github.repository }}/ssp
+          VERSION=${GITHUB_REF#refs/heads/}-${GITHUB_RUN_ID}
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          TAG="${DOCKER_IMAGE}:${VERSION}"
+          echo ::set-output name=tag::${TAG}
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PAT }}
+      
+      - uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Test
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          context: .
+          file: ./Dockerfile
+          target: test
+      
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          context: .
+          file: ./Dockerfile
+          target: runtime
+          push: true
+          tags: ${{ steps.prep.outputs.tag }}
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_TEAM_TOKEN }}
+          working-directory: terraform/aws
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate 
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var client_app_image=${{ steps.prep.outputs.tag }}
