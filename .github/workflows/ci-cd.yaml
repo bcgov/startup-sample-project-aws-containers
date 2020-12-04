@@ -83,10 +83,14 @@ jobs:
         id: validate
         run: terraform validate 
 
+      - name: Terraform Workspace Select
+        id: workspace
+        run: |
+          terraform workspace select ${GITHUB_REF#refs/*/}
+
       - name: Terraform Plan
         id: plan
         run: |
           terraform plan \
-            -var workspace=${{ secrets.LICENSE_PLATE }}-${GITHUB_REF#refs/*/}
             -var account_name=${GITHUB_REF#refs/*/}
             -var client_app_image=${{ steps.prep.outputs.tag }}
