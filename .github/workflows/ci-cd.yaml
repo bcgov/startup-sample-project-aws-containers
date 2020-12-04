@@ -124,8 +124,10 @@ jobs:
             \`\`\`terraform
             ${process.env.PLAN}
             \`\`\`
+
             </details>
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            *Pusher:* @${{ github.actor }}, *Action:* \`${{ github.event_name }}\``;
               
             github.issues.createComment({
               issue_number: context.issue.number,
