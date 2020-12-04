@@ -1,13 +1,12 @@
-data "aws_caller_identity" "current" {
-  provider = aws.base
-}
-
 provider "aws" {
-  alias = "base"
+  alias   = "base"
   region  = var.aws_region
   version = "~> 2.64"
 }
 
+data "aws_caller_identity" "base" {
+  provider = aws.base
+}
 provider "aws" {
   region  = var.aws_region
   version = "~> 2.64"
@@ -18,7 +17,7 @@ provider "aws" {
 }
 
 locals {
-  account_id = data.aws_caller_identity.current.account_id
+  account_id = data.aws_caller_identity.base.account_id
 
   //Put all common tags here
   common_tags = {
