@@ -23,7 +23,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=${{env.REGISTRY}}/${{ github.repository }}
+          DOCKER_IMAGE=${env.REGISTRY}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
           TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo  ${BRANCH})
