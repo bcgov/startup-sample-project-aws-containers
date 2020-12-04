@@ -1,34 +1,44 @@
 name: CI/CD
+
 on:
   push:
     branches: [dev, test, main]
     tags: ['*']
   pull_request:
     branches: [dev, test, main]
-jobs:       
+
+env:
+  REGISTRY: "ghcr.io"
+  TF_SRC_PATH: "terraform/aws"
+
+jobs:
   push_to_registry:
     name: Build, Test and Push to GHCR
     runs-on: ubuntu-20.04
     steps:
+
       - name: Check out the repo
         uses: actions/checkout@v2
       
       - name: Prepare
         id: prep
         run: |
-          REGISTRY=ghcr.io
-          DOCKER_IMAGE=${REGISTRY}/${{ github.repository }}
-          VERSION=${GITHUB_REF#refs/heads/}-${GITHUB_RUN_ID}
+          DOCKER_IMAGE=${{env.REGISTRY}}/${{ github.repository }}
+          BRANCH=${GITHUB_REF#refs/heads/}
+          VERSION=${BRANCH}-${GITHUB_RUN_ID}
+          TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo  ${BRANCH})
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
+            TF_WORKSPACE=prod
           fi
           TAG="${DOCKER_IMAGE}:${VERSION}"
           echo ::set-output name=tag::${TAG}
+          echo ::set-output tf_workspace::${TF_WORKSPACE}
       
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
-          registry: ghcr.io
+          registry: ${env.REGISTRY}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_PAT }}
       
@@ -55,7 +65,6 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
-        if: ${{ github.event_name != 'pull_request' }}
         with:
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -63,7 +72,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: runtime
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tag }}
 
       - uses: hashicorp/setup-terraform@v1
@@ -73,22 +82,32 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        run: terraform fmt -check terraform/aws
+        run: terraform fmt -check ${env.TF_SRC_PATH}
 
       - name: Terraform Init
         id: init
         run: |
-          export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-          terraform init terraform/aws
+          export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
+          terraform init ${env.TF_SRC_PATH}
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate terraform/aws
+        run: terraform validate ${env.TF_SRC_PATH}
 
       - name: Terraform Plan
         id: plan
+        # if: ${{ github.event_name == 'pull_request' }}
         run: |
-          echo "account_name = \"${GITHUB_REF#refs/*/}\"" > terraform/aws/gh.auto.tfvars
-          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> terraform/aws/gh.auto.tfvars
+          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${env.TF_SRC_PATH}/gh.auto.tfvars
+          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${env.TF_SRC_PATH}/gh.auto.tfvars
           export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-          terraform plan terraform/aws
+          terraform plan ${env.TF_SRC_PATH}
+      
+      # - name: Terraform Apply
+      #   id: apply
+      #   if: ${{ github.event_name != 'pull_request' }}
+      #   run: |
+      #     echo "account_name = \"${GITHUB_REF#refs/*/}\"" > ${env.TF_SRC_PATH}/gh.auto.tfvars
+      #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${env.TF_SRC_PATH}/gh.auto.tfvars
+      #     export TF_WORKSPACE=${GITHUB_REF#refs/*/}
+      #     terraform apply -auto-approve ${env.TF_SRC_PATH}

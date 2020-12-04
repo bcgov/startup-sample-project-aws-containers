@@ -1,15 +1,16 @@
 provider "aws" {
-  alias   = "base"
+  alias   = "main"
   region  = var.aws_region
-  version = "~> 2.64"
+  version = "~> 3.11"
 }
 
-data "aws_caller_identity" "base" {
-  provider = aws.base
+data "aws_caller_identity" "main" {
+  provider = aws.main
 }
+
 provider "aws" {
   region  = var.aws_region
-  version = "~> 2.64"
+  version = "~> 3.11"
 
   assume_role {
     role_arn = "arn:aws:iam::${local.account_id}:role/BCGOV_${var.account_name}_Automation_Admin_Role"
@@ -17,7 +18,7 @@ provider "aws" {
 }
 
 locals {
-  account_id = data.aws_caller_identity.base.account_id
+  account_id = data.aws_caller_identity.main.account_id
 
   //Put all common tags here
   common_tags = {
