@@ -108,7 +108,7 @@ jobs:
           echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
-          terraform plan ${{ env.TF_SRC_PATH }}
+          terraform plan -no-color ${{ env.TF_SRC_PATH }}
         continue-on-error: true
 
       - name: Update Pull Request
