@@ -23,7 +23,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=${{ REGISTRY }}/${{ github.repository }}
+          DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
           TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo  ${BRANCH})
@@ -82,32 +82,32 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        run: terraform fmt -check ${env.TF_SRC_PATH}
+        run: terraform fmt -check ${{ env.TF_SRC_PATH }}
 
       - name: Terraform Init
         id: init
         run: |
           export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
-          terraform init ${env.TF_SRC_PATH}
+          terraform init ${{ env.TF_SRC_PATH }}
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate ${env.TF_SRC_PATH}
+        run: terraform validate ${{ env.TF_SRC_PATH }}
 
       - name: Terraform Plan
         id: plan
         # if: ${{ github.event_name == 'pull_request' }}
         run: |
-          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${env.TF_SRC_PATH}/gh.auto.tfvars
-          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${env.TF_SRC_PATH}/gh.auto.tfvars
+          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-          terraform plan ${env.TF_SRC_PATH}
+          terraform plan ${{ env.TF_SRC_PATH }}
       
       # - name: Terraform Apply
       #   id: apply
       #   if: ${{ github.event_name != 'pull_request' }}
       #   run: |
-      #     echo "account_name = \"${GITHUB_REF#refs/*/}\"" > ${env.TF_SRC_PATH}/gh.auto.tfvars
-      #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${env.TF_SRC_PATH}/gh.auto.tfvars
+      #     echo "account_name = \"${GITHUB_REF#refs/*/}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+      #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
       #     export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-      #     terraform apply -auto-approve ${env.TF_SRC_PATH}
+      #     terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
