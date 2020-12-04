@@ -99,7 +99,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        # if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         env:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: |
@@ -113,7 +113,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           PLAN: "${{ steps.plan.outputs.stdout }}"
-          SUCCSESS: '\u2705'
+          SUCCESS: '\u2705'
           FAILURE: '\u274C'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -145,12 +145,12 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
       
-      # - name: Terraform Apply
-      #   id: apply
-      #   if: github.event_name != 'pull_request'
-      #   env:
-      #     TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
-      #   run: |
-      #     echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-      #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-      #     terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
+      - name: Terraform Apply
+        id: apply
+        if: github.event_name != 'pull_request'
+        env:
+          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
+        run: |
+          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
