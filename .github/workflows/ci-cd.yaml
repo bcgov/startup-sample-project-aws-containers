@@ -33,7 +33,7 @@ jobs:
           fi
           TAG="${DOCKER_IMAGE}:${VERSION}"
           echo ::set-output name=tag::${TAG}
-          echo ::set-output tf_workspace::${TF_WORKSPACE}
+          echo ::set-output name=tf_workspace::${TF_WORKSPACE}
       
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
