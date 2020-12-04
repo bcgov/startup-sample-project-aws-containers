@@ -105,7 +105,7 @@ jobs:
         run: |
           echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-          export TF_WORKSPACE=${GITHUB_REF#refs/*/}
+          export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
           terraform plan -no-color ${{ env.TF_SRC_PATH }}
         continue-on-error: true
 
@@ -140,7 +140,7 @@ jobs:
       #   id: apply
       #   if: github.event_name != 'pull_request'
       #   run: |
-      #     echo "account_name = \"${GITHUB_REF#refs/*/}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+      #     echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
       #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-      #     export TF_WORKSPACE=${GITHUB_REF#refs/*/}
+      #     export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
       #     terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
