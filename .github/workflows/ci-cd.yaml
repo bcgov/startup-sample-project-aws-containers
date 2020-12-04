@@ -118,9 +118,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fmt = ${{ steps.fmt.outcome }} == 'success' ? ${{ env.SUCCESS }}: ${{ env.SUCCESS }}
-            const init = ${{ steps.init.outcome }} == 'success' ? ${{ env.SUCCESS }}: ${{ env.SUCCESS }}
-            const plan = ${{ steps.plan.outcome }} == 'success' ? ${{ env.SUCCESS }}: ${{ env.SUCCESS }}
+            const fmt = ${{ steps.fmt.outcome }} == 'success' ? ${{ env.SUCCESS }} : ${{ env.SUCCESS }};
+            const init = ${{ steps.init.outcome }} == 'success' ? ${{ env.SUCCESS }} : ${{ env.SUCCESS }};
+            const plan = ${{ steps.plan.outcome }} == 'success' ? ${{ env.SUCCESS }} : ${{ env.SUCCESS }};
             const output = `#### Terraform Format and Style: ${fmt}
             #### Terraform Initialization: ${init}
             #### Terraform Plan: ${plan}
