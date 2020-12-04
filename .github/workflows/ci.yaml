@@ -18,7 +18,7 @@ jobs:
         id: prep
         run: |
           REGISTRY=docker.pkg.github.com
-          DOCKER_IMAGE=${REGISTRY}/${{ github.repository }}
+          DOCKER_IMAGE=${REGISTRY}/${{ github.repository }}/ssp
           VERSION=${GITHUB_REF#refs/heads/}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
