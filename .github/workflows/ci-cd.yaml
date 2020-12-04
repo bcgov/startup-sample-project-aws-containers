@@ -68,7 +68,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.12.24
+          terraform_version: 0.13.5
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - name: Terraform fmt
@@ -88,7 +88,6 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan \
-            -var account_name=${GITHUB_REF#refs/*/} \
-            -var client_app_image=${{ steps.prep.outputs.tag }} \
-            terraform/aws 
+          echo "account_name = ${GITHUB_REF#refs/*/}" > terraform/aws/gh.auto.tfvars
+          echo "client_app_image = ${{ steps.prep.outputs.tag }}" >> terraform/aws/gh.auto.tfvars
+          terraform plan terraform/aws 

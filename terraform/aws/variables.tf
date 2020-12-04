@@ -1,9 +1,5 @@
 # variables.tf
 
-variable "workspace" {
-  description = "Terraform workspace"
-}
-
 variable "account_name" {
   description = "AWS workload account name"
 }
