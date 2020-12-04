@@ -4,6 +4,17 @@ variable "account_name" {
   description = "AWS workload account name"
 }
 
+variable "account_id" {
+  type = map
+  default = {
+    "dev"     = "813318847992"
+    "test"    = "287566111173"
+    "sandbox" = "016328607553"
+    "unlass"  = "111576486857"
+  }
+  description = "Map AWS workload account name to account id"
+}
+
 variable "aws_region" {
   description = "The AWS region things are created in"
   default     = "ca-central-1"
