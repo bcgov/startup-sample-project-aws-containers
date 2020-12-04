@@ -93,26 +93,23 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: |
-          export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
-          terraform init ${{ env.TF_SRC_PATH }}
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate ${{ env.TF_SRC_PATH }}
+        env:
+          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
+        run: terraform init ${{ env.TF_SRC_PATH }}
 
       - name: Terraform Plan
         id: plan
         # if: github.event_name == 'pull_request'
+        env:
+          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: |
           echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-          export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
           terraform plan -no-color ${{ env.TF_SRC_PATH }}
         continue-on-error: true
 
       - name: Update Pull Request
-        uses: actions/github-script@0.9.0
+        uses: actions/github-script@v3
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
@@ -121,7 +118,6 @@ jobs:
           script: |
             const output = `#### Terraform Format and Style \`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization \`${{ steps.init.outcome }}\`
-            #### Terraform Validation \`${{ steps.validate.outcome }}\`
             #### Terraform Plan \`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`${process.env.PLAN}\`\`\`
@@ -142,8 +138,9 @@ jobs:
       # - name: Terraform Apply
       #   id: apply
       #   if: github.event_name != 'pull_request'
+      #   env:
+      #     TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
       #   run: |
       #     echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
       #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-      #     export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
       #     terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
