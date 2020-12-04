@@ -17,8 +17,9 @@ jobs:
         name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=ghcr.io/${{ github.repository }}
-          VERSION=${GITHUB_REF#refs/heads/}
+          REGISTRY=docker.pkg.github.com
+          DOCKER_IMAGE=${REGISTRY}/${{ github.repository }}
+          VERSION=${GITHUB_REF#refs/heads/}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
           fi
@@ -28,44 +29,50 @@ jobs:
           fi
           echo ::set-output name=tags::${TAGS}
       -
-        name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_PAT }}
-      - 
-        name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - 
-        name: Test
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          context: .
-          file: ./Dockerfile
-          target: test
-      - 
-        name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        if: ${{ github.event_name != 'pull_request' }}
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          context: .
-          file: ./Dockerfile
-          target: runtime
-          push: true
-          tags: ${{ steps.prep.outputs.tags }}
+        name: build and push
+        run: |
+          echo ${{ secrets.GHCR_PAT }} | docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} --password-stdin
+          docker build -t ${{ steps.prep.outputs.tags }} .
+          docker push ${{ steps.prep.outputs.tags }}
+      # -
+      #   name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GHCR_PAT }}
+      # - 
+      #   name: Cache Docker layers
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: /tmp/.buildx-cache
+      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-buildx-
+      # -
+      #   name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v1
+      # - 
+      #   name: Test
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache
+      #     context: .
+      #     file: ./Dockerfile
+      #     target: test
+      # - 
+      #   name: Build and push
+      #   id: docker_build
+      #   uses: docker/build-push-action@v2
+      #   if: ${{ github.event_name != 'pull_request' }}
+      #   with:
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache
+      #     context: .
+      #     file: ./Dockerfile
+      #     target: runtime
+      #     push: true
+      #     tags: ${{ steps.prep.outputs.tags }}
