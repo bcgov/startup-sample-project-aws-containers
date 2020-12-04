@@ -25,6 +25,11 @@ jobs:
         run: |
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
+          if [[ $GITHUB_REF == refs/pull/* ]]; then
+            VERSION=PR-${GITHUB_REF#refs/pull/}
+            BASE_REF=${{ github.event.pull_request.base.ref }}
+            BRANCH=${BASE_REF#refs/heads/}
+          fi
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
           TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo ${BRANCH})
           if [[ $GITHUB_REF == refs/tags/* ]]; then
