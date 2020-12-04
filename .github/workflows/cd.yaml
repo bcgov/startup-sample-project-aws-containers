@@ -1,0 +1,32 @@
+name: CD
+on:
+  push:
+    branches: [dev-infra, test-infra, main-infra]
+  pull_request:
+    branches: [dev-infra, test-infra, main-infra]
+  registry_package:
+    types: [ updated, published]
+jobs:       
+  deploy_new_image:
+    if: github.event == 'registry_package'
+    name: Deploy new image
+    runs-on: ubuntu-20.04
+    steps:
+      - 
+        name: Check out the repo
+        uses: actions/checkout@v2
+      -
+        name: echo new image
+        run: echo ${GITHUB_REF}
+      # - 
+      #   name: Prepare
+      #   id: prep
+      #   run: |
+      #     echo ::set-output name=tags::${TAGS}
+      # -
+      #   name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GHCR_PAT }}
