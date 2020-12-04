@@ -9,6 +9,7 @@ on:
 
 env:
   REGISTRY: "ghcr.io"
+  TF_VERSION: 0.13.5
   TF_SRC_PATH: "terraform/aws"
 
 jobs:
@@ -25,12 +26,12 @@ jobs:
         run: |
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
+          VERSION=${BRANCH}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/pull/* ]]; then
-            VERSION=PR-${GITHUB_REF#refs/pull/}
+            VERSION=PR-${GITHUB_REF#refs/pull/}-${GITHUB_RUN_ID}
             BASE_REF=${{ github.event.pull_request.base.ref }}
             BRANCH=${BASE_REF#refs/heads/}
           fi
-          VERSION=${BRANCH}-${GITHUB_RUN_ID}
           TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo ${BRANCH})
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
@@ -82,7 +83,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.13.5
+          terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - name: Terraform fmt
@@ -119,11 +120,12 @@ jobs:
           script: |
             const output = `#### Terraform Format and Style \`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization \`${{ steps.init.outcome }}\`
+            #### Terraform Validation \`${{ steps.validate.outcome }}\`
             #### Terraform Plan \`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`${process.env.PLAN}\`\`\`
             </details>
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*;
               
             github.issues.createComment({
               issue_number: context.issue.number,
