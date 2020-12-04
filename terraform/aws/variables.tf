@@ -1,5 +1,18 @@
 # variables.tf
 
+variable "workspace" {
+  description = "Terraform workspace"
+}
+
+variable "account_name" {
+  description = "AWS workload account name"
+}
+
+variable "aws_region" {
+  description = "The AWS region things are created in"
+  default     = "ca-central-1"
+}
+
 variable "aws_region" {
   description = "The AWS region things are created in"
   default     = "ca-central-1"

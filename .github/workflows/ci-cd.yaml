@@ -4,6 +4,7 @@ on:
     branches: [dev, test, main]
     tags: ['*']
   pull_request:
+    branches: [dev, test, main]
 jobs:       
   push_to_registry:
     name: Build, Test and Push to GHCR
@@ -15,7 +16,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          REGISTRY=docker.pkg.github.com
+          REGISTRY=ghcr.io
           DOCKER_IMAGE=${REGISTRY}/${{ github.repository }}/ssp
           VERSION=${GITHUB_REF#refs/heads/}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -84,4 +85,8 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var client_app_image=${{ steps.prep.outputs.tag }}
+        run: |
+          terraform plan \
+            -var workspace=${{ secrets.LICENSE_PLATE }}-${GITHUB_REF#refs/*/}
+            -var account_name=${GITHUB_REF#refs/*/}
+            -var client_app_image=${{ steps.prep.outputs.tag }}
