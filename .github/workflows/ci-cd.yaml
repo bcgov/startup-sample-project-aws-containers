@@ -23,7 +23,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=${env.REGISTRY}/${{ github.repository }}
+          DOCKER_IMAGE=${{ REGISTRY }}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
           TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo  ${BRANCH})
@@ -38,7 +38,7 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
-          registry: ${env.REGISTRY}
+          registry: ${{ REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_PAT }}
       
