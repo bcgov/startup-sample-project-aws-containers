@@ -69,19 +69,18 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           cli_config_credentials_token: ${{ secrets.TF_TEAM_TOKEN }}
-          working-directory: terraform/aws
 
       - name: Terraform fmt
         id: fmt
-        run: terraform fmt -check
+        run: terraform fmt -check terraform/aws
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init terraform/aws
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate 
+        run: terraform validate terraform/aws
 
       - name: Terraform Workspace Select
         id: workspace
@@ -91,6 +90,6 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan \
+          terraform plan terraform/aws \
             -var account_name=${GITHUB_REF#refs/*/}
             -var client_app_image=${{ steps.prep.outputs.tag }}
