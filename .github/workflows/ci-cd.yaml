@@ -28,7 +28,7 @@ jobs:
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/pull/* ]]; then
-            VERSION=PR-${GITHUB_REF#refs/pull/}-${GITHUB_RUN_ID}
+            VERSION=PR-${GITHUB_REF#refs/pull/*}-${GITHUB_RUN_ID}
             BASE_REF=${{ github.event.pull_request.base.ref }}
             BRANCH=${BASE_REF#refs/heads/}
           fi
@@ -107,7 +107,7 @@ jobs:
           echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
-          terraform plan -no-color ${{ env.TF_SRC_PATH }}
+          terraform plan ${{ env.TF_SRC_PATH }}
         continue-on-error: true
 
       - name: Update Pull Request
