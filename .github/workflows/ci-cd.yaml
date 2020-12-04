@@ -28,7 +28,8 @@ jobs:
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/pull/* ]]; then
-            VERSION=PR-${GITHUB_REF#refs/pull/*}-${GITHUB_RUN_ID}
+            PR_NUMBER=$(echo ${GITHUB_REF} | sed -e 's#refs/pull/\([0-9]\+\)/.*$#\1#g')
+            VERSION=PR-${PR_NUMBER}-${GITHUB_RUN_ID}
             BASE_REF=${{ github.event.pull_request.base.ref }}
             BRANCH=${BASE_REF#refs/heads/}
           fi
