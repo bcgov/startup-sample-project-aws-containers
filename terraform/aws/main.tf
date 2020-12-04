@@ -1,4 +1,12 @@
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+  provider = aws.base
+}
+
+provider "aws" {
+  alias = "base"
+  region  = var.aws_region
+  version = "~> 2.64"
+}
 
 provider "aws" {
   region  = var.aws_region
