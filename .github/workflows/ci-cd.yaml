@@ -106,7 +106,6 @@ jobs:
           working_directory: ${{ env.TF_SRC_PATH }}
           reporter: github-pr-review
           filter_mode: nofilter
-          fail_on_error: true
 
       - name: tfsec
         uses: reviewdog/action-tfsec@master
@@ -115,8 +114,15 @@ jobs:
           github_token: ${{ secrets.github_token }}
           working_directory: ${{ env.TF_SRC_PATH }}
           reporter: github-pr-review
-          fail_on_error: true
           filter_mode: nofilter
+
+      - uses: lablabs/setup-tflint@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        
+      - id: tflint
+        run: tflint ${{ env.TF_SRC_PATH }}
+        continue-on-error: true
 
       - name: Terraform Plan
         id: plan
@@ -132,22 +138,32 @@ jobs:
         uses: actions/github-script@v3
         if: github.event_name == 'pull_request'
         env:
-          PLAN: "${{ steps.plan.outputs.stdout }}"
           SUCCESS: '\u2705'
           FAILURE: '\u274C'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fmt = `${{ steps.fmt.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
+            const lint = `${{ steps.tflint.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const init = `${{ steps.init.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const plan =  `${{ steps.plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const output = `#### Terraform Format and Style: ${fmt}
+            #### Terraform Lint: ${tflint}
             #### Terraform Initialization: ${init}
             #### Terraform Plan: ${plan}
+
+            <details><summary>Show Lint</summary>
+
+            \`\`\`terraform
+            `${{ steps.plan.tflint.stdout }}`
+            \`\`\`
+
+            </details>
+
             <details><summary>Show Plan</summary>
 
             \`\`\`terraform
-            ${process.env.PLAN}
+            `${{ steps.plan.outputs.stdout }}`
             \`\`\`
 
             </details>
@@ -162,7 +178,7 @@ jobs:
             })
 
       - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
+        if: steps.tflint.outcome == 'failure' || steps.plan.outcome == 'failure'
         run: exit 1
       
       - name: Terraform Apply
@@ -173,3 +189,4 @@ jobs:
         run: |
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
+continue-on-error
