@@ -90,13 +90,13 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        run: terraform fmt -check ${{ env.TF_SRC_PATH }}
+        run: terraform fmt -check -no-color ${{ env.TF_SRC_PATH }}
 
       - name: Terraform Init
         id: init
         env:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
-        run: terraform init ${{ env.TF_SRC_PATH }}
+        run: terraform init -no-color ${{ env.TF_SRC_PATH }}
 
       - name: Reviewdog TFSEC
         uses: reviewdog/action-tfsec@master
