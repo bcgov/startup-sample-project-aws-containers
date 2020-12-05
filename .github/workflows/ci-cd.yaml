@@ -13,23 +13,19 @@ env:
   TF_SRC_PATH: "terraform/aws"
 
 jobs:
-  ossar:
-    name: Open Source Static Analysis Runner
+  lint-client:
+    name: eslint client
     runs-on: ubuntu-latest
-    
+
     steps:
+      - uses: actions/checkout@v2
 
-    - uses: actions/checkout@v2
+      - uses: hallee/eslint-action@1.0.3
+        with:
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+          eslint-rc: ./client/.eslintrc
+          execute-on-files: ./client/src
 
-    - name: Run OSSAR
-      uses: github/ossar-action@v1
-      id: ossar
-
-    - name: Upload results to Security tab
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: ${{ steps.ossar.outputs.sarifFile }}
-  
   main:
     name: main
     runs-on: ubuntu-20.04
