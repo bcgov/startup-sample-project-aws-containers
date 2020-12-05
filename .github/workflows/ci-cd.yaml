@@ -9,6 +9,7 @@ on:
 
 env:
   REGISTRY: "ghcr.io"
+  TF_VERSION: 0.13.5
   TF_SRC_PATH: "terraform/aws"
 
 jobs:
@@ -26,7 +27,13 @@ jobs:
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}
           BRANCH=${GITHUB_REF#refs/heads/}
           VERSION=${BRANCH}-${GITHUB_RUN_ID}
-          TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo  ${BRANCH})
+          if [[ $GITHUB_REF == refs/pull/* ]]; then
+            PR_NUMBER=$(echo ${GITHUB_REF} | sed -e 's#refs/pull/\([0-9]\+\)/.*$#\1#g')
+            VERSION=PR-${PR_NUMBER}-${GITHUB_RUN_ID}
+            BASE_REF=${{ github.event.pull_request.base.ref }}
+            BRANCH=${BASE_REF#refs/heads/}
+          fi
+          TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo ${BRANCH})
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
             TF_WORKSPACE=prod
@@ -77,7 +84,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.13.5
+          terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - name: Terraform fmt
@@ -86,28 +93,64 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: |
-          export TF_WORKSPACE=${{ steps.prep.outputs.tf_workspace }}
-          terraform init ${{ env.TF_SRC_PATH }}
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate ${{ env.TF_SRC_PATH }}
+        env:
+          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
+        run: terraform init ${{ env.TF_SRC_PATH }}
 
       - name: Terraform Plan
         id: plan
-        # if: ${{ github.event_name == 'pull_request' }}
+        if: github.event_name == 'pull_request'
+        env:
+          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: |
-          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          echo "target_env = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-          export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-          terraform plan ${{ env.TF_SRC_PATH }}
+          terraform plan -no-color ${{ env.TF_SRC_PATH }}
+        continue-on-error: true
+
+      - name: Update Pull Request
+        uses: actions/github-script@v3
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "${{ steps.plan.outputs.stdout }}"
+          SUCCESS: '\u2705'
+          FAILURE: '\u274C'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fmt = `${{ steps.fmt.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
+            const init = `${{ steps.init.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
+            const plan =  `${{ steps.plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
+            const output = `#### Terraform Format and Style: ${fmt}
+            #### Terraform Initialization: ${init}
+            #### Terraform Plan: ${plan}
+            <details><summary>Show Plan</summary>
+
+            \`\`\`terraform
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher:* @${{ github.actor }}, *Action:* \`${{ github.event_name }}\``;
+              
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
       
-      # - name: Terraform Apply
-      #   id: apply
-      #   if: ${{ github.event_name != 'pull_request' }}
-      #   run: |
-      #     echo "account_name = \"${GITHUB_REF#refs/*/}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-      #     echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-      #     export TF_WORKSPACE=${GITHUB_REF#refs/*/}
-      #     terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
+      - name: Terraform Apply
+        id: apply
+        if: github.event_name != 'pull_request'
+        env:
+          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
+        run: |
+          echo "target_env = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
