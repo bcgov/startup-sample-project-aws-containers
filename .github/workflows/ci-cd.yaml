@@ -189,4 +189,3 @@ jobs:
         run: |
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
-continue-on-error
