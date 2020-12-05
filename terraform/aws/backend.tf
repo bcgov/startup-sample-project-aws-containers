@@ -3,7 +3,7 @@ terraform {
     organization = "bcgov"
 
     workspaces {
-      prefix = "tnfhhm-
+      prefix = "tnfhhm-"
     }
   }
 }

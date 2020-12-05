@@ -98,15 +98,6 @@ jobs:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: terraform init ${{ env.TF_SRC_PATH }}
 
-      - name: Reviewdog TFLint
-        uses: reviewdog/action-tflint@master
-        if: github.event_name == 'pull_request'
-        with:
-          github_token: ${{ secrets.github_token }}
-          working_directory: ${{ env.TF_SRC_PATH }}
-          reporter: github-pr-review
-          filter_mode: nofilter
-
       - name: Reviewdog TFSEC
         uses: reviewdog/action-tfsec@master
         if: github.event_name == 'pull_request'
@@ -115,15 +106,6 @@ jobs:
           working_directory: ${{ env.TF_SRC_PATH }}
           reporter: github-pr-review
           filter_mode: nofilter
-        
-      - name: TFLint Capture STDOUT
-        id: tflint
-        run: |
-          curl -Ls "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip > /dev/null
-          unzip tflint.zip > /dev/null
-          rm tflint.zip > /dev/null
-          ./tflint ${{ env.TF_SRC_PATH }}
-        continue-on-error: true
 
       - name: Terraform Plan
         id: plan
@@ -145,23 +127,31 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fmt = `${{ steps.fmt.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
-            const lint = `${{ steps.tflint.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const init = `${{ steps.init.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const plan =  `${{ steps.plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const output = `#### Terraform Format and Style: ${fmt}
-            #### Terraform Lint: ${lint}
-            #### Terraform Initialization: ${init}
-            #### Terraform Plan: ${plan}
-
-            <details><summary>Show Lint</summary>
+            
+            <details><summary>Show</summary>
 
             \`\`\`terraform
-            ${{ steps.plan.tflint.stdout }}
+            ${{ steps.fmt.outputs.stdout }}
             \`\`\`
 
             </details>
 
-            <details><summary>Show Plan</summary>
+            #### Terraform Initialization: ${init}
+
+            <details><summary>Show</summary>
+
+            \`\`\`terraform
+            ${{ steps.init.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan: ${plan}
+
+            <details><summary>Show</summary>
 
             \`\`\`terraform
             ${{ steps.plan.outputs.stdout }}
