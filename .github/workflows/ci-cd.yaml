@@ -13,22 +13,30 @@ env:
   TF_SRC_PATH: "terraform/aws"
 
 jobs:
-  lint-client:
-    name: eslint client
+  eslint:
+    name: eslint
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
 
-      - uses: hallee/eslint-action@1.0.3
+      - uses: actions/checkout@v1
+
+      - name: eslint client
+        uses: reviewdog/action-eslint@v1
         with:
-          repo-token: ${{secrets.GITHUB_TOKEN}}
-          eslint-rc: ./client/.eslintrc
-          execute-on-files: ./client/src
+          reporter: github-pr-review
+          workdir: client/src/
+
+      - name: eslint server
+        uses: reviewdog/action-eslint@v1
+        with:
+          reporter: github-pr-review
+          workdir: server/
 
   main:
     name: main
     runs-on: ubuntu-20.04
+    needs: [eslint]
     
     steps:
 
