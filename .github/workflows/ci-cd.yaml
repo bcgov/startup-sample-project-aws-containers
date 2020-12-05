@@ -98,7 +98,7 @@ jobs:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: terraform init ${{ env.TF_SRC_PATH }}
 
-      - name: tflint
+      - name: Reviewdog TFLint
         uses: reviewdog/action-tflint@master
         if: github.event_name == 'pull_request'
         with:
@@ -107,7 +107,7 @@ jobs:
           reporter: github-pr-review
           filter_mode: nofilter
 
-      - name: tfsec
+      - name: Reviewdog TFSEC
         uses: reviewdog/action-tfsec@master
         if: github.event_name == 'pull_request'
         with:
@@ -115,13 +115,12 @@ jobs:
           working_directory: ${{ env.TF_SRC_PATH }}
           reporter: github-pr-review
           filter_mode: nofilter
-
-      - uses: lablabs/setup-tflint@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
         
-      - id: tflint
-        run: tflint ${{ env.TF_SRC_PATH }}
+      - name: TFLint Capture STDOUT
+        id: tflint
+        run: |
+          curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip > /dev/null
+          tflint ${{ env.TF_SRC_PATH }}
         continue-on-error: true
 
       - name: Terraform Plan
