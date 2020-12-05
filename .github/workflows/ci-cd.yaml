@@ -14,7 +14,7 @@ env:
 
 jobs:
   push_to_registry:
-    name: Build, Test and Push to GHCR
+    name: main
     runs-on: ubuntu-20.04
     steps:
 
