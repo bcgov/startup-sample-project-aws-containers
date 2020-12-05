@@ -102,6 +102,7 @@ jobs:
         uses: reviewdog/action-tflint@master
         if: github.event_name == 'pull_request'
         with:
+          github_token: ${{ secrets.github_token }}
           working_directory: ${{ env.TF_SRC_PATH }}
           reporter: github-pr-review
           filter_mode: nofilter
