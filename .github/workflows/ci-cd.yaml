@@ -155,7 +155,7 @@ jobs:
             <details><summary>Show Lint</summary>
 
             \`\`\`terraform
-            `${{ steps.plan.tflint.stdout }}`
+            ${{ steps.plan.tflint.stdout }}
             \`\`\`
 
             </details>
@@ -163,7 +163,7 @@ jobs:
             <details><summary>Show Plan</summary>
 
             \`\`\`terraform
-            `${{ steps.plan.outputs.stdout }}`
+            ${{ steps.plan.outputs.stdout }}
             \`\`\`
 
             </details>
