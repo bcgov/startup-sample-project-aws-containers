@@ -103,7 +103,7 @@ jobs:
         env:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: |
-          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          echo "target_env = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           terraform plan -no-color ${{ env.TF_SRC_PATH }}
         continue-on-error: true
@@ -151,6 +151,6 @@ jobs:
         env:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: |
-          echo "account_name = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
+          echo "target_env = \"${{ steps.prep.outputs.tf_workspace }}\"" > ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
           terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
