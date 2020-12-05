@@ -13,9 +13,27 @@ env:
   TF_SRC_PATH: "terraform/aws"
 
 jobs:
-  push_to_registry:
+  ossar:
+    name: Open Source Static Analysis Runner
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Run OSSAR
+      uses: github/ossar-action@v1
+      id: ossar
+
+    - name: Upload results to Security tab
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{ steps.ossar.outputs.sarifFile }}
+  
+  main:
     name: main
     runs-on: ubuntu-20.04
+    
     steps:
 
       - name: Check out the repo
