@@ -119,8 +119,10 @@ jobs:
       - name: TFLint Capture STDOUT
         id: tflint
         run: |
-          curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip > /dev/null
-          tflint ${{ env.TF_SRC_PATH }}
+          curl -Ls "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip > /dev/null
+          unzip tflint.zip > /dev/null
+          rm tflint.zip > /dev/null
+          ./tflint ${{ env.TF_SRC_PATH }}
         continue-on-error: true
 
       - name: Terraform Plan
@@ -147,7 +149,7 @@ jobs:
             const init = `${{ steps.init.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const plan =  `${{ steps.plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const output = `#### Terraform Format and Style: ${fmt}
-            #### Terraform Lint: ${tflint}
+            #### Terraform Lint: ${lint}
             #### Terraform Initialization: ${init}
             #### Terraform Plan: ${plan}
 
