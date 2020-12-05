@@ -131,7 +131,7 @@ jobs:
 
             </details>
 
-            *Pusher:* @${{ github.actor }}, *Action:* [${process.env.GITHUB_WORKFLOW}: #${process.env.GITHUB_RUN_NUMBER}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})`;
+            **Pusher:** @${{ github.actor }}, **Action:** [${process.env.GITHUB_WORKFLOW}: #${process.env.GITHUB_RUN_NUMBER}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})`;
               
             github.issues.createComment({
               issue_number: context.issue.number,
