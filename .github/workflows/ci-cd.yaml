@@ -98,6 +98,16 @@ jobs:
           TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
         run: terraform init -no-color ${{ env.TF_SRC_PATH }}
 
+      - name: Reviewdog TFLint
+        uses: reviewdog/action-tflint@master
+        if: github.event_name == 'pull_request'
+        with:
+          github_token: ${{ secrets.github_token }}
+          working_directory: ${{ env.TF_SRC_PATH }}
+          reporter: github-pr-review
+          filter_mode: added
+          level: warning
+
       - name: Reviewdog TFSEC
         uses: reviewdog/action-tfsec@master
         if: github.event_name == 'pull_request'
@@ -105,7 +115,8 @@ jobs:
           github_token: ${{ secrets.github_token }}
           working_directory: ${{ env.TF_SRC_PATH }}
           reporter: github-pr-review
-          filter_mode: nofilter
+          filter_mode: added
+          level: warning
 
       - name: Terraform Plan
         id: plan
