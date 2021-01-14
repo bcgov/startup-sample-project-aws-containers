@@ -103,7 +103,7 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           client_app_image: ${{ steps.prep.outputs.tag }}
-        run: terragrunt plan-all | tee /tmp/tg_plan
+        run: terragrunt plan-all --terragrung-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
       - name: Get Terraform Plan Output
@@ -152,4 +152,4 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
           client_app_image: ${{ steps.prep.outputs.tag }}
-        run: terragrunt apply-all -auto-approve
+        run: terragrunt apply-all -auto-approve --terragrung-non-interactive
