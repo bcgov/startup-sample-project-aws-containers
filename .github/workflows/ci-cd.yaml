@@ -72,6 +72,10 @@ jobs:
     needs: [ci]
     
     steps:
+
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
