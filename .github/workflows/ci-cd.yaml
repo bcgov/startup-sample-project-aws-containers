@@ -13,7 +13,8 @@ env:
   REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
   IMAGE: ${{ secrets.CONTAINER_IMAGE }}
   TF_VERSION: 0.13.5
-  TF_SRC_PATH: "terraform/aws"
+  TG_VERSION: 0.26.7
+  TG_SRC_PATH: terraform
 
 jobs:
   main:
@@ -91,45 +92,26 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
-      - name: Terraform fmt
-        id: fmt
-        run: terraform fmt -check -no-color ${{ env.TF_SRC_PATH }}
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Terraform Init
-        id: init
+      - name: Terragrunt Plan
+        id: tg_plan
+        if: github.event_name == 'pull_request'
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
-          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
-        run: terraform init -no-color ${{ env.TF_SRC_PATH }}
+          TF_CLI_ARGS: -no-color
+          client_app_image: ${{ steps.prep.outputs.tag }}
+        run: terragrunt plan-all | tee /tmp/tg_plan
+        continue-on-error: true
 
-      - name: Reviewdog TFLint
-        uses: reviewdog/action-tflint@master
-        if: github.event_name == 'pull_request'
-        with:
-          github_token: ${{ secrets.github_token }}
-          working_directory: ${{ env.TF_SRC_PATH }}
-          reporter: github-pr-review
-          filter_mode: added
-          level: warning
-
-      - name: Reviewdog TFSEC
-        uses: reviewdog/action-tfsec@master
-        if: github.event_name == 'pull_request'
-        with:
-          github_token: ${{ secrets.github_token }}
-          working_directory: ${{ env.TF_SRC_PATH }}
-          reporter: github-pr-review
-          filter_mode: added
-          level: warning
-
-      - name: Terraform Plan
+      - name: Get Terraform Plan Output
         id: plan
         if: github.event_name == 'pull_request'
-        env:
-          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
-        run: |
-          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-          terraform plan -no-color ${{ env.TF_SRC_PATH }}
-        continue-on-error: true
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: /tmp/tg_plan
 
       - name: Update Pull Request
         uses: actions/github-script@v3
@@ -140,35 +122,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fmt = `${{ steps.fmt.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
-            const init = `${{ steps.init.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const plan =  `${{ steps.plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
-            const output = `#### Terraform Format and Style: ${fmt}
-            
-            <details><summary>Show</summary>
+            const output = `#### Terraform Plan: ${plan}
+
+            <details>
+            <summary>Show</summary>
 
             \`\`\`terraform
-            ${{ steps.fmt.outputs.stdout }}
-            \`\`\`
-
-            </details>
-
-            #### Terraform Initialization: ${init}
-
-            <details><summary>Show</summary>
-
-            \`\`\`terraform
-            ${{ steps.init.outputs.stdout }}
-            \`\`\`
-
-            </details>
-
-            #### Terraform Plan: ${plan}
-
-            <details><summary>Show</summary>
-
-            \`\`\`terraform
-            ${{ steps.plan.outputs.stdout }}
+            ${{ steps.plan.outputs.content }}
             \`\`\`
 
             </details>
@@ -182,15 +143,13 @@ jobs:
               body: output
             })
 
-      - name: Terraform Plan Status
-        if: steps.tflint.outcome == 'failure' || steps.plan.outcome == 'failure'
+      - name: Terragrunt Plan Status
+        if: steps.plan.outcome == 'failure'
         run: exit 1
-      
-      - name: Terraform Apply
-        id: apply
+
+      - name: Terragrunt Apply
         if: github.event_name != 'pull_request'
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
-          TF_WORKSPACE: ${{ steps.prep.outputs.tf_workspace }}
-        run: |
-          echo "client_app_image = \"${{ steps.prep.outputs.tag }}\"" >> ${{ env.TF_SRC_PATH }}/gh.auto.tfvars
-          terraform apply -auto-approve ${{ env.TF_SRC_PATH }}
+          client_app_image: ${{ steps.prep.outputs.tag }}
+        run: terragrunt apply-all -auto-approve
