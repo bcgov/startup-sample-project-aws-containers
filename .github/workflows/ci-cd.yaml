@@ -74,7 +74,7 @@ jobs:
           file: ./Dockerfile
           target: runtime
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.CONTAINER_REGISTRY }}/${{ env.CONTAINER_IMAGE }}:${{ steps.prep.outputs.git_short_sha }}
+          tags: ${{ secrets.CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_IMAGE }}:${{ steps.prep.outputs.git_short_sha }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
