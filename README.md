@@ -23,10 +23,8 @@ In order to develop or run the app locally, you will need:
 In order to deploy to AWS, you will also need:
 
 - `terraform` 12 or newer
-- the AWS CLI (on MacOS Catalina, `brew install awscli`)
-- access to an AWS account and mechanism to get temporary (STS) credentials
 
-## Setup
+## Local Setup
 
 ### Install Prerequisites
 
@@ -70,59 +68,9 @@ make vscode-copy-config
 make vscode
 ```
 
-## Deploy to AWS
-
-The process for deployment to AWS is a work in progress. This section outlines the process that is used for development and experimentation.
-
-### Build Deployment Image
-
-The image that is built using the local build step is not intended for remote deployment, so before we can deploy to a remote environment, we need to build an suitable image. The command below will do this.
-
-```shell script
-make pipeline-build
-```
-
-### Provision Image Repository
-
-Once we have a deployment image, we need to push the image to repository where the runtime container engine will be able to access it, so we need to create a repository. The command below will set up a repository for us.
-
-> You will need to _Log into AWS_ before running the command below and make your credentials visible to your command shell via environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN`.
-> _Note_: The `make` command below calls `terraform` behind the scenes and you will be prompted whether to proceed with creation of the repository. Answer `yes' at the prompt to proceed.
-
-```shell script
-make setup-image-repository
-```
-
-### Push image
-
-Next, we can push the image to the repository that was created above using the command below.
-
-```shell script
-make pipeline-push
-```
-
-### Provision AWS infrastructure and Deploy App
-
-The next step is to provision the services that are needed to run the app in AWS. The command below will do this by calling Terraform. When the procedure is completed, it will have created all the services, and the application will be deployed.
-
-> _Note_: You may wish to "refresh" your AWS credentials (login in again using AWS console and update environment variables) at this point, as the provisioning step takes some time and credentials are time-bound.
-> _Note_: You will see some of the steps you completed are run again. These are mostly "no-ops" and shouldn't add much time to the process. Nothing to see here...
-
-```shell script
-make setup-aws-infrastructure
-```
-
-Once the process completes, it will print a URL `alb_hostname` that will be needed in order to create your request for a public url with the CloudOps team.
-
-To deploy a specfic version of the container image:
-
-```bash
-make pipeline-deploy-version DEPLOYMENT_IMAGE=<CONTAINER_REGISTRY_URL/IMAGE_NAME:TAG>
-```
-
 ### Public Access
 
-Once your application infrastructure as been provisioned you can get a public url for your application by submitting a request in the `#cloudops-requests` channel on Rocket.Chat (chat.pathfinder.gov.bc.ca).
+Once your application infrastructure as been provisioned you can get a public url for your application by submitting a request in the `#aws-lz2` channel on Rocket.Chat (chat.pathfinder.gov.bc.ca).
 
 Please submit your request with the folloing information:
 
@@ -130,14 +78,6 @@ Please submit your request with the folloing information:
 - service name
 - environment (Dev/Test/Prod)
 - alb_hostname
-
-### Cleanup/Teardown
-
-The task of decommissioning the app and its infrastructure, can be done in one step as shown below.
-
-```shell script
-make cleanup-aws-infrastructure
-```
 
 ## License
 
