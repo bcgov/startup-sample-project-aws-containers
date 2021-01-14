@@ -34,7 +34,6 @@ jobs:
             BASE_REF=${{ github.event.pull_request.base.ref }}
             BRANCH=${BASE_REF#refs/heads/}
           fi
-          echo ::set-output name=git_short_sha::${GITHUB_SHA:0:7}
           echo ::set-output name=tf_workspace::${BRANCH}
       
       - name: Login to GitHub Container Registry
@@ -75,7 +74,7 @@ jobs:
           file: ./Dockerfile
           target: runtime
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.IMAGE_ID }}:${{ steps.prep.outputs.git_short_sha }}
+          tags: ${{ env.IMAGE_ID }}:${{ github.sha }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -92,7 +91,7 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
           TF_CLI_ARGS: -no-color
-          client_app_image: ${{ steps.prep.outputs.tag }}
+          client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         run: terragrunt plan-all --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
@@ -141,5 +140,5 @@ jobs:
         if: github.event_name != 'pull_request'
         working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
-          client_app_image: ${{ env.IMAGE_ID }}:${{ steps.prep.outputs.git_short_sha }}
+          client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         run: terragrunt apply-all --terragrunt-non-interactive

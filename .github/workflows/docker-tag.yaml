@@ -21,13 +21,6 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
       
-      - name: Prepare
-        id: prep
-        run: |
-          DOCKER_TAG=${GITHUB_REF#refs/tags/v}
-          echo ::set-output name=docker_tag::${DOCKER_TAG}
-          echo ::set-output name=git_short_sha::${GIT_SHORT_SHA}
-      
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -35,8 +28,8 @@ jobs:
           username: ${{ env.REGISTRY_USERNAME }}
           password: ${{ env.REGISTRY_PASSWORD }}
 
-      - name: Create Docker TAG
+      - name: Create Docker Tag
         run: |
-          docker pull ${{ env.IMAGE_ID }}:${GITHUB_SHA:0:7}
-          docker tag ${{ env.IMAGE_ID }}:${GITHUB_SHA:0:7} ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
+          docker pull ${{ env.IMAGE_ID }}:${GITHUB_SHA}
+          docker tag ${{ env.IMAGE_ID }}:${GITHUB_SHA} ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
           docker push ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
