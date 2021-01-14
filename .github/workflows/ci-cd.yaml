@@ -4,7 +4,6 @@ on:
   push:
     branches: [master]
   pull_request:
-    branches: [master]
 
 env:
   REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
@@ -18,8 +17,8 @@ env:
   TFC_WORKSPACE: dev
 
 jobs:
-  main:
-    name: main
+  ci:
+    name: ci
     runs-on: ubuntu-20.04
     
     steps:
@@ -67,6 +66,12 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.IMAGE_ID }}:${{ github.sha }}
 
+  cd:
+    name: cd
+    runs-on: ubuntu-20.04
+    needs: [ci]
+    
+    steps:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
@@ -128,7 +133,7 @@ jobs:
         run: exit 1
 
       - name: Terragrunt Apply
-        if: github.event_name != 'pull_request'
+        if: github.event_name = 'push'
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
