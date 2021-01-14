@@ -1,4 +1,4 @@
-name: Push Docker Tag
+name: Tag
 
 on:
   push:
@@ -31,5 +31,5 @@ jobs:
       - name: Create Docker Tag
         run: |
           docker pull ${{ env.IMAGE_ID }}:${GITHUB_SHA}
-          docker tag ${{ env.IMAGE_ID }}:${GITHUB_SHA} ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
-          docker push ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
+          docker tag ${{ env.IMAGE_ID }}:${GITHUB_SHA} ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/}
+          docker push ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/}

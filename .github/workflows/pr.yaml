@@ -1,16 +1,6 @@
-name: CI/CD
+name: Pull Request
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - ".github/workflows/**"
-      - "client/**"
-      - "server/**"
-      - "terraform/**"
-      - "Dockerfile"
-      - "!**/README.md"
-
   pull_request:
     paths:
       - ".github/workflows/**"
@@ -21,10 +11,7 @@ on:
       - "!**/README.md"
 
 env:
-  REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
-  REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
-  REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
-  IMAGE_ID: ${{ secrets.CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_IMAGE }}
+  IMAGE_ID: ssp
 
   TF_VERSION: 0.13.5
   TG_VERSION: 0.26.7
@@ -32,20 +19,13 @@ env:
   TFC_WORKSPACE: dev
 
 jobs:
-  ci:
-    name: ci
+  pr:
+    name: pr
     runs-on: ubuntu-20.04
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ env.REGISTRY_USERNAME }}
-          password: ${{ env.REGISTRY_PASSWORD }}
 
       - uses: actions/cache@v2
         with:
@@ -67,7 +47,7 @@ jobs:
           file: ./Dockerfile
           target: test
 
-      - name: Build and push
+      - name: Build
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -77,18 +57,14 @@ jobs:
           context: .
           file: ./Dockerfile
           target: runtime
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.IMAGE_ID }}:${{ github.sha }}
+          push: false
 
-  cd:
-    name: cd
+  tf_plan:
+    name: pr
     runs-on: ubuntu-20.04
-    needs: [ci]
+    if: github.base_ref == 'refs/head/master'
 
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
@@ -100,7 +76,6 @@ jobs:
 
       - name: Terragrunt Plan
         id: tg_plan
-        if: github.event_name == 'pull_request'
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           TF_CLI_ARGS: -no-color
@@ -110,14 +85,12 @@ jobs:
 
       - name: Get Terraform Plan Output
         id: plan
-        if: github.event_name == 'pull_request'
         uses: juliangruber/read-file-action@v1
         with:
           path: /tmp/tg_plan
 
       - name: Update Pull Request
         uses: actions/github-script@v3
-        if: github.event_name == 'pull_request'
         env:
           SUCCESS: '\u2705'
           FAILURE: '\u274C'
@@ -148,10 +121,3 @@ jobs:
       - name: Terragrunt Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
-
-      - name: Terragrunt Apply
-        if: github.event_name == 'push'
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
-        env:
-          client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
-        run: terragrunt apply-all --terragrunt-non-interactive
