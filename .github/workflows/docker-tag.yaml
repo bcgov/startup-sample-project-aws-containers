@@ -24,7 +24,6 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          GIT_SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
           DOCKER_TAG=${GITHUB_REF#refs/tags/v}
           echo ::set-output name=docker_tag::${DOCKER_TAG}
           echo ::set-output name=git_short_sha::${GIT_SHORT_SHA}
@@ -38,6 +37,6 @@ jobs:
 
       - name: Create Docker TAG
         run: |
-          docker pull ${{ env.IMAGE_ID }}/${{ steps.prep.outputs.git_short_sha }}
-          docker tag ${{ env.IMAGE_ID }}/${{ steps.prep.outputs.git_short_sha }} ${{ env.IMAGE_ID }}/${{ steps.prep.outputs.docker_tag }}
-          docker push ${{ env.IMAGE_ID }}/${{ steps.prep.outputs.docker_tag }}
+          docker pull ${{ env.IMAGE_ID }}/${GITHUB_SHA:0:7}
+          docker tag ${{ env.IMAGE_ID }}/${GITHUB_SHA:0:7} ${{ env.IMAGE_ID }}/${GITHUB_REF#refs/tags/v}
+          docker push ${{ env.IMAGE_ID }}/${GITHUB_REF#refs/tags/v}
