@@ -133,7 +133,7 @@ jobs:
         run: exit 1
 
       - name: Terragrunt Apply
-        if: github.event_name = 'push'
+        if: github.event_name == 'push'
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
