@@ -2,9 +2,9 @@ name: CI/CD
 
 on:
   push:
-    branches: [dev, test]
+    branches: [master]
   pull_request:
-    branches: [dev, test]
+    branches: [master]
 
 env:
   REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
@@ -15,6 +15,7 @@ env:
   TF_VERSION: 0.13.5
   TG_VERSION: 0.26.7
   TG_SRC_PATH: terraform
+  TFC_WORKSPACE: dev
 
 jobs:
   main:
@@ -25,16 +26,6 @@ jobs:
 
       - name: Check out the repo
         uses: actions/checkout@v2
-      
-      - name: Prepare
-        id: prep
-        run: |
-          BRANCH=${GITHUB_REF#refs/heads/}
-          if [[ $GITHUB_REF == refs/pull/* ]]; then
-            BASE_REF=${{ github.event.pull_request.base.ref }}
-            BRANCH=${BASE_REF#refs/heads/}
-          fi
-          echo ::set-output name=tf_workspace::${BRANCH}
       
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -88,7 +79,7 @@ jobs:
       - name: Terragrunt Plan
         id: tg_plan
         if: github.event_name == 'pull_request'
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ TFC_WORKSPACE }}
         env:
           TF_CLI_ARGS: -no-color
           client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
@@ -138,7 +129,7 @@ jobs:
 
       - name: Terragrunt Apply
         if: github.event_name != 'pull_request'
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ TFC_WORKSPACE }}
         env:
           client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         run: terragrunt apply-all --terragrunt-non-interactive

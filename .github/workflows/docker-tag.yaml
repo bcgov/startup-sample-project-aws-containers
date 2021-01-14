@@ -2,7 +2,7 @@ name: Push Docker Tag
 
 on:
   push:
-    tags: ['v*']
+    tags: ['*']
 
 env:
   REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
