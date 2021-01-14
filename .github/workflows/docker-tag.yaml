@@ -37,6 +37,6 @@ jobs:
 
       - name: Create Docker TAG
         run: |
-          docker pull ${{ env.IMAGE_ID }}/${GITHUB_SHA:0:7}
-          docker tag ${{ env.IMAGE_ID }}/${GITHUB_SHA:0:7} ${{ env.IMAGE_ID }}/${GITHUB_REF#refs/tags/v}
-          docker push ${{ env.IMAGE_ID }}/${GITHUB_REF#refs/tags/v}
+          docker pull ${{ env.IMAGE_ID }}:${GITHUB_SHA:0:7}
+          docker tag ${{ env.IMAGE_ID }}:${GITHUB_SHA:0:7} ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
+          docker push ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/v}
