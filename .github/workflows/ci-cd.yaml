@@ -11,6 +11,7 @@ env:
   REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
   REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
   IMAGE: ${{ secrets.CONTAINER_IMAGE }}
+  IMAGE_ID: $(( env.REGISTRY }}/${{ secrets.CONTAINER_IMAGE }}
   TF_VERSION: 0.13.5
   TG_VERSION: 0.26.7
   TG_SRC_PATH: terraform
@@ -74,7 +75,7 @@ jobs:
           file: ./Dockerfile
           target: runtime
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_IMAGE }}:${{ steps.prep.outputs.git_short_sha }}
+          tags: ${{ env.IMAGE_ID }}:${{ steps.prep.outputs.git_short_sha }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -140,5 +141,5 @@ jobs:
         if: github.event_name != 'pull_request'
         working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
-          client_app_image: ${{ steps.prep.outputs.tag }}
+          client_app_image: ${{ env.IMAGE_ID }}:${{ steps.prep.outputs.git_short_sha }}
         run: terragrunt apply-all --terragrunt-non-interactive
