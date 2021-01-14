@@ -79,7 +79,7 @@ jobs:
       - name: Terragrunt Plan
         id: tg_plan
         if: github.event_name == 'pull_request'
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ TFC_WORKSPACE }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           TF_CLI_ARGS: -no-color
           client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
@@ -129,7 +129,7 @@ jobs:
 
       - name: Terragrunt Apply
         if: github.event_name != 'pull_request'
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ TFC_WORKSPACE }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           client_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         run: terragrunt apply-all --terragrunt-non-interactive
