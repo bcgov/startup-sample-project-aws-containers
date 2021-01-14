@@ -28,17 +28,12 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          GIT_SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
           BRANCH=${GITHUB_REF#refs/heads/}
           if [[ $GITHUB_REF == refs/pull/* ]]; then
             BASE_REF=${{ github.event.pull_request.base.ref }}
             BRANCH=${BASE_REF#refs/heads/}
           fi
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            DOCKER_TAG=${GITHUB_REF#refs/tags/v}
-          fi
-          echo ::set-output name=docker_tag::${DOCKER_TAG}
-          echo ::set-output name=git_short_sha::${GIT_SHORT_SHA}
+          echo ::set-output name=git_short_sha::${${GITHUB_SHA:0:7}
           echo ::set-output name=tf_workspace::${BRANCH}
       
       - name: Login to GitHub Container Registry
