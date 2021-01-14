@@ -3,7 +3,6 @@ name: CI/CD
 on:
   push:
     branches: [dev, test]
-    # tags: ['*']
   pull_request:
     branches: [dev, test]
 
@@ -29,23 +28,18 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE }}
+          GIT_SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
           BRANCH=${GITHUB_REF#refs/heads/}
-          VERSION=${BRANCH}-${GITHUB_RUN_ID}
           if [[ $GITHUB_REF == refs/pull/* ]]; then
-            PR_NUMBER=$(echo ${GITHUB_REF} | sed -e 's#refs/pull/\([0-9]\+\)/.*$#\1#g')
-            VERSION=PR-${PR_NUMBER}-${GITHUB_RUN_ID}
             BASE_REF=${{ github.event.pull_request.base.ref }}
             BRANCH=${BASE_REF#refs/heads/}
           fi
-          TF_WORKSPACE=$([ "$BRANCH" = "main" ] && echo prod || echo ${BRANCH})
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
-            TF_WORKSPACE=prod
+            DOCKER_TAG=${GITHUB_REF#refs/tags/v}
           fi
-          TAG="${DOCKER_IMAGE}:${VERSION}"
-          echo ::set-output name=tag::${TAG}
-          echo ::set-output name=tf_workspace::${TF_WORKSPACE}
+          echo ::set-output name=docker_tag::${DOCKER_TAG}
+          echo ::set-output name=git_short_sha::${GIT_SHORT_SHA}
+          echo ::set-output name=tf_workspace::${BRANCH}
       
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -85,7 +79,7 @@ jobs:
           file: ./Dockerfile
           target: runtime
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.prep.outputs.tag }}
+          tags: ${{ env.CONTAINER_REGISTRY }}/${{ env.CONTAINER_IMAGE }}:${{ steps.prep.outputs.git_short_sha }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -152,4 +146,4 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ steps.prep.outputs.tf_workspace }}
         env:
           client_app_image: ${{ steps.prep.outputs.tag }}
-        run: terragrunt apply-all -auto-approve --terragrunt-non-interactive
+        run: terragrunt apply-all --terragrunt-non-interactive
