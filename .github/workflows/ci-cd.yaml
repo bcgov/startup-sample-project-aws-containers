@@ -9,7 +9,7 @@ on:
       - "server/**"
       - "terraform/**"
       - "Dockerfile"
-      - "!**README.md"
+      - "!**/README.md"
 
   pull_request:
     paths:
@@ -18,7 +18,7 @@ on:
       - "server/**"
       - "terraform/**"
       - "Dockerfile"
-      - "!**README.md"
+      - "!**/README.md"
 
 env:
   REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
