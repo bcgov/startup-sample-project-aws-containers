@@ -20,10 +20,6 @@ In order to develop or run the app locally, you will need:
 - `make`
 - `Docker`
 
-In order to deploy to AWS, you will also need:
-
-- `terraform` 12 or newer
-
 ## Local Setup
 
 ### Install Prerequisites
