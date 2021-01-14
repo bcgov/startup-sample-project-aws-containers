@@ -10,7 +10,7 @@ It's essentially a fancier "Hello World" app. This demo app is current WIP and n
 
 ## Introduction
 
-Welcome to your new project. This is a basic starter project with a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running locally, as well as "Infrastructure-as-Code" using Terraform to allow the app to be easily deployed to public cloud environments. Currently, AWS is supported, but support for other cloud targets may be added in the future.
+Welcome to your new project. This is a basic starter project with a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running locally, as well as "Infrastructure-as-Code" using Terraform/Terragrunt to allow the app to be easily deployed to public cloud environments. Currently, AWS is supported, but support for other cloud targets may be added in the future.
 
 ## Prerequisites
 
@@ -64,11 +64,21 @@ make vscode-copy-config
 make vscode
 ```
 
+## Cloud Deployment
+
+Terraform and Terragrunt are used to deploy the application to AWS.
+
+### Terraform App Module
+
+The infrastructure for the app is defined in the terraform module linked below and instantiated using Terragrunt (config is in the `terraform/` folder).
+
+[startup-sample-project-terraform-modules](https://github.com/bcgov/startup-sample-project-terraform-modules)
+
 ### Public Access
 
 Once your application infrastructure as been provisioned you can get a public url for your application by submitting a request in the `#aws-lz2` channel on Rocket.Chat (chat.pathfinder.gov.bc.ca).
 
-Please submit your request with the folloing information:
+Please submit your request with the following information:
 
 - license plate
 - service name
