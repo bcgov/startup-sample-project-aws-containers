@@ -4,8 +4,6 @@ on:
   workflow_run:
     workflows:
       - Pull Request
-    branches:
-      - master
     types:
       - completed
 
