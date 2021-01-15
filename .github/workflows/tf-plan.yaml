@@ -51,7 +51,7 @@ jobs:
         with:
           path: /tmp/tg_plan
 
-      - name: 'Download artifact'
+      - name: "Download artifact"
         uses: actions/github-script@v3.1.0
         with:
           script: |
