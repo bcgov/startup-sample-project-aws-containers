@@ -3,7 +3,8 @@ name: Pull Request
 on:
   pull_request:
     paths:
-      - ".github/workflows/**"
+      - ".github/workflows/pr.yaml"
+      - ".github/workflows/tf-plan.yaml"
       - "client/**"
       - "server/**"
       - "terraform/**"
