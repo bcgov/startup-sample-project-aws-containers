@@ -3,7 +3,7 @@ locals {
   tfc_organization = "bcgov"
   project          = "tnfhhm"
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  client_app_image = get_env("client_app_image", "")
+  app_image        = get_env("app_image", "")
 }
 
 generate "remote_state" {
@@ -27,6 +27,6 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-client_app_image = "${local.client_app_image}"
+app_image = "${local.app_image}"
 EOF
 }
