@@ -64,6 +64,12 @@ make vscode-copy-config
 make vscode
 ```
 
+## GitHub Actions (CI/CD)
+
+GitHub Action workflows in `.github/workflows` are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
+
+![alt text](docs/images/workflows.png "GitHub Action workflows")
+
 ## Cloud Deployment
 
 Terraform and Terragrunt are used to deploy the application to AWS.
