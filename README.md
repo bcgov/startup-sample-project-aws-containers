@@ -66,6 +66,16 @@ make vscode
 
 ## GitHub Actions (CI/CD)
 
+### Required Secrets
+
+- `CONTAINER_REGISTRY` - e.g. ghcr.io
+- `CONTAINER_REGISTRY_USERNAME` - registry username
+- `CONTAINER_REGISTRY_PASSWORD` - registry password e.g. github personal access token
+- `CONTAINER_IMAGE` - e.g. bcgov/startup-sample-project
+- `TFC_TEAM_TOKEN` - Terraform Cloud team token with access to Terraform workspaces used to deploy the app and infrastructure to AWS.
+
+### Workflows
+
 GitHub Action workflows in `.github/workflows` are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
 
 ![alt text](docs/images/workflows.png "GitHub Action workflows")
