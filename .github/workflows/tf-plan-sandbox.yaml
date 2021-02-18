@@ -81,7 +81,7 @@ jobs:
           script: |
             var fs = require('fs');
             var issue_number = Number(fs.readFileSync('./NR'));
-            const plan =  `${{ steps.plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
+            const plan =  `${{ steps.tg_plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
             const output = `#### Terraform Plan: ${plan}
 
             <details>
