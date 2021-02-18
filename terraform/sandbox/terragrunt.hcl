@@ -8,8 +8,8 @@ locals {
   tfc_organization = "bcgov"
   project          = "tnfhhm"
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  repository_name  = "tnfhhm"
-  read_principals  = ["arn:aws:iam::813318847992:root", "arn:aws:iam::287566111173:root"]
+  repository_name  = "startup-sample-project"
+  read_principals  = get_env("AWS_ACCOUNTS_ECR_READ_ACCESS", "")
 }
 
 generate "tfvars" {
@@ -18,7 +18,7 @@ generate "tfvars" {
   disable_signature = true
   contents          = <<-EOF
 repository_name = "${local.repository_name}"
-read_principals = ${jsonencode(local.read_principals)}
+read_principals = ${local.read_principals}
 EOF
 }
 

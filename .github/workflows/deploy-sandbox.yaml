@@ -1,24 +1,24 @@
-name: Deploy Dev
+name: Deploy Sandbox
 
 on:
-  workflow_run:
-    workflows:
-      - Push
-    types:
-      - completed
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/deploy-sandbox.yaml"
+      - "terraform/terragrunt.hcl"
+      - "terraform/sandbox/**"
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
   TF_VERSION: 0.13.5
   TG_VERSION: 0.26.7
   TG_SRC_PATH: terraform
-  TFC_WORKSPACE: dev
+  TFC_WORKSPACE: sandbox
 
 jobs:
   cd:
     name: cd
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Check out the repo
@@ -38,5 +38,5 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
+          AWS_ACCOUNTS_ECS_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECS_READ_ACCESS }}
         run: terragrunt apply-all --terragrunt-non-interactive

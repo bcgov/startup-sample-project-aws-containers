@@ -5,11 +5,7 @@ on:
     tags: ["*"]
 
 env:
-  REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
-  REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
-  REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
-  IMAGE: ${{ secrets.CONTAINER_IMAGE }}
-  IMAGE_ID: ${{ secrets.CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_IMAGE }}
+  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
 
 jobs:
   main:
@@ -20,13 +16,6 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      # - name: Login to GitHub Container Registry
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ${{ env.REGISTRY }}
-      #     username: ${{ env.REGISTRY_USERNAME }}
-      #     password: ${{ env.REGISTRY_PASSWORD }}
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -36,6 +25,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-duration-seconds: 600
           role-session-name: startup-sample-project-github-action
+          role-skip-session-tagging: true
           
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
