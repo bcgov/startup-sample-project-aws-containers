@@ -1,6 +1,5 @@
 terraform {
-  # source = "git::https://github.com/bcgov/startup-sample-project-terraform-modules.git//?ref=v0.0.1"
-  source = "../../../terraform-octk-aws-workload-ecr//."
+  source = "git::https://github.com/BCDevOps/terraform-octk-aws-workload-ecr.git//?ref=v0.0.1"
 }
 
 locals {
