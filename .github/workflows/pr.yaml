@@ -8,6 +8,7 @@ on:
       - "client/**"
       - "server/**"
       - "terraform/**"
+      - "!terraform/sandbox/**"
       - "Dockerfile"
       - "!**/README.md"
 

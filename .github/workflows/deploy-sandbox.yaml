@@ -9,7 +9,6 @@ on:
       - "terraform/sandbox/**"
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
   TF_VERSION: 0.13.5
   TG_VERSION: 0.26.7
   TG_SRC_PATH: terraform

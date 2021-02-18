@@ -1,0 +1,22 @@
+name: Pull Request Sandbox
+
+on:
+  pull_request:
+    paths:
+      - "terraform/sandbox/**"
+
+jobs:
+  pr:
+    name: pr
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Save PR number
+        working-directory: /tmp
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/NR
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pr
+          path: /tmp/pr/
