@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: Terraform Plan Sandbox
 
 on:
   workflow_run:
