@@ -3,6 +3,7 @@ name: Pull Request Sandbox
 on:
   pull_request:
     paths:
+      - ".github/workflows/pr-sandbox.yaml"
       - "terraform/sandbox/**"
 
 jobs:
