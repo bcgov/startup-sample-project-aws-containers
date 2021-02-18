@@ -37,5 +37,5 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          AWS_ACCOUNTS_ECS_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECS_READ_ACCESS }}
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
         run: terragrunt apply-all --terragrunt-non-interactive
