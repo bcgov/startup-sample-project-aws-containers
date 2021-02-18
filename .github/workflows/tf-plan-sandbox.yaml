@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: Terraform Plan Sandbox
 
 on:
   workflow_run:
@@ -39,7 +39,7 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           TF_CLI_ARGS: -no-color
-          AWS_ACCOUNTS_ECS_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECS_READ_ACCESS }}
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
         run: terragrunt plan-all --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
