@@ -50,7 +50,7 @@ jobs:
 
       - name: Create inframap
         run: |
-          curl -o https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
+          curl -o inframap-linux-amd64.tar.gz  https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xvzf inframap-linux-amd64.tar.gz
           chmod +x inframap-linux-amd64
           TG_CACHE_DIR=$(find terraform/dev -name backend.tf)
