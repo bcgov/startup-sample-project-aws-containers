@@ -50,11 +50,12 @@ jobs:
 
       - name: Create inframap
         run: |
-          curl -o inframap-linux-amd64.tar.gz  https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
+          curl -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xvzf inframap-linux-amd64.tar.gz
           chmod +x inframap-linux-amd64
-          TG_CACHE_DIR=$(find terraform/dev -name backend.tf)
-          ./inframap-linux-amd64 inframap generate --external-nodes=false --clean=false --hcl $(dirname -- "$TG_CACHE_DIR") | dot -Tpng > /tmp/inframap.png
+          TG_CACHE_BACKEND_TF=$(find terraform/dev -name backend.tf)
+          TG_CACHE_DIR=$(dirname -- "$TG_CACHE_BACKEND_TF")
+          ./inframap-linux-amd64 generate --external-nodes=false --clean=false --hcl "$TG_CACHE_DIR" | dot -Tpng > /tmp/inframap.png
 
       - name: Upload inframap artifact
         uses: actions/upload-artifact@v2
