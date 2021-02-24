@@ -50,6 +50,7 @@ jobs:
 
       - name: Create inframap
         run: |
+          apt-get update && apt install -y jq
           curl -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xzf inframap-linux-amd64.tar.gz
           chmod +x inframap-linux-amd64
