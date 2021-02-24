@@ -53,7 +53,7 @@ jobs:
           curl -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xzf inframap-linux-amd64.tar.gz
           chmod +x inframap-linux-amd64
-          TG_CACHE_BACKEND_TF=$(find ${{ env.TFC_WORKSPACE }}/${{ env.TFC_WORKSPACE }} -name backend.tf)
+          TG_CACHE_BACKEND_TF=$(find ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }} -name backend.tf)
           TG_CACHE_DIR=$(dirname -- "$TG_CACHE_BACKEND_TF")
           ./inframap-linux-amd64 generate --external-nodes=false --clean=false --hcl "$TG_CACHE_DIR" | dot -Tpng > /tmp/inframap.png
       
