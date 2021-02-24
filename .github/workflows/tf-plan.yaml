@@ -49,6 +49,7 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v1
 
       - name: Create inframap
+        id: create-inframap
         run: |
           curl -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xzf inframap-linux-amd64.tar.gz
