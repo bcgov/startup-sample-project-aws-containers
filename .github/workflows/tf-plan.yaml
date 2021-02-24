@@ -50,7 +50,6 @@ jobs:
 
       - name: Create inframap
         run: |
-          apt-get update && apt install -y jq
           curl -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xzf inframap-linux-amd64.tar.gz
           chmod +x inframap-linux-amd64
@@ -59,9 +58,10 @@ jobs:
           ./inframap-linux-amd64 generate --external-nodes=false --clean=false --hcl "$TG_CACHE_DIR" | dot -Tpng > /tmp/inframap.png
       
       - name: Upload inframap
+        id: inframap
         run:
           IMGBBURL=$(curl --location --request POST "https://api.imgbb.com/1/upload?key=${{ secrets.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq '.data.url')
-          echo "IMGURL=$IMGBBURL" >> $GITHUB_ENV
+          echo "::set-output name=imgurl::$IMGBBURL"
 
       - name: Get Terraform Plan Output
         id: plan
@@ -114,7 +114,7 @@ jobs:
             </details>
 
             #### Architecture Diagram
-            [inframap](${{ env.IMGURL }})
+            [inframap](${{ steps.inframap.outputs.imgurl }})
 
             *Pusher:* @${{ github.actor }}, *Action:* [${process.env.GITHUB_WORKFLOW}: #${process.env.GITHUB_RUN_NUMBER}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})`;
               
