@@ -71,7 +71,7 @@ jobs:
           path: /tmp/tg_plan
 
       - name: Download artifact
-        uses: actions/github-script@v3.1.0
+        uses: actions/github-script@v3
         with:
           script: |
             var artifacts = await github.actions.listWorkflowRunArtifacts({
@@ -104,7 +104,6 @@ jobs:
             var fs = require('fs');
             var issue_number = Number(fs.readFileSync('./NR'));
             const plan =  `${{ steps.tg_plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
-            const inframap_url = 
             const output = `#### Terraform Plan: ${plan}
 
             <details>
