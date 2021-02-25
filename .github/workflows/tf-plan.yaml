@@ -60,7 +60,7 @@ jobs:
       
       - name: Upload inframap
         id: inframap
-        run:
+        run: |
           IMGBBURL=$(curl -s -L -X POST "https://api.imgbb.com/1/upload?key=${{ secrets.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
           echo "::set-output name=imgurl::$IMGBBURL"
 
