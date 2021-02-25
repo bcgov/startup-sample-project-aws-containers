@@ -11,7 +11,7 @@ env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
 
   TF_VERSION: 0.13.5
-  TG_VERSION: 0.26.7
+  TG_VERSION: 0.28.7
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: dev
 
@@ -42,7 +42,7 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
-        run: terragrunt plan-all --terragrunt-non-interactive | tee /tmp/tg_plan
+        run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
       - name: Setup Graphviz
