@@ -49,8 +49,9 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v1
 
       - name: Create inframap
+        id: create-inframap
         run: |
-          curl -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
+          curl -s -L -o inframap-linux-amd64.tar.gz https://github.com/cycloidio/inframap/releases/download/v0.5.2/inframap-linux-amd64.tar.gz
           tar xzf inframap-linux-amd64.tar.gz
           chmod +x inframap-linux-amd64
           TG_CACHE_BACKEND_TF=$(find ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }} -name backend.tf)
@@ -60,7 +61,7 @@ jobs:
       - name: Upload inframap
         id: inframap
         run:
-          IMGBBURL=$(curl --location --request POST "https://api.imgbb.com/1/upload?key=${{ secrets.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
+          IMGBBURL=$(curl -s -L -X POST "https://api.imgbb.com/1/upload?key=${{ secrets.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
           echo "::set-output name=imgurl::$IMGBBURL"
 
       - name: Get Terraform Plan Output
@@ -69,7 +70,7 @@ jobs:
         with:
           path: /tmp/tg_plan
 
-      - name: "Download artifact"
+      - name: Download artifact
         uses: actions/github-script@v3.1.0
         with:
           script: |
@@ -96,12 +97,14 @@ jobs:
         env:
           SUCCESS: '\u2705'
           FAILURE: '\u274C'
+          INFRAMAP_URL: ${{ steps.inframap.outputs.imgurl }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             var fs = require('fs');
             var issue_number = Number(fs.readFileSync('./NR'));
             const plan =  `${{ steps.tg_plan.outcome }}` == 'success' ? `${{ env.SUCCESS }}` : `${{ env.FAILURE }}`;
+            const inframap_url = 
             const output = `#### Terraform Plan: ${plan}
 
             <details>
@@ -114,7 +117,8 @@ jobs:
             </details>
 
             #### Architecture Diagram
-            ![inframap](${{ steps.inframap.outputs.imgurl }})
+            
+            ![img](${process.env.INFRAMAP_URL})
 
             *Pusher:* @${{ github.actor }}, *Action:* [${process.env.GITHUB_WORKFLOW}: #${process.env.GITHUB_RUN_NUMBER}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})`;
               
