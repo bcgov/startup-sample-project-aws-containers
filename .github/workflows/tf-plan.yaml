@@ -42,7 +42,7 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
-        run: terragrunt plan-all --terragrunt-non-interactive | tee /tmp/tg_plan
+        run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
       - name: Setup Graphviz
