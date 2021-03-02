@@ -64,14 +64,40 @@ make vscode-copy-config
 make vscode
 ```
 
+## AWS Credentials
+
+This code assumes that the Terraform Cloud workspaces are pre-populated wth AWS credential environment variables. The workspaces and credentials are automatically created as part of the project provisioning. These credentials are used for creating all resources with terraform.
+
+Additional service account iam users and credentials can be created upon request for performing limited actions like pushing to ECR from a CI/CD. This project uses one of those service accounts to push images to ECR in the sandbox account.
+
+When an additional service account is requested the following values will be provided:
+
+- `AWS_ACCESS_KEY_ID` - credentials for you service account
+- `AWS_SECRET_ACCESS_KEY` - credentials for you service account
+- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials
+
+## AWS Elastic Container Registry (ECR)
+
+This project creates an ECR repository in the sandbox account and authorizes read access from other AWS accounts. This is useful for deploying to ECS.
+
+The GitHub secret `AWS_ACCOUNTS_ECR_READ_ACCESS` is used by the ECR terraform module to authorize the read access from the other AWS accounts.
+
+The following GitHub secret value would allow the dev, test, and prod accounts to read from ECS in the sandbox account:
+
+`AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'`
+
+A more target approach is possible, it is not necessary to authorize entire accounts.
+
 ## GitHub Actions (CI/CD)
 
 ### Required Secrets
 
-- `CONTAINER_REGISTRY` - e.g. ghcr.io
-- `CONTAINER_REGISTRY_USERNAME` - registry username
-- `CONTAINER_REGISTRY_PASSWORD` - registry password e.g. github personal access token
-- `CONTAINER_IMAGE` - e.g. bcgov/startup-sample-project
+- `AWS_ACCESS_KEY_ID` - credentials for you service account
+- `AWS_SECRET_ACCESS_KEY` - credentials for you service account
+- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials
+- `AWS_ACCOUNTS_ECR_READ_ACCESS` - list of aws principals to grant read access
+- `AWS_ECR_URI` - ECR repository URI
+- `AWS_REGION` - should be `ca-central-1`
 - `TFC_TEAM_TOKEN` - Terraform Cloud team token with access to Terraform workspaces used to deploy the app and infrastructure to AWS.
 
 ### Workflows
