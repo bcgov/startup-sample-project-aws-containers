@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/push.yaml"
+      - ".github/workflows/deploy-*.yaml"
       - "client/**"
       - "server/**"
       - "terraform/**"
