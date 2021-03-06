@@ -6,15 +6,11 @@ include {
   path = find_in_parent_folders()
 }
 
-locals {
-  alb_name = "ssp"
-}
-
 generate "tfvars" {
   path              = "dev.auto.tfvars"
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-alb_name = "${local.alb_name}"
+alb_name = "ssp"
 EOF
 }
