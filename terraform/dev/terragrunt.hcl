@@ -6,7 +6,7 @@ include {
   path = find_in_parent_folders()
 }
 
-generate "tfvars" {
+generate "dev_tfvars" {
   path              = "dev.auto.tfvars"
   if_exists         = "overwrite"
   disable_signature = true
