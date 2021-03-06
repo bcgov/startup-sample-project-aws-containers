@@ -23,7 +23,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-duration-seconds: 600
+          role-duration-seconds: 900
           role-session-name: startup-sample-project-github-action
           role-skip-session-tagging: true
           
