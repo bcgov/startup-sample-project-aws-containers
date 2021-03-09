@@ -12,5 +12,6 @@ generate "dev_tfvars" {
   disable_signature = true
   contents          = <<-EOF
 alb_name = "ssp"
+service_names = ["startup-sample-project"]
 EOF
 }
