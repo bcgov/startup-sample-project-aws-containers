@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/BCDevOps/terraform-octk-aws-workload-ecr.git//.?ref=v0.0.1"
+  source = "git::https://github.com/BCDevOps/terraform-octk-aws-workload-ecr.git//.?ref=v0.0.2"
 }
 
 locals {
@@ -7,7 +7,6 @@ locals {
   tfc_organization = "bcgov"
   project          = "tnfhhm"
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  repository_name  = "startup-sample-project"
   read_principals  = get_env("AWS_ACCOUNTS_ECR_READ_ACCESS", "")
 }
 
@@ -16,7 +15,7 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-repository_name = "${local.repository_name}"
+repository_names = ["startup-sample-project", "another-ecr"]
 read_principals = ${local.read_principals}
 EOF
 }
