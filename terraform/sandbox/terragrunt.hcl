@@ -15,7 +15,7 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-repository_names = ["startup-sample-project", "another-ecr"]
+repository_names = ["ssp", "another-ecr"]
 read_principals = ${local.read_principals}
 EOF
 }
