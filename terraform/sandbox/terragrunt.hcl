@@ -5,7 +5,7 @@ terraform {
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
-  project          = "tnfhhm"
+  project          = "lqc63d"
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
   read_principals  = get_env("AWS_ACCOUNTS_ECR_READ_ACCESS", "")
 }
