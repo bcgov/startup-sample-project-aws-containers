@@ -9,7 +9,7 @@ on:
       - "terraform/sandbox/**"
 
 env:
-  TF_VERSION: 0.13.5
+  TF_VERSION: 1.0.4
   TG_VERSION: 0.26.7
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: sandbox
