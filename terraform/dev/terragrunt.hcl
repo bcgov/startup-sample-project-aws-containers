@@ -11,7 +11,7 @@ generate "dev_tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-alb_name = "ssp"
+alb_name = "default"
 service_names = ["startup-sample-project"]
 EOF
 }
