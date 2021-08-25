@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/bcgov/startup-sample-project-terraform-modules.git//?ref=v0.0.5"
+  source = "git::https://github.com/bcgov/startup-sample-project-terraform-modules.git//?ref=v0.0.4"
 }
 
 include {
@@ -10,8 +10,6 @@ generate "dev_tfvars" {
   path              = "dev.auto.tfvars"
   if_exists         = "overwrite"
   disable_signature = true
-  cloudfront = true
-  cloudfront_origin_domain = "https://startup-sample-project.tnfhhm-dev.nimbus.cloud.gov.bc.ca/"
   contents          = <<-EOF
 alb_name = "default"
 service_names = ["startup-sample-project"]
