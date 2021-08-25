@@ -2,7 +2,7 @@ name: Deploy Sandbox
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - ".github/workflows/deploy-sandbox.yaml"
       - "terraform/terragrunt.hcl"
