@@ -10,10 +10,10 @@ generate "dev_tfvars" {
   path              = "dev.auto.tfvars"
   if_exists         = "overwrite"
   disable_signature = true
-  cloudfront        = true
   cloudfront_origin_domain = "https://startup-sample-project.tnfhhm-dev.nimbus.cloud.gov.bc.ca/"
   contents          = <<-EOF
-alb_name = "default"
-service_names = ["startup-sample-project"]
-EOF
+    alb_name = "default"
+    cloudfront = true
+    service_names = ["startup-sample-project"]
+  EOF
 }
