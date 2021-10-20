@@ -10,7 +10,7 @@ import { Divider } from '../generic';
 class CustomDataForm extends React.Component {
   state = {}
   componentDidMount() {
-    fetch('/api/v1/greeting/latest', {
+    fetch(`${process.env.REACT_APP_API_URL}/api/v1/greeting/latest`, {
       method: 'GET',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
     }).then((response) =>{

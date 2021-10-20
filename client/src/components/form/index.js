@@ -24,7 +24,7 @@ const Form = ({ initialValues = null, isDisabled}) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     const modifiedValues = handleSubmission(values);
-    const response = await fetch('/api/v1/greeting', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/greeting`, {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify({ ...modifiedValues }),
