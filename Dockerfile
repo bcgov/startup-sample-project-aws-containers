@@ -5,6 +5,7 @@ FROM node:12-alpine AS client
 RUN apk add python3 make g++
 
 # Build client
+ENV REACT_APP_API_URL=""
 WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
