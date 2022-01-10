@@ -6,6 +6,9 @@ const { randomBytes } = require("crypto");
 const { passport } = require("./auth.js");
 const requireHttps = require("./require-https.js");
 const { validate, GreetingSchema } = require("./validation.js");
+const multer = require("multer");
+const cors = require("cors");
+const { uploadFile, getFileStream } = require("./s3");
 let dbClient = null;
 let collections = null;
 let dynamodbClient = null;
@@ -16,6 +19,9 @@ if ("development" !== process.env.NODE_ENV)
   dynamodbClient = require("./db").dynamodbClient;
 const { errorHandler, asyncMiddleware } = require("./error-handler.js");
 const logger = require("./logger.js");
+const util = require("util");
+const fs = require("fs");
+const unlinkFile = util.promisify(fs.unlink);
 
 const apiBaseUrl = "/api/v1";
 const app = express();
@@ -49,6 +55,27 @@ const generateUniqueHexId = async (collection) => {
   }
   return randomHexId;
 };
+
+const upload = multer({ dest: '/tmp/uploads/' })
+//POST  image to s3.
+app.use((req, res, next) => {
+  res.append('Access-Control-Allow-Origin', ['*']);
+  res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.append('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+app.post(`${apiBaseUrl}/images`, upload.single('image'), async (req, res) => {
+  const file = req.file
+  console.log(file)
+  // apply filter
+  // resize 
+  const result = await uploadFile(file)
+  await unlinkFile(file.path)
+  console.log(result)
+  const description = req.body.description
+  res.send({imagePath: `/images/${result.Key}`})
+})
+
 
 // Choose and save greeting
 app.post(

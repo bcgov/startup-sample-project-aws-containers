@@ -29,5 +29,5 @@ import * as yup from 'yup';
 
 export const FormSchema = yup.object().noUnknown().shape({
   // Greeting
-  greeting: yup.string().required('Greeting selection is required'),
+  //greeting: yup.string().required('Greeting selection is required'),
 });

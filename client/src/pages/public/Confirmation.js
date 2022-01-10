@@ -18,8 +18,8 @@ export default ({ location: { state } }) => {
   const { id, greeting } = state || { id: null };
 
   useEffect(() => {
-    // Visit analytics goes here
-  });
+    console.log(state)
+  }, []);
 
   return (
     <Page>
@@ -36,7 +36,7 @@ export default ({ location: { state } }) => {
           ) : <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
             <Box margin="2rem 0" pt={8}>
               <Typography variant="h2">
-                {greeting}!
+                {greeting || 'Image Uploaded Successfully'}!
               </Typography>
             </Box>
           </Grid>

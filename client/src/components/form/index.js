@@ -22,13 +22,37 @@ const Form = ({ initialValues = null, isDisabled}) => {
   };
 
   const handleSubmit = async (values) => {
-    setSubmitLoading(true);
+    setSubmitLoading(false);
     const modifiedValues = handleSubmission(values);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/greeting`, {
+    //const modifiedValues = handleSubmission(values);
+    console.log(modifiedValues);
+
+
+    if(values.file){
+      if(modifiedValues.greeting===''){
+        modifiedValues.greeting='Image Uploaded Successfully';
+      }
+      const formData= new FormData(); formData.append('image',values.file);
+      
+
+      const uploadResponse = await fetch(`/api/v1/images`, {
+        method: 'POST',
+        //headers: {'Content-Type': 'multipart/form-data'},
+        body: formData,
+       
+      });
+      console.log(uploadResponse);
+      const {  imagePath, error } = await uploadResponse.json();
+
+    } 
+   
+    const response = await fetch(`/api/v1/greeting`, {
       method: 'POST',
+      crossDomain:true,
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify({ ...modifiedValues }),
     });
+
     setSubmitLoading(false);
     if (response.ok) {
       const { id, greeting, error } = await response.json();
