@@ -40,4 +40,4 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
-        run: terragrunt destroy-all --terragrunt-non-interactive
+        run: terragrunt apply-all --terragrunt-non-interactive
