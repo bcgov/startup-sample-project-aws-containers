@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/bcgov/startup-sample-project-terraform-modules.git//?ref=v0.0.5"
+  source = "git::https://github.com/bcgov/startup-sample-project-aws-containers-terraform-modules.git//?ref=v0.1"
 }
 
 include {

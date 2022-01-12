@@ -1,6 +1,6 @@
 # Sample Startup Project
 
-[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md).
 
 ## WIP Warning
 
@@ -16,7 +16,7 @@ Welcome to your new project. This is a basic starter project with a NodeJS app c
 
 In order to develop or run the app locally, you will need:
 
-- a `bash`-like terminal environment; testing has primarily been done using MacOS Catalina, Ubuntu Linux, and Windows 10 (WSL2)
+- a `bash`-like terminal environment; testing has primarily been done using MacOS Catalina, Ubuntu Linux, and Windows 10 (WSL2).
 - `make`
 - `Docker`
 
