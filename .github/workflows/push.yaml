@@ -10,7 +10,7 @@ on:
       - "server/**"
       - "terraform/**"
       - "Dockerfile"
-      - "README.md"
+      - "!**/README.md"
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
