@@ -15,54 +15,45 @@ Welcome to your new project. This is a basic starter project with a NodeJS app c
 ## Prerequisites
 
 In order to develop or run the app locally, you will need:
+- [Docker](https://docs.docker.com/get-docker/)
+- [Microsoft Visual Studio Code](https://code.visualstudio.com/)
 
-- a `bash`-like terminal environment; testing has primarily been done using MacOS Catalina, Ubuntu Linux, and Windows 10 (WSL2).
-- `make`
-- `Docker`
+### Launch DevContainer
+1. Open cloned repository in Visual Studio Code
+2. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Reopen in Container`
+3. Once open, use Open and Build in Devcontainer
+3. Use `docker-compose` commands presented in the next section to build and run local development containers.  
 
-## Local Setup
 
-### Install Prerequisites
+### Build and Run Locally using Docker in Docker
 
-```bash
-# MacOS and Ubuntu 20.04, Windows 10 (WSL2 - Ubuntu 20.04), if make is installed
-make local-setup
-```
+- Builds the local development containers:  
+`docker-compose -f docker-compose.dev.yml build`
 
-```bash
-# MacOS, if make is not installed
-./.config/local/darwin.sh
-```
+- Runs the local development containers:  
+`docker-compose -f docker-compose.dev.yml up -d`
 
-```bash
-# Ubuntu 20.04, Windows 10 (WSL2 - Ubuntu 20.04), if make is not installed
-./.config/local/linux.sh
-```
+- Runs the local development containers:  
+`docker-compose -f docker-compose.dev.yml up mongodb`
 
-### One-time Setup
+- Closes the local development containers:  
+`docker-compose -f docker-compose.dev.yml down`
 
-```bash
-# setup development environment
-make setup-development-env
-```
+- Closes the local development containers:  
+`docker-compose -f docker-compose.dev.yml restart`
 
-### Build and Run Locally using Docker
+- Tail logs from local development containers:  
+`docker-compose -f docker-compose.dev.yml logs -f`
 
-```bash
-make local
-```
+### Other Useful Commands
 
-### VS Code
+- `docker exec -it $(PROJECT)-client sh`  
+- `docker exec -it $(PROJECT)-server sh`  
+- `docker exec -it $(PROJECT)-mongodb bash`  
+- `docker exec -it $(PROJECT)-server npm run db:seed`  
+- `docker exec -it $(PROJECT)-server npm run db:migration`  
+- `docker exec -it $(PROJECT)-server npm test`  
 
-```bash
-# initialize vscode project config
-make vscode-copy-config
-```
-
-```bash
-# open the project in vscode
-make vscode
-```
 
 ## AWS Credentials
 
@@ -115,17 +106,6 @@ Terraform and Terragrunt are used to deploy the application to AWS.
 The infrastructure for the app is defined in the terraform module linked below and instantiated using Terragrunt (config is in the `terraform/` folder).
 
 [startup-sample-project-terraform-modules](https://github.com/bcgov/startup-sample-project-terraform-modules)
-
-### Public Access
-
-Once your application infrastructure as been provisioned you can get a public url for your application by submitting a request in the `#aws-lz2` channel on Rocket.Chat (chat.pathfinder.gov.bc.ca).
-
-Please submit your request with the following information:
-
-- license plate
-- service name
-- environment (Dev/Test/Prod)
-- alb_hostname
 
 ## License
 
