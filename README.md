@@ -26,20 +26,22 @@ In order to develop or run the app locally, you will need:
 
 
 ### Build and Run Locally using Docker in Docker
+In the previous section (Launch DevContainer) the container defined by ./.devcontainer/DockerFile has been created and started. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_) in this second project, start a terminal session and run the following commands (notice the commands will run in the container, not in your machine)
 
-- Builds the local development containers:  
+- Builds the containers (locally inside your container: Docker in Docker):  
 `docker-compose -f docker-compose.dev.yml build`
 
 - Runs the local development containers:  
 `docker-compose -f docker-compose.dev.yml up -d`
 
-- Runs the local development containers:  
+- If you want to run only one of the containers defined in docker-compose.dev.yml, then type:  
 `docker-compose -f docker-compose.dev.yml up mongodb`
+in this example will only run mongodb container
 
-- Closes the local development containers:  
+- Closes all the containers:  
 `docker-compose -f docker-compose.dev.yml down`
 
-- Closes the local development containers:  
+- Restarts the local development containers (locally inside your container: Docker in Docker):  
 `docker-compose -f docker-compose.dev.yml restart`
 
 - Tail logs from local development containers:  
@@ -54,7 +56,7 @@ In order to develop or run the app locally, you will need:
 - `docker exec -it $(PROJECT)-server npm run db:migration`  
 - `docker exec -it $(PROJECT)-server npm test`  
 
-
+Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  ./.devcontainer/DockerFile you will see that at the end of the file, these variables are set as the container env variables 
 ## AWS Credentials
 
 This code assumes that the Terraform Cloud workspaces are pre-populated wth AWS credential environment variables. The workspaces and credentials are automatically created as part of the project provisioning. These credentials are used for creating all resources with terraform.

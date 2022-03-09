@@ -31,7 +31,7 @@ RUN apt-get update \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
 # Install build-essential
-RUN apt-get install -y build-essential
+RUN apt-get update && apt-get install -y build-essential
 
 # Install AWS CLI - TODO: hash verification needed
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" \
