@@ -7,7 +7,7 @@ include {
 }
 
 generate "test_tfvars" {
-  path              = "test.auto.tfvars"
+  path              = "test.auto.td5cou"
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
