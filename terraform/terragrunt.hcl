@@ -6,6 +6,7 @@ locals {
   app_image        = get_env("app_image", "")
 }
 
+
 generate "remote_state" {
   path      = "backend.tf"
   if_exists = "overwrite"
