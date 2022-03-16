@@ -1,4 +1,4 @@
-name: Deploy Sandbox_crc
+name: Deploy Sandbox
 
 on:
   push:
