@@ -13,7 +13,7 @@ generate "dev_tfvars" {
   contents          = <<-EOF
     alb_name = "default"
     cloudfront = true
-    cloudfront_origin_domain = "startup-sample-project.tnfhhm-dev.nimbus.cloud.gov.bc.ca"
+    cloudfront_origin_domain = "startup-sample-project.td5cou-dev.nimbus.cloud.gov.bc.ca"
     service_names = ["startup-sample-project"]
   EOF
 }
