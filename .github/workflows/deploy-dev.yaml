@@ -1,4 +1,4 @@
-name: Deploy Dev
+name: Deploy Dev_crc
 
 on:
   workflow_run:
