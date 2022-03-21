@@ -113,14 +113,14 @@ During the deployment process, Terraform script will create in the AWS Cloud an 
 
 Inside this container, three containers are created that will host the client, server and DB components of the app.
 
-###Connecting to the client
+### Connecting to the client
 You will be able to access the client using the address set for the variable cloudfront_origin_domain in line 17 of _./terraform/dev/terragrunt.hcl_ file. The format is the following:
     `cloudfront_origin_domain = "startup-sample-project.[license plate-dev].nimbus.cloud.gov.bc.ca"`
 
 [license plate-dev] will take, for example, the following form 'bc1dae-dev'
 
 
-###Prerequisites for building in the AWS Cloud
+### Prerequisites for building in the AWS Cloud
 This code assumes that you have credentials that allow access to the AWS cloud. These credentials will be used by the Terraform scripts to create the infraestructure in AWS. The credentials are created as part of the project set creation by the CPT team.
 
 Once the project set is created, it will have one or more service accounts associated each of them with different credentials and roles. 
