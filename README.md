@@ -80,13 +80,13 @@ Note: The above commands will work when executed from the container defined in _
 
 
 ## Deploy on the AWS Cloud
-To install the app on the Cloud you will need 
-- Access to BCGov-SEA Cloud in AWS
+To install the app on the Cloud you will need access to BCGov-SEA Cloud in AWS
 
 In the forked version of the code, you will need to:
-    - replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
-    - replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
-    - replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
+
+- replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
+- replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
+- replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
 
 Note: License plate is one of the access keys provided by the Cloud Pathfinder group to allow access to BCGov SEA - AWS
 
