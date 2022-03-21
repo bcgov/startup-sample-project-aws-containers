@@ -25,14 +25,12 @@ In order to develop or run the app locally, you will need:
 - [Microsoft Visual Studio Code](https://code.visualstudio.com/)
 
 
-
-
 ### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
 1. Fork the app repository to your GitHub repository
 2. Clone the repository to your local machine and open it your favorite editor (for example VS Code)
 3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`
 4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
-5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by ./.devcontainer/DockerFile
+5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by _./.devcontainer/DockerFile_
 6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like: 
       `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
 7. Type: 
@@ -44,40 +42,40 @@ to run the containers (inside the main container)
 9. Clicking on the PORTS tab (in Terminal) You will see 
 
 ![alt text](https://github.com/crochcunill/startup-sample-project-aws-containers-1/blob/Test_1/docs/images/ports.png)
-)
+
 
 Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
 
-10- Connect to http://localhost:4000, you will be able to access the application running on your machine
+10- Connect to http://localhost:4000, you will be able to access the application running on your local machine
 
 
 ### Other Useful Commands (locally, when using Docker-in-Docker)
+The following commands are executed locally inside your main container: Docker in Docker
 
 - If you want to run only one of the containers defined in docker-compose.dev.yml, then type:  
 `docker-compose -f docker-compose.dev.yml up mongodb`
 in this example will only run mongodb container
 
-- Closes all the containers:  
+- Closes all the containers:
 `docker-compose -f docker-compose.dev.yml down`
 
-- Restarts the local development containers (locally inside your container: Docker in Docker):  
+- Restarts the local development containers:
 `docker-compose -f docker-compose.dev.yml restart`
 
 - Tail logs from local development containers:  
 `docker-compose -f docker-compose.dev.yml logs -f`
 
-- Opens a session in the containers (inside the main container):
+- Opens a session in the containers:
 `docker exec -it $(PROJECT)-client sh`  
 `docker exec -it $(PROJECT)-server sh`  
 `docker exec -it $(PROJECT)-mongodb bash`  
-
 
 - Runs scripts in the server container:
 `docker exec -it $(PROJECT)-server npm run db:seed`  
 `docker exec -it $(PROJECT)-server npm run db:migration`  
 `docker exec -it $(PROJECT)-server npm test`  
 
-Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  _./.devcontainer/DockerFile_ you will see that at the end of the file, these variables are set as the container environmetal variables 
+Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  _./.devcontainer/Dockerfile_ you will see that at the end of the file, these variables are set as the container environmetal variables 
 
 
 
@@ -86,9 +84,9 @@ To install the app on the Cloud you will need
 - Access to BCGov-SEA Cloud in AWS
 
 In the forked version of the code, you will need to:
-    replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
-    replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
-    replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
+    - replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
+    - replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
+    - replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
 
 Note: License plate is one of the access keys provided by the Cloud Pathfinder group to allow access to BCGov SEA - AWS
 
@@ -106,7 +104,6 @@ The deployment of the sample containers app to the AQS Cloud uses several steps.
 [startup-sample-project-terraform-modules](https://github.com/bcgov/startup-sample-project-terraform-modules)
 
 and instantiated using `./terraform/terragrunt.hcl` file.
-
 
 
 - Properly speaking, the Terraform scripts will create an infraestructure plan in the Terraform Cloud, and a second script will apply the plan and deploy the planned infraestructure in AWS Cloud.
@@ -134,10 +131,11 @@ The required Secrets are:
 - `AWS_ACCESS_KEY_ID` - credentials for you service account
 - `AWS_SECRET_ACCESS_KEY` - credentials for you service account
 - `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials. Follows the pattern arn:aws:iam::############:role/PBMMOps-BCGOV_sandbox_Project_Role_ecr_read_write where ############ is your AWS account number.
-- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format arn:aws:iam::############:root where ############ is your AWS account number. For exmple
+- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format arn:aws:iam::############:root where ############ is your AWS account number. For exmple: 
 
     AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'
 
+    
 A more target approach is possible, it is not necessary to authorize entire accounts.
 
 - `AWS_ECR_URI` - ECR repository URI. Follows the format ############.dkr.ecr.ca-central-1.amazonaws.com/ssp where ############ is your AWS account number.
