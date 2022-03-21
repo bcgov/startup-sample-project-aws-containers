@@ -12,7 +12,7 @@ It's essentially a fancier "Hello World" app. This demo app is current WIP and n
 
 Welcome to your new project. This is a basic starter project with a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running the application either
 - Locally: it runs in your local machine. It will create a Docker container that will run in any OS (Mac, Linux, Windows), inside this Docker container, there will be other docker containers (Docker-in-Docker) that are the ones that will serve the application
-- On the cloud. It uses Terraform/Terragrunt scripts that allow  "Infrastructure-as-Code". They allow the app to be easily deployed to any public cloud environments. 
+- On the AWS Cloud. It uses Terraform/Terragrunt scripts that allow  "Infrastructure-as-Code". They allow the app to be easily deployed to any public cloud environments. 
 Currently, only AWS is supported, but support for other cloud targets may be added in the future. 
 
 
@@ -30,15 +30,15 @@ In order to develop or run the app locally, you will need:
 ### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
 1. Fork the app repository to your GitHub repository
 2. Clone the repository to your local machine and open it your favorite editor (for example VS Code)
-3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Reopen in Container`
+3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`
 4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
-5. Using the Command Palette again, enter the command `Remote-Containers: Rebuild Container`. It will build and launch the container defined by ./.devcontainer/DockerFile
-6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like 
+5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by ./.devcontainer/DockerFile
+6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like: 
       `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
-7. Type 
+7. Type: 
     `docker-compose -f docker-compose.dev.yml build`
 to build the client, server and mongo containers (inside the main container)
-8. Type
+8. Type:
     `docker-compose -f docker-compose.dev.yml up -d`
 to run the containers (inside the main container)
 9. Clicking on the PORTS tab (in Terminal) You will see 
@@ -77,7 +77,7 @@ in this example will only run mongodb container
 `docker exec -it $(PROJECT)-server npm run db:migration`  
 `docker exec -it $(PROJECT)-server npm test`  
 
-Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  ./.devcontainer/DockerFile you will see that at the end of the file, these variables are set as the container env variables 
+Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  _./.devcontainer/DockerFile_ you will see that at the end of the file, these variables are set as the container environmetal variables 
 
 
 
@@ -85,9 +85,17 @@ Note: The above commands will work when executed from the container defined in _
 To install the app on the Cloud you will need 
 - Access to BCGov-SEA Cloud in AWS
 
+In the forked version of the code, you will need to:
+    replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
+    replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
+    replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
+
+Note: License plate is one of the access keys provided by the Cloud Pathfinder group to allow access to BCGov SEA - AWS
+
+
 ### Deployment overview
 The deployment of the sample containers app to the AQS Cloud uses several steps.
-- Execute a Pull Request to the GitHub repositoy
+- Execute a _Pull Request_ to the GitHub repositoy
 - The PR triggers several GitHub Action workflows in `.github/workflows`. They are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
 
 ![alt text](docs/images/workflows.png "GitHub Action workflows")
@@ -108,7 +116,14 @@ During the deployment process, Terraform script will create in the AWS Cloud an 
 
 Inside this container, three containers are created that will host the client, server and DB components of the app.
 
-### Prerequisites for building in the AWS Cloud
+###Connecting to the client
+You will be able to access the client using the address set for the variable cloudfront_origin_domain in line 17 of _./terraform/dev/terragrunt.hcl_ file. The format is the following:
+    `cloudfront_origin_domain = "startup-sample-project.[license plate-dev].nimbus.cloud.gov.bc.ca"`
+
+[license plate-dev] will take, for example, the following form 'bc1dae-dev'
+
+
+###Prerequisites for building in the AWS Cloud
 This code assumes that you have credentials that allow access to the AWS cloud. These credentials will be used by the Terraform scripts to create the infraestructure in AWS. The credentials are created as part of the project set creation by the CPT team.
 
 Once the project set is created, it will have one or more service accounts associated each of them with different credentials and roles. 
@@ -132,9 +147,8 @@ A more target approach is possible, it is not necessary to authorize entire acco
 
 
 ## License
-
 ```text
-Copyright 2020 Province of British Columbia
+Copyright 2021 Province of British Columbia
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
