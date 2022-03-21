@@ -10,29 +10,46 @@ It's essentially a fancier "Hello World" app. This demo app is current WIP and n
 
 ## Introduction
 
-Welcome to your new project. This is a basic starter project with a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running locally, as well as "Infrastructure-as-Code" using Terraform/Terragrunt to allow the app to be easily deployed to public cloud environments. Currently, AWS is supported, but support for other cloud targets may be added in the future.
+Welcome to your new project. This is a basic starter project with a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running the application either
+- Locally: it runs in your local machine. It will create a Docker container that will run in any OS (Mac, Linux, Windows), inside this Docker container, there will be other docker containers (Docker-in-Docker) that are the ones that will serve the application
+- On the cloud. It uses Terraform/Terragrunt scripts that allow  "Infrastructure-as-Code". They allow the app to be easily deployed to any public cloud environments. 
+Currently, only AWS is supported, but support for other cloud targets may be added in the future. 
 
-## Prerequisites
+
+
+## Build Locally
+### Prerequisites for building locally
 
 In order to develop or run the app locally, you will need:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Microsoft Visual Studio Code](https://code.visualstudio.com/)
 
-### Launch DevContainer
-1. Open cloned repository in Visual Studio Code
-2. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Reopen in Container`
-3. Once open, use Open and Build in Devcontainer
-3. Use `docker-compose` commands presented in the next section to build and run local development containers.  
+To install the app on the Cloud you will need 
+- Access to BCGov-SEA Cloud in AWS
 
 
-### Build and Run Locally using Docker in Docker
-In the previous section (Launch DevContainer) the container defined by ./.devcontainer/DockerFile has been created and started. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_) in this second project, start a terminal session and run the following commands (notice the commands will run in the container, not in your machine)
+### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
+1. Fork the app repository to your GitHub repository
+2- Clone the repository to your local machine and open it your favorite editor (for example VS Code)
+3- Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Reopen in Container`
+4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
+5. Using the Command Palette again, enter the command `Remote-Containers: Rebuild Container`. It will build and launch the container defined by ./.devcontainer/DockerFile
+6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like 
+      _vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $_ 
+7. Type 
+    `docker-compose -f docker-compose.dev.yml build`
+to build the client, server and mongo containers (inside the main container)
+8. Type
+    `docker-compose -f docker-compose.dev.yml up -d`
+to run the containers (inside the main container)
+9. Clicking on the PORTS tab (in Terminal) You will see 
 
-- Builds the containers (locally inside your container: Docker in Docker):  
-`docker-compose -f docker-compose.dev.yml build`
+![alt text](https://github.com/crochcunill/startup-sample-project-aws-containers-1/blob/main/docs/images/ports.png?raw=true)
 
-- Runs the local development containers:  
-`docker-compose -f docker-compose.dev.yml up -d`
+10- Connect to http://localhost:4000, you will be able to access the application running on your machine
+
+
+### Other Useful Commands (locally, when using Docker-in-Docker)
 
 - If you want to run only one of the containers defined in docker-compose.dev.yml, then type:  
 `docker-compose -f docker-compose.dev.yml up mongodb`
@@ -47,67 +64,68 @@ in this example will only run mongodb container
 - Tail logs from local development containers:  
 `docker-compose -f docker-compose.dev.yml logs -f`
 
-### Other Useful Commands
+- Opens a session in the containers (inside the main container)
 
-- `docker exec -it $(PROJECT)-client sh`  
-- `docker exec -it $(PROJECT)-server sh`  
-- `docker exec -it $(PROJECT)-mongodb bash`  
-- `docker exec -it $(PROJECT)-server npm run db:seed`  
-- `docker exec -it $(PROJECT)-server npm run db:migration`  
-- `docker exec -it $(PROJECT)-server npm test`  
+`docker exec -it $(PROJECT)-client sh`  
+`docker exec -it $(PROJECT)-server sh`  
+`docker exec -it $(PROJECT)-mongodb bash`  
+
+
+- Runs scripts in the server container
+`docker exec -it $(PROJECT)-server npm run db:seed`  
+`docker exec -it $(PROJECT)-server npm run db:migration`  
+`docker exec -it $(PROJECT)-server npm test`  
 
 Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  ./.devcontainer/DockerFile you will see that at the end of the file, these variables are set as the container env variables 
-## AWS Credentials
 
-This code assumes that the Terraform Cloud workspaces are pre-populated wth AWS credential environment variables. The workspaces and credentials are automatically created as part of the project provisioning. These credentials are used for creating all resources with terraform.
 
-Additional service account iam users and credentials can be created upon request for performing limited actions like pushing to ECR from a CI/CD. This project uses one of those service accounts to push images to ECR in the sandbox account.
 
-When an additional service account is requested the following values will be provided:
+## Deploy on the Cloud
 
-- `AWS_ACCESS_KEY_ID` - credentials for you service account
-- `AWS_SECRET_ACCESS_KEY` - credentials for you service account
-- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials
 
-## AWS Elastic Container Registry (ECR)
 
-This project creates an ECR repository in the sandbox account and authorizes read access from other AWS accounts. This is useful for deploying to ECS.
-
-The GitHub secret `AWS_ACCOUNTS_ECR_READ_ACCESS` is used by the ECR terraform module to authorize the read access from the other AWS accounts.
-
-The following GitHub secret value would allow the dev, test, and prod accounts to read from ECS in the sandbox account:
-
-`AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'`
-
-A more target approach is possible, it is not necessary to authorize entire accounts.
-
-## GitHub Actions (CI/CD)
-
-### Required Secrets
-
-- `AWS_ACCESS_KEY_ID` - credentials for you service account
-- `AWS_SECRET_ACCESS_KEY` - credentials for you service account
-- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials
-- `AWS_ACCOUNTS_ECR_READ_ACCESS` - list of aws principals to grant read access
-- `AWS_ECR_URI` - ECR repository URI
-- `AWS_REGION` - should be `ca-central-1`
-- `TFC_TEAM_TOKEN` - Terraform Cloud team token with access to Terraform workspaces used to deploy the app and infrastructure to AWS.
-
-### Workflows
-
-GitHub Action workflows in `.github/workflows` are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
+### Deployment overview
+The deployment of the sample containers app to the cloud uses several steps.
+- Execute a Pull Request to the GitHub repositoy
+- The PR triggers several GitHub Action workflows in `.github/workflows`. They are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
 
 ![alt text](docs/images/workflows.png "GitHub Action workflows")
 
-## Cloud Deployment
 
-Terraform and Terragrunt are used to deploy the application to AWS.
-
-### Terraform App Module
-
-The infrastructure for the app is defined in the terraform module linked below and instantiated using Terragrunt (config is in the `terraform/` folder).
+- The Actions will deploy the infraestructure for the app by invoking Terraform scripts. They are defined in the terraform module linked below and instantiated using Terragrunt (config is in the `./terraform/terragrunt.hcl` file).
 
 [startup-sample-project-terraform-modules](https://github.com/bcgov/startup-sample-project-terraform-modules)
+
+
+- Properly speaking, the Terraform scripts will  will create an infraestructure plan in the Terraform Cloud, and a second script will apply the plan and deploy the planned infraestructure in AWS Cloud.
+
+
+In the deployment, the terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts. This is useful for deploying to ECS.
+
+Inside this container, three containers are created that will host the client, server and DB components of the app.
+
+### Prerequisites for building in the AWS Cloud
+This code assumes that you have credentials that allow access to the AWS cloud. These credentials will be used by the Terraform scripts to create the infraestructure in AWS. The credentials are created as part of the project set creation by the CPT team.
+
+Once the project set is created, it will have one or more service accounts associated each of them with different credentials and roles. 
+
+These credentials, necessary to access AWS Cloud, are send to Terraform cloud by the GitHub Actions. The values themselves are stored as GitHub _Secrets_
+
+The required Secrets are:
+- `AWS_ACCESS_KEY_ID` - credentials for you service account
+- `AWS_SECRET_ACCESS_KEY` - credentials for you service account
+- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials. Follows the pattern arn:aws:iam::############:role/PBMMOps-BCGOV_sandbox_Project_Role_ecr_read_write where ############ is your AWS account number.
+- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format arn:aws:iam::############:root where ############ is your AWS account number. For exmple
+
+    AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'
+
+A more target approach is possible, it is not necessary to authorize entire accounts.
+
+- `AWS_ECR_URI` - ECR repository URI. Follows the format ############.dkr.ecr.ca-central-1.amazonaws.com/ssp where ############ is your AWS account number.
+- `AWS_REGION` - should be `ca-central-1`
+- `TFC_TEAM_TOKEN` - Terraform Cloud team token with access to Terraform workspaces used to deploy the app and infrastructure to AWS.
+
+
 
 ## License
 
