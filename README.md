@@ -117,11 +117,11 @@ Inside this container, three containers are created that will host the client, s
 You will be able to access the client using the address set for the variable cloudfront_origin_domain in line 17 of _./terraform/dev/terragrunt.hcl_ file. The format is the following:
     `cloudfront_origin_domain = "startup-sample-project.[license plate-dev].nimbus.cloud.gov.bc.ca"`
 
-[license plate-dev] will take, for example, the following form 'bc1dae-dev'
+[license plate-dev] will take, for example, the following form `bc1dae-dev`
 
 
 ### Prerequisites for building in the AWS Cloud
-This code assumes that you have credentials that allow access to the AWS cloud. These credentials will be used by the Terraform scripts to create the infraestructure in AWS. The credentials are created as part of the project set creation by the CPT team.
+This code assumes that you have credentials that allow access to the AWS Cloud. These credentials will be used by the Terraform scripts to create the infraestructure in AWS. The credentials are created as part of the project set creation by the Cloud Pathfinder team.
 
 Once the project set is created, it will have one or more service accounts associated each of them with different credentials and roles. 
 
@@ -130,15 +130,15 @@ These credentials, necessary to access AWS Cloud, are send to Terraform cloud by
 The required Secrets are:
 - `AWS_ACCESS_KEY_ID` - credentials for you service account
 - `AWS_SECRET_ACCESS_KEY` - credentials for you service account
-- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials. Follows the pattern arn:aws:iam::############:role/PBMMOps-BCGOV_sandbox_Project_Role_ecr_read_write where ############ is your AWS account number.
-- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format arn:aws:iam::############:root where ############ is your AWS account number. For exmple: 
+- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials. Follows the pattern `arn:aws:iam::############:role/PBMMOps-BCGOV_sandbox_Project_Role_ecr_read_write` where `############` is your AWS account number.
+- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format `arn:aws:iam::############:root` where `############` is your AWS account number. For exmple: 
 
     AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'
 
     
 A more target approach is possible, it is not necessary to authorize entire accounts.
 
-- `AWS_ECR_URI` - ECR repository URI. Follows the format ############.dkr.ecr.ca-central-1.amazonaws.com/ssp where ############ is your AWS account number.
+- `AWS_ECR_URI` - ECR repository URI. Follows the format `############.dkr.ecr.ca-central-1.amazonaws.com/ssp` where `############` is your AWS account number.
 - `AWS_REGION` - should be `ca-central-1`
 - `TFC_TEAM_TOKEN` - Terraform Cloud team token with access to Terraform workspaces used to deploy the app and infrastructure to AWS.
 
