@@ -24,18 +24,17 @@ In order to develop or run the app locally, you will need:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Microsoft Visual Studio Code](https://code.visualstudio.com/)
 
-To install the app on the Cloud you will need 
-- Access to BCGov-SEA Cloud in AWS
+
 
 
 ### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
 1. Fork the app repository to your GitHub repository
-2- Clone the repository to your local machine and open it your favorite editor (for example VS Code)
-3- Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Reopen in Container`
+2. Clone the repository to your local machine and open it your favorite editor (for example VS Code)
+3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Reopen in Container`
 4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
 5. Using the Command Palette again, enter the command `Remote-Containers: Rebuild Container`. It will build and launch the container defined by ./.devcontainer/DockerFile
 6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like 
-      _vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $_ 
+      `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
 7. Type 
     `docker-compose -f docker-compose.dev.yml build`
 to build the client, server and mongo containers (inside the main container)
@@ -44,7 +43,10 @@ to build the client, server and mongo containers (inside the main container)
 to run the containers (inside the main container)
 9. Clicking on the PORTS tab (in Terminal) You will see 
 
-![alt text](https://github.com/crochcunill/startup-sample-project-aws-containers-1/blob/main/docs/images/ports.png?raw=true)
+![alt text](https://github.com/crochcunill/startup-sample-project-aws-containers-1/blob/Test_1/docs/images/ports.png)
+)
+
+Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
 
 10- Connect to http://localhost:4000, you will be able to access the application running on your machine
 
@@ -64,14 +66,13 @@ in this example will only run mongodb container
 - Tail logs from local development containers:  
 `docker-compose -f docker-compose.dev.yml logs -f`
 
-- Opens a session in the containers (inside the main container)
-
+- Opens a session in the containers (inside the main container):
 `docker exec -it $(PROJECT)-client sh`  
 `docker exec -it $(PROJECT)-server sh`  
 `docker exec -it $(PROJECT)-mongodb bash`  
 
 
-- Runs scripts in the server container
+- Runs scripts in the server container:
 `docker exec -it $(PROJECT)-server npm run db:seed`  
 `docker exec -it $(PROJECT)-server npm run db:migration`  
 `docker exec -it $(PROJECT)-server npm test`  
@@ -80,27 +81,30 @@ Note: The above commands will work when executed from the container defined in _
 
 
 
-## Deploy on the Cloud
-
-
+## Deploy on the AWS Cloud
+To install the app on the Cloud you will need 
+- Access to BCGov-SEA Cloud in AWS
 
 ### Deployment overview
-The deployment of the sample containers app to the cloud uses several steps.
+The deployment of the sample containers app to the AQS Cloud uses several steps.
 - Execute a Pull Request to the GitHub repositoy
 - The PR triggers several GitHub Action workflows in `.github/workflows`. They are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
 
 ![alt text](docs/images/workflows.png "GitHub Action workflows")
 
 
-- The Actions will deploy the infraestructure for the app by invoking Terraform scripts. They are defined in the terraform module linked below and instantiated using Terragrunt (config is in the `./terraform/terragrunt.hcl` file).
+- The Actions will run Terraform scripts that will deploy the infraestructure for the app. This infraestructure is defined in the terraform module linked below
 
 [startup-sample-project-terraform-modules](https://github.com/bcgov/startup-sample-project-terraform-modules)
 
+and instantiated using `./terraform/terragrunt.hcl` file.
 
-- Properly speaking, the Terraform scripts will  will create an infraestructure plan in the Terraform Cloud, and a second script will apply the plan and deploy the planned infraestructure in AWS Cloud.
 
 
-In the deployment, the terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts. This is useful for deploying to ECS.
+- Properly speaking, the Terraform scripts will create an infraestructure plan in the Terraform Cloud, and a second script will apply the plan and deploy the planned infraestructure in AWS Cloud.
+
+
+During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
 
 Inside this container, three containers are created that will host the client, server and DB components of the app.
 
