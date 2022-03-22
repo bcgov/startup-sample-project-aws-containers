@@ -16,11 +16,10 @@ Welcome to your new project. This is a basic starter project with a NodeJS app c
 Currently, only AWS is supported, but support for other cloud targets may be added in the future. 
 
 
-
 ## Build Locally
 ### Prerequisites for building locally
 
-In order to develop or run the app locally, you will need:
+In order to develop or run the app locally, you will need the following:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Microsoft Visual Studio Code](https://code.visualstudio.com/)
 
