@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 const Summary = () => {
   return (
     <Fragment>
-      <Typography variant="h2" color="primary" gutterBottom>
+      <Typography variant="h2" color="primary" gutterBottom id="pageHeader">
         Simple Demo App
       </Typography>
       <Typography variant="body1" paragraph>

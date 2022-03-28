@@ -26,13 +26,14 @@ console.log(values)
 
         {/** Title */}
         <Grid item xs={12}>
-          <Typography variant="subtitle1">Select your favorite greeting (or) Upload an Image</Typography>
+          <Typography variant="subtitle1"  id="selectFavoriteHeader">Select your favorite greeting (or) Upload an Image</Typography>
           <Divider />
         </Grid>
 
         {/** Greeting */}
         <Grid item xs={12} md={6}>
           <Field
+            id="greetingDropdown"
             name="greeting"
             component={RenderSelectField}
             label="* Favorite Greeting"
@@ -62,6 +63,7 @@ console.log(values)
           <Grid container justify="center">
             <Grid item xs={8}>
               <Button
+                id="submitButtonGreeter_js"
                 type="submit"
                 loading={submitLoading}
                 disabled={localFile===null && values.greeting === ''}  

@@ -35,7 +35,7 @@ export default ({ location: { state } }) => {
             </Grid>
           ) : <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
             <Box margin="2rem 0" pt={8}>
-              <Typography variant="h2">
+              <Typography variant="h2" id="selectedGreeting">
                 {greeting || 'Image Uploaded Successfully'}!
               </Typography>
             </Box>
@@ -44,6 +44,7 @@ export default ({ location: { state } }) => {
         <Grid item xs={12} sm={12} md={10} lg={8} xl={8} container justify="center">
           <Grid item xs={4}>
             <Button
+              id="submitButtonConfirmation_js"
               type="submit"
               disabled={false}
               size="large"

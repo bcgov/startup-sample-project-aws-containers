@@ -40,7 +40,9 @@ to build the client, server and mongo containers (inside the main container)
 to run the containers (inside the main container)
 9. Clicking on the PORTS tab (in Terminal) You will see 
 
+
 ![alt text](https://github.com/bcgov/startup-sample-project-aws-containers-1/blob/main/docs/images/ports.png)
+
 
 
 Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
