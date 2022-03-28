@@ -18,7 +18,7 @@ env:
 
 jobs:
   ci:
-    name: ci_crc
+    name: ci
     runs-on: ubuntu-20.04
 
     steps:
