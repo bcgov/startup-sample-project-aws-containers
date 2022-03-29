@@ -22,10 +22,15 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-    - name: Install Brew and Chrome
+    - name: Install Brew
+      run: |
+           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    - name: Install Cask
       run: |
            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
            brew install cask
+    - name: Install Chrome
+      run: |
            brew install --cask google-chrome
     - name: Run the test
       run: |
