@@ -34,3 +34,11 @@ jobs:
           cd functional-tests
           ./gradlew chromeHeadlessTest --tests="FirstTest"
 
+    - name: Install email
+      run: |
+        sudo apt-get install mailutils
+        
+    - name: Send email
+      run: |
+          echo "Message Body Here" | mail -s "Subject Here" carle.roch-cunill@bc.gov.ca
+        sudo apt-get install mailutils
