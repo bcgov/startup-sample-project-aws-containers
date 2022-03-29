@@ -40,5 +40,6 @@ jobs:
         
     - name: Send email
       run: |
-          echo "Message Body Here" | mail -s "Subject Here" carles.roch-cunill@bc.gov.ca
+          ls ./functional-tests/build/reports
+          echo "Message Body Here" | mail -s "Subject Here" crochcunill@gmail.com
 
