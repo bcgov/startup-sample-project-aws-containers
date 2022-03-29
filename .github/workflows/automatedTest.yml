@@ -24,5 +24,8 @@ jobs:
         distribution: 'temurin'
     - name: Run the test
       run: |
+          sudo apt-get install libxss1 libappindicator1 libindicator7
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install ./google-chrome*.deb
           cd functional-tests
           ./gradlew chromeTest --tests="FirstTest"
