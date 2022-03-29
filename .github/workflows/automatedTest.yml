@@ -32,7 +32,7 @@ jobs:
     - name: Install Chrome
       run: |
            brew search chrome
-           brew install --cask google-chrome
+           brew install --cask google-chrome-dev
     - name: Run the test
       run: |
           pwd
