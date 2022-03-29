@@ -22,10 +22,12 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: Install Brew and Chrome
+      run: |
+           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+           brew install brew-cask
+           brew cask install google-chrome
     - name: Run the test
       run: |
-          sudo apt-get install libxss1 libappindicator1 libindicator7
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt install ./google-chrome*.deb
           cd functional-tests
           ./gradlew chromeTest --tests="FirstTest"
