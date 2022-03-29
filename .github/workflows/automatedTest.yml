@@ -31,8 +31,10 @@ jobs:
            brew install cask
     - name: Install Chrome
       run: |
+           brew search chrome
            brew install --cask google-chrome
     - name: Run the test
       run: |
+          pwd
           cd functional-tests
           ./gradlew chromeTest --tests="FirstTest"
