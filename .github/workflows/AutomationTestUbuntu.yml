@@ -32,5 +32,5 @@ jobs:
       run: |
           pwd
           cd functional-tests
-          ./gradlew chromeTest --tests="FirstTest"
+          ./gradlew chromeHeadlessTest --tests="FirstTest"
 
