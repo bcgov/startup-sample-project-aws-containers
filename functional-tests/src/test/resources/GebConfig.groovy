@@ -4,6 +4,7 @@
 	See: http://www.gebish.org/manual/current/#configuration
 */
 
+
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
@@ -26,7 +27,9 @@ environments {
 	// run via “./gradlew chromeTest”
 	// See: https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver
 	chrome {
-				driver = { 
+
+		driver = { 
+
 			//	def capabilities = org.openqa.selenium.remote.DesiredCapabilities.chrome()	
 			//	capabilities.setCapability("PageLoadStrategy","normal")
 			ChromeOptions o = new ChromeOptions()
@@ -35,6 +38,10 @@ environments {
 			o.addArguments('--allow-insecure-localhost')	
 			o.setExperimentalOption('useAutomationExtension', false)
 			o.addArguments('--safebrowsing-disable-download-protection')
+
+			o.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+
+
 
 			Map<String, Object> prefs = new HashMap<String, Object>()
 			prefs.put('download.default_directory', downloadDir)

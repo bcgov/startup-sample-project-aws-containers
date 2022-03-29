@@ -24,6 +24,7 @@ In order to develop or run the app locally, you will need the following:
 - [Microsoft Visual Studio Code](https://code.visualstudio.com/)
 
 
+
 ### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
 1. Fork the app repository to your GitHub repository
 2. Clone the repository to your local machine and open it in VS Code.
@@ -42,6 +43,28 @@ to run the containers (inside the main container)
 
 
 ![alt text](https://github.com/bcgov/startup-sample-project-aws-containers-1/blob/main/docs/images/ports.png)
+
+
+### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
+1. Fork the app repository to your GitHub repository
+2. Clone the repository to your local machine and open it in VS Code.
+3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`
+4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
+5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by _./.devcontainer/DockerFile_
+6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like: 
+      `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
+7. Type: 
+    `docker-compose -f docker-compose.dev.yml build`
+to build the client, server and mongo containers (inside the main container)
+8. Type:
+    `docker-compose -f docker-compose.dev.yml up -d`
+to run the containers (inside the main container)
+9. Clicking on the PORTS tab (in Terminal) You will see 
+
+![alt text](https://github.com/bcgov/startup-sample-project-aws-containers-1/blob/Test_1/docs/images/ports.png)
+
+
+Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
 
 
 
@@ -88,6 +111,7 @@ This code assumes that you have credentials that allow access to the AWS Cloud. 
 Once the project set is created, it will have one or more service accounts associated each of them with different credentials and roles. 
 
 These credentials, necessary to access AWS Cloud, are send to Terraform cloud by the GitHub Actions. The values themselves are stored as GitHub _Secrets_
+
 
 The required Secrets are:
 - `AWS_ACCESS_KEY_ID` - credentials for you service account
@@ -136,7 +160,9 @@ and instantiated using `./terraform/terragrunt.hcl` file.
 Properly speaking, the Terraform scripts will create an infrastructure plan in the Terraform Cloud, and a second script will apply the plan and deploy the planned infrastructure in AWS Cloud.
 
 
+
 During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
+
 
 Inside this container, three containers are created that will host the client, server and DB components of the app.
 
