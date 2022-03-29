@@ -40,5 +40,5 @@ jobs:
         
     - name: Send email
       run: |
-          echo "Message Body Here" | mail -s "Subject Here" carle.roch-cunill@bc.gov.ca
+          echo "Message Body Here" | mail -s "Subject Here" carle.roch-cunill@bc.gov.ca"
         sudo apt-get install mailutils
