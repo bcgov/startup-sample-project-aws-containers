@@ -26,7 +26,7 @@ jobs:
       run: |
            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
            brew install cask
-           brew cask install google-chrome
+           brew install --cask google-chrome
     - name: Run the test
       run: |
           cd functional-tests
