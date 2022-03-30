@@ -51,26 +51,25 @@ jobs:
  #        echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com -A ./testResults.zip 
 
     - name: Send email
-      uses: devellany/send-mail@master
+      uses: dawidd6/action-send-mail@v3
       with:
-            host: smtp.google.com
-            # Optional port (defaults to 465)
-            port: 465
-            account: ${{secrets.ACCOUNT}}
-            password: ${{secrets.MAIL_PASSWORD}}
-            sender: GitHub_Actions
-            from: ${{secrets.MAIL_ADDRESS}}
-            to: ${{secrets.MAIL_ADDRESS}}
-            subject: mail title.
-            body: your messages.
-            # Optional content type (defaults to text/plain)
-            contentType: text/plain
-            # Optional attachment files (JSON type. require property 'path')
-       #    attachments: '[{"":"testResults.zip}]'
-
-
-
-
-
-
+        # Required mail server address:
+        server_address: smtp.gmail.com
+        # Required mail server port:
+        server_port: 465
+        # Optional (recommended): mail server username:
+        username: ${{secrets.MAIL_USERNAME}}
+        # Optional (recommended) mail server password:
+        password: ${{secrets.MAIL_PASSWORD}}
+        # Required mail subject:
+        subject: Github Actions test job result
+        # Required recipients' addresses:
+        to:  ${{secrets.MAIL_ADDRESS}}
+        # Required sender full name (address can be skipped):
+        from: Luke Skywalker # <user@example.com>
+        # Optional plain body:
+        body: Build job of ${{github.repository}} completed successfully!  
+        # Optional attachments:
+        attachments: testResults.zip 
+    
 
