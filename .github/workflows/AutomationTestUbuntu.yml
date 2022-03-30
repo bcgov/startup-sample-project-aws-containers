@@ -47,4 +47,4 @@ jobs:
       run: |
           ls -la
           echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com
-          mail -s "Automated test results" -t crochcunill@gmail.com -A testResults.zip < "From the mail line"
+          mail -s "Automated test results" -t crochcunill@gmail.com -A ./testResults.zip < "From the mail line"
