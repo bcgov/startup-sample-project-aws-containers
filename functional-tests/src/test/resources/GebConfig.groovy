@@ -121,7 +121,7 @@ def env = System.getenv()
 baseUrl = env['BASEURL']
 
 if (!baseUrl) {
-	baseUrl = "https://startup-sample-project.${{ secrets.LICENSE_PLATE }}-dev.nimbus.cloud.gov.bc.ca/"
+	baseUrl = "https://startup-sample-project."${{ secrets.LICENSE_PLATE }}"-dev.nimbus.cloud.gov.bc.ca/"
    //  baseUrl = "http://localhost:4000/"
 }
 
