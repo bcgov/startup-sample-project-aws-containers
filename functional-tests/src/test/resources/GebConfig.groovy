@@ -119,8 +119,9 @@ baseNavigatorWaiting = true
 // This is particularly handy for development and the pipeline
 def env = System.getenv()
 baseUrl = env['BASEURL']
+
 if (!baseUrl) {
-	baseUrl = "https://startup-sample-project.td5cou-dev.nimbus.cloud.gov.bc.ca/"
+	baseUrl = "https://startup-sample-project.${{ secrets.LICENSE_PLATE }}-dev.nimbus.cloud.gov.bc.ca/"
    //  baseUrl = "http://localhost:4000/"
 }
 
