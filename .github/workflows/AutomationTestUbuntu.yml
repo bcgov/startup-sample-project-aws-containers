@@ -5,8 +5,6 @@ name: Run Automated test Ubuntu
 
 on:
     workflow_dispatch:
-
-
     
 jobs:
   build:
@@ -38,17 +36,12 @@ jobs:
           cd functional-tests
           ./gradlew chromeHeadlessTest --tests="FirstTest"
           
-    - name: Zip the reports folderRun the test
-      run: |
-          ls -la ./functional-tests/build/reports/spock
-          zip -r testResults.zip ./functional-tests/build/reports
-          ls -la
     - name: Install email
       run: |
         sudo apt-get install mailutils
         
-    - name: Send email
+    - name: Zip results folder and Send email
       run: |
-          ls ./testResults.zip
+          zip -r testResults.zip ./functional-tests/build/reports
           mail -s "Automated test results" -t crochcunill@gmail.com -A ./testResults.zip < "From the mail line"
           echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com
