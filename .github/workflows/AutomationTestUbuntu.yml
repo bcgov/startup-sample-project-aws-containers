@@ -45,6 +45,6 @@ jobs:
         
     - name: Send email
       run: |
-          ls ./functional-tests/build/reports
+          ls -la
           echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com
-          mail -s "Automated test results" -t crochcunill@gmail.com -A backup.zip < "From the mail line"
+          mail -s "Automated test results" -t crochcunill@gmail.com -A testResults.zip < "From the mail line"
