@@ -41,11 +41,36 @@ jobs:
           cd functional-tests
           ./gradlew chromeHeadlessTest --tests="FirstTest"
           
-    - name: Install email
-      run: |
-        sudo apt-get install mailutils
+ #   - name: Install email
+ #     run: |
+ #       sudo apt-get install mailutils
         
-    - name: Zip results folder and Send email
+    - name: Zip results folder
       run: |
           zip -r testResults.zip ./functional-tests/build/reports
-          echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com -A ./testResults.zip 
+ #        echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com -A ./testResults.zip 
+
+    - name: Send email
+      uses: devellany/send-mailer@v1.0.2
+      with:
+            host: smtp.google.com
+            # Optional port (defaults to 465)
+            port: 465
+            account: ${{secrets.ACCOUNT}}
+            password: ${{secrets.MAIL_PASSWORD}}
+            sender: GitHub_Actions
+            from: ${{secrets.MAIL_ADDRESS}}
+            to: ${{secrets.MAIL_ADDRESS}}
+            subject: mail title.
+            body: your messages.
+            # Optional content type (defaults to text/plain)
+            contentType: text/plain
+            # Optional attachment files (JSON type. require property 'path')
+            attachments: '[{"":"testResults.zip}]'
+
+
+
+
+
+
+
