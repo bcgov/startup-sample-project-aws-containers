@@ -33,7 +33,11 @@ jobs:
           pwd
           cd functional-tests
           ./gradlew chromeHeadlessTest --tests="FirstTest"
-
+          
+    - name: Zip the reports folderRun the test
+      run: |
+          zip -r testResults.zip ./build/reports
+          ls -la
     - name: Install email
       run: |
         sudo apt-get install mailutils
@@ -41,5 +45,5 @@ jobs:
     - name: Send email
       run: |
           ls ./functional-tests/build/reports
-          echo "Message Body Here" | mail -s "Subject Here" crochcunill@gmail.com
-
+          echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com
+          mail -s "Automated test results" -t crochcunill@gmail.com -A backup.zip < "From the mail line"
