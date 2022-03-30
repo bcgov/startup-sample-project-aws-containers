@@ -5,7 +5,7 @@ name: Run Automated test Ubuntu
 
 env:
       LICENSE_PLATE: ${{ secrets.LICENSE_PLATE }}
-      BASEURL: https://startup-sample-project.${{env.LICENSE_PLATE}}-dev.nimbus.cloud.gov.bc.ca/"
+      BASEURL: "https://startup-sample-project.${{env.LICENSE_PLATE}}-dev.nimbus.cloud.gov.bc.ca/"
    
       
 on:
