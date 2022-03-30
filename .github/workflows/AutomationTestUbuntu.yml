@@ -66,7 +66,7 @@ jobs:
             # Optional content type (defaults to text/plain)
             contentType: text/plain
             # Optional attachment files (JSON type. require property 'path')
-            attachments: '[{"":"testResults.zip}]'
+       #    attachments: '[{"":"testResults.zip}]'
 
 
 
