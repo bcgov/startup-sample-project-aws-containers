@@ -51,7 +51,7 @@ jobs:
  #        echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com -A ./testResults.zip 
 
     - name: Send email
-      uses: devellany/send-mailer@v1.0.2
+      uses: devellany/send-mail@master
       with:
             host: smtp.google.com
             # Optional port (defaults to 465)
