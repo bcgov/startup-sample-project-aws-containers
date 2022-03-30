@@ -37,7 +37,7 @@ jobs:
     - name: Zip the reports folderRun the test
       run: |
           ls -la
-          zip -r testResults.zip . -i ./build/reports
+          zip -r testResults.zip . -i ./functional-tests/build/reports
           ls -la
     - name: Install email
       run: |
