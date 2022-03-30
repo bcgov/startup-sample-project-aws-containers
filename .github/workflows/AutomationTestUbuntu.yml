@@ -6,6 +6,8 @@ name: Run Automated test Ubuntu
 on:
     workflow_dispatch:
 
+
+    
 jobs:
   build:
 
@@ -28,7 +30,9 @@ jobs:
       run: |
            sudo apt-get update 
            sudo apt-get install google-chrome-stable
+           
     - name: Run the test
+      continue-on-error: true
       run: |
           pwd
           cd functional-tests
