@@ -5,7 +5,7 @@ name: Run Automated test Ubuntu
 
 env:
       LICENSE_PLATE: ${{ secrets.LICENSE_PLATE }}
-
+      BASEURL: https://startup-sample-project.${LICENSE_PLATE}-dev.nimbus.cloud.gov.bc.ca/"
 on:
     workflow_dispatch:
     
@@ -35,7 +35,7 @@ jobs:
     - name: Run the test
       continue-on-error: true
       run: |
-          pwd
+          echo $BASEURL
           cd functional-tests
           ./gradlew chromeHeadlessTest --tests="FirstTest"
           
