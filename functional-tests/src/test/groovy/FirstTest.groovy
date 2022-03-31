@@ -34,7 +34,7 @@ class FirstTest extends GebReportingSpec {
        assert waitFor{(MyGreeting.text().contains(testGreeting))}
 
     and: "Return to the Entry page by clicking the Confirmation button"
-        SubmitButton.click()
+    waitFor{SubmitButton.click()}
 
     then: "Confirm we have arrived to the Entry page and confirm the current greeting and the previous one have been saved and it is displayed"    
         assert(waitFor{at EntryPage})
