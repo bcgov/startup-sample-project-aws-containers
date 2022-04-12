@@ -4,9 +4,7 @@
 name: Run Automated test Ubuntu
 
 env:
-      LICENSE_PLATE: ${{ secrets.LICENSE_PLATE }}
-      BASEURL: https://startup-sample-project.${{ secrets.LICENSE_PLATE }}-dev.nimbus.cloud.gov.bc.ca/
-   
+      LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}   
       
 on:
     workflow_dispatch:
