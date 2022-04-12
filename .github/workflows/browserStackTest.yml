@@ -1,4 +1,9 @@
-name: 'BrowserStack Test'
+
+name: BrowserStack Test
+
+env:  
+     LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+
 
 on: 
   workflow_dispatch:
@@ -6,7 +11,8 @@ on:
 
 jobs:
   ubuntu-job:
-    name: 'BrowserStack Test on Ubuntu'
+
+    name: BrowserStack Test on Ubuntu
     runs-on: ubuntu-latest 
     
     steps:
@@ -16,9 +22,9 @@ jobs:
         with:
           username:  ${{ secrets.BROWSERSTACK_USERNAME }}
           access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          build-name: 'BUILD_INFO_BrowserStack_TEST'
-          project-name: 'CONTAINERS_APP_browserStack_TEST'
-
+          build-name: ${{github.run_number}}
+          project-name: ${{ github.repository }}
+   
       - name: BrowserStack Local Tunnel Setup  # Invokes the setup-local action
         uses: browserstack/github-actions/setup-local@master
         with:
@@ -28,7 +34,7 @@ jobs:
 
 # The next 3 steps are for building the web application to be tested and starting the web server on the runner environment
 
-      - name: 'Checkout the repository'
+      - name: Checkout the repository
         uses: actions/checkout@v3
   
       - name: Set up JDK 11
@@ -42,6 +48,7 @@ jobs:
       - name: Set repo
         run: |
             echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
       - name: Install Chrome
         run: |
            sudo apt-get update 
@@ -50,11 +57,10 @@ jobs:
       - name: Run the test
         continue-on-error: true
         run: |
-          echo $BASEURL
           cd functional-tests
-          ./gradlew chromeHeadlessTest --tests="FirstTest"
+          ./gradlew remoteChromeTest --tests="FirstTest"
           
-        
+
       - name: Zip results folder
         run: |
           zip -r testResults.zip ./functional-tests/build/reports
@@ -62,26 +68,28 @@ jobs:
       - name: Send email
         uses: dawidd6/action-send-mail@v3
         with:
-          # Required mail server address:
-          server_address: ${{secrets.MAIL_SERVER}}
-          # Required mail server port:
-          server_port: 465
-          # Optional (recommended): mail server username:
-          username: ${{secrets.MAIL_USERNAME}}
-          # Optional (recommended) mail server password:
-          password: ${{secrets.MAIL_PASSWORD}}
-          # Required mail subject:
-          subject: Github Actions test job result
-          # Required recipients' addresses:
-          to:  ${{secrets.MAIL_ADDRESS}}
-          # Required sender full name (address can be skipped):
-          from: ${{secrets.MAIL_USERNAME}}
-          # Optional plain body:
-          body: Build job of ${{github.repository}} completed successfully!  
-          # Optional attachments:
-          attachments: testResults.zip 
+
+           # Required mail server address:
+           server_address: ${{secrets.MAIL_SERVER}}
+           # Required mail server port:
+           server_port: 465
+           # Optional (recommended): mail server username:
+           username: ${{secrets.MAIL_USERNAME}}
+           # Optional (recommended) mail server password:
+           password: ${{secrets.MAIL_PASSWORD}}
+           # Required mail subject:
+           subject: Github Actions test job result
+           # Required recipients' addresses:
+           to:  ${{secrets.MAIL_ADDRESS}}
+           # Required sender full name (address can be skipped):
+           from: ${{secrets.MAIL_USERNAME}}
+           # Optional plain body:
+           body: Build job of ${{github.repository}} completed successfully!  
+           # Optional attachments:
+           attachments: testResults.zip 
     
-      - name: 'BrowserStackLocal Stop'  # Terminating the BrowserStackLocal tunnel connection
+      - name: BrowserStackLocal Stop  # Terminating the BrowserStackLocal tunnel connection
+
         uses: browserstack/github-actions/setup-local@master
         with:
           local-testing: stop

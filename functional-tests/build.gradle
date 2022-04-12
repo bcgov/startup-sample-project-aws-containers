@@ -13,7 +13,7 @@ plugins {
 ext {
     // The drivers we want to use
     //drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless","ie","edge","safari"]
-    drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless"]
+    drivers = ["firefox", "firefoxHeadless", "chrome", "remoteChrome","chromeHeadless"]
     ext {
 
     

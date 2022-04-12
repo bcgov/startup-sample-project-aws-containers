@@ -4,7 +4,6 @@
 	See: http://www.gebish.org/manual/current/#configuration
 */
 
-
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
@@ -13,23 +12,35 @@ import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.ie.InternetExplorerDriver
 import org.openqa.selenium.edge.EdgeDriver
 import org.openqa.selenium.safari.SafariDriver
+import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.remote.DesiredCapabilities
+import org.openqa.selenium.remote.LocalFileDetector
+
+def env = System.getenv()
+
+// Setting the baseUrl, it is the url used by the automation as root page
+if (System.getenv('LICENSE_PLATE') == null) {// LICENSE_PLATE is se as env variable in the browserStackTest.yml file.
+	baseUrl = "http://localhost:4000/"   //When running the container in your local machine, otherwise is set in the GitHub action
+}
+else {
+	baseUrl= "https://startup-sample-project.${env['LICENSE_PLATE']}-dev.nimbus.cloud.gov.bc.ca/"
+}
+
+println "BaseURL ===> $baseUrl" //printing the baseUrl used by the test
 
 waiting {
-	timeout = 20
+	timeout = 20  //seconds, if nothing happens stop the run 
 	retryInterval = 1
 }
 
 atCheckWaiting = [20, 1]
 
 environments {
-	
 	// run via “./gradlew chromeTest”
 	// See: https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver
 	chrome {
 
 		driver = { 
-
 			//	def capabilities = org.openqa.selenium.remote.DesiredCapabilities.chrome()	
 			//	capabilities.setCapability("PageLoadStrategy","normal")
 			ChromeOptions o = new ChromeOptions()
@@ -38,10 +49,7 @@ environments {
 			o.addArguments('--allow-insecure-localhost')	
 			o.setExperimentalOption('useAutomationExtension', false)
 			o.addArguments('--safebrowsing-disable-download-protection')
-
 			o.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
-
-
 
 			Map<String, Object> prefs = new HashMap<String, Object>()
 			prefs.put('download.default_directory', downloadDir)
@@ -51,9 +59,33 @@ environments {
 			o.setExperimentalOption('prefs', prefs)
      	
 			new ChromeDriver(o)
-
 		}
 	}
+
+
+// run via “./gradlew remotechromeTest”
+ remoteChrome {
+	 	//The BrowserStack url with the corresponding credentials to run the test on one of their browsers
+        remoteURL = "https://${env['BROWSERSTACK_USERNAME']}:${env['BROWSERSTACK_ACCESS_KEY']}@hub-cloud.browserstack.com/wd/hub";
+
+        driver = {
+			//Check https://www.browserstack.com/automate/capabilities, it will generate the capabilities for you
+			chromeOptions = new ChromeOptions()
+			chromeOptions.setCapability("os", "WINDOWS")
+			chromeOptions.setCapability("os_version", "11");
+			chromeOptions.setCapability("browser_version", "99.0");
+			chromeOptions.setCapability("browserstack.local", "false");
+			chromeOptions.setCapability("browserstack.selenium_version", "3.14.0");
+			chromeOptions.setCapability("build", "0.1")
+		   	chromeOptions.setCapability("project", "Automating SEA Testing")
+
+            new RemoteWebDriver(new URL(remoteURL),chromeOptions)
+					
+            //def drvr = new RemoteWebDriver(new URL(remoteURL), capabilities)
+            //drvr.setFileDetector(new LocalFileDetector())  //this option allows to tranfers files from local to BrowserStack
+        }
+    }
+
 
 	// run via “./gradlew chromeHeadlessTest”
 	// See: https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver
@@ -114,21 +146,6 @@ environments {
 // To run the tests with all browsers just run “./gradlew test”
 
 baseNavigatorWaiting = true
-
-// Allows for setting you baseurl in an environment variable.
-// This is particularly handy for development and the pipeline
-def env = System.getenv()
-baseUrl = env['BASEURL']
-
-LicensePlate=env['LICENSE_PLATE']
-
-if (!baseUrl) {
-	baseUrl = "https://startup-sample-project.${LICENSE_PLATE}-dev.nimbus.cloud.gov.bc.ca/"
-   //  baseUrl = "http://localhost:4000/"
-}
-
-println "BaseURL: ${baseUrl}"
-println "--------------------------"
 
 cacheDriverPerThread = true
 quitCachedDriverOnShutdown = true 
