@@ -13,7 +13,6 @@ env:
   TG_VERSION: 0.31.4
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: sandbox
-  LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
 
 jobs:
   cd:
@@ -39,4 +38,5 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive

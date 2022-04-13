@@ -15,7 +15,6 @@ on:
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
-  LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
 
 jobs:
   ci:
