@@ -13,6 +13,7 @@ env:
   TG_VERSION: 0.31.4
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: sandbox
+  LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
 
 jobs:
   plan:
