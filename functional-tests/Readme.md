@@ -8,28 +8,30 @@ The app is written in groovy using the geb/spock framework. This framework makes
 By locally we mean that you have the containers app running on a container on your machine at the address `baseUrl = "http://localhost:4000/"`.
 
 To run the test, open terminal and navigate to `.../functional-test` and execute 
+
 `./gradlew chromeTest --tests="FirstTest"`
 
 
 ## Run the test locally with your app running in AWS and using BrowserStack
-In this case, the test scripts are running locally, firing remote browser, in this case on the BrowserStack cloud, and the browser is opening the containers app page stored in AWS
+In this case the app has been successfully delployed in AWS (check the Readme file at the root of this project). The test scripts are running locally in your machine firing a remote browser, in this case on the BrowserStack cloud, and the browser is opening the containers app page stored in AWS
 
 For this configuration you need 
 - The sample containers app installed in AWS. You also need the license plate (check `startup-sample-project-aws-containers/functional-tests/Readme.md` for more information)
 
-- An account with BrowserStack, once you have the account, you will access the values of `User Name` and `Access Key`. To run the test locally, you will need to type the following command to add their values to your environment
+- An account with BrowserStack, once you have the account, you will access the values of `User Name` and `Access Key`. To run the test locally, you will need to type in terminal the following commands to add their values in your environment
 
-  `$ export LICENSE_PLATE=[LICENSE PLATE]`
+  `export LICENSE_PLATE=[LICENSE PLATE]`
   
-  `$ export BROWSERSTACK_USERNAME=[BrowserStack user name]`
+  `export BROWSERSTACK_USERNAME=[BrowserStack user name]`
   
-  `$ export BROWSERSTACK_ACCESS_KEY=[BrowserStack Access key]`
+  `export BROWSERSTACK_ACCESS_KEY=[BrowserStack Access key]`
 
-once set, navigate to `.../functional-test` and execute run the following command on your terminal
+once set, navigate to `../functional-test` and execute run the following command on your terminal
+
 `./gradlew remoteChromeTest --tests="FirstTest"`
 
 
-Note: you need to set LICENSE_PLATE as an env variable, as it is part of the URL of the containers app when the app is running in AWS. If the app is running locally on your machine. GebConfig.groovy will default to "http://localhost:4000/"` if LICENSE_PLATE is null
+Note: You need to set LICENSE_PLATE as an env variable, as it is part of the URL of the containers app when the app is running in AWS. If the app is running locally on your machine (see section `Run the test locally with containers app running locally`), then GebConfig.groovy will default to "http://localhost:4000/"`  (it assumes that LICENSE_PLATE has not been set as env variable and is therefore null)
 
 Note: The specific capabilities of the browser that you are firing in BrowserStack are defined in GebConfig.groovy in the remoteChrome environment. The BrowserStack username and Access key are not hardcoded but retrieved through environmental variables
 ## Run the test scripts on GitHub CI/CD pipeline using actions firing a browser in BrowserStack cloud 
@@ -59,22 +61,32 @@ The following secrets need to be set to mail the test results to the account of 
 - MAIL_USERNAME
 
 
-Note: you need to set LICENSE_PLATE as an env variable, as it is part of the URL of the containers app when the app is running in AWS. If the app is running locally on your machine, then uncomment the line `baseUrl = "http://localhost:4000/"` in GebConfig.groovy.
 
+
+
+
+## Running using other browsers
+- **ChromeHeadless**: 
+
+  The current configuration allows you to run the test locally in ChromeHeadless mode with the command
+
+  `./gradlew chromeHeadlessTest --tests="FirstTest"`
 
 - **Firefox**: 
 
-- **Safari**: Same bugs as in Firefox. I have not tried further.
+  `./gradlew firefoxTest --tests="FirstTest"`
 
-- **ChromeHeadless**:
+  for the headless version
 
-## Running using other browsers
-The current configuration allows you to run the test locally in ChromeHeadless mode with the command
-`./gradlew chromeHeadlessTest --tests="FirstTest"`
+  `./gradlew firefoxHeadlessTest --tests="FirstTest"`
 
 
-If you run the test in BrowserStack, the capabilities of the browser are defined in the remoteChrome environment. You may want to add more environments to the list. The following command will run the test in all the environments 
-`./gradlew Test --tests="FirstTest"`
+- **Using BrowserStack**: 
+
+  If you run the test in BrowserStack, the capabilities of the browser are defined in the remoteChrome environment. You may want to add more environments to the list. The following command will run the test in all the environments 
+
+  `./gradlew Test --tests="FirstTest"`
+
 
 ## Reports
 After every run, you will find two useful reports at
