@@ -20,7 +20,9 @@ For this configuration you need
 - An account with BrowserStack, once you have the account, you will access the values of `User Name` and `Access Key`. To run the test locally, you will need to type the following command to add their values to your environment
 
   `$ export LICENSE_PLATE=[LICENSE PLATE]`
+  
   `$ export BROWSERSTACK_USERNAME=[BrowserStack user name]`
+  
   `$ export BROWSERSTACK_ACCESS_KEY=[BrowserStack Access key]`
 
 once set, navigate to `.../functional-test` and execute run the following command on your terminal
