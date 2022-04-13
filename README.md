@@ -45,32 +45,16 @@ to run the containers (inside the main container)
 ![alt text](https://github.com/bcgov/startup-sample-project-aws-containers-1/blob/main/docs/images/ports.png)
 
 
-### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
-1. Fork the app repository to your GitHub repository
-2. Clone the repository to your local machine and open it in VS Code.
-3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`
-4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
-5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by _./.devcontainer/DockerFile_
-6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like: 
-      `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
-7. Type: 
-    `docker-compose -f docker-compose.dev.yml build`
-to build the client, server and mongo containers (inside the main container)
-8. Type:
-    `docker-compose -f docker-compose.dev.yml up -d`
-to run the containers (inside the main container)
-9. Clicking on the PORTS tab (in Terminal) You will see 
 
-![alt text](https://github.com/bcgov/startup-sample-project-aws-containers-1/blob/Test_1/docs/images/ports.png)
+
 
 
 Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
 
 
-
-Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
 
 10- Connect to http://localhost:4000, you will be able to access the application running on your local machine
+
 
 
 ### Other Useful Commands (locally, when using Docker-in-Docker)
@@ -134,6 +118,7 @@ To install the app on the Cloud you will need access to BCGov-SEA Cloud in AWS
 
 In the forked version of the code, you will need to:
 
+
 - replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
 - replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
 - replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
@@ -164,7 +149,9 @@ Properly speaking, the Terraform scripts will create an infrastructure plan in t
 During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
 
 
+
 Inside this container, three containers are created that will host the client, server and DB components of the app.
+
 
 ### Connecting to the client
 You will be able to access the client using the address set for the variable cloudfront_origin_domain in line 17 of _./terraform/dev/terragrunt.hcl_ file. The format is the following:
@@ -195,4 +182,8 @@ limitations under the License.
 
 ## Testing Thanks
 
+<<<<<<< HEAD
 Thanks to BrowserStack for Testing Tool support via OpenSource Licensing ![BrowserStack](docs/images/browserstack-logo-white-small.png)
+=======
+Thanks to BrowserStack for Testing Tool support via OpenSource Licensing ![BrowserStack](docs/images/browserstack-logo-white-small.png)
+>>>>>>> upstream2/main
