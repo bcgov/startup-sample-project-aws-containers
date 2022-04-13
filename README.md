@@ -42,11 +42,7 @@ to run the containers (inside the main container)
 9. Clicking on the PORTS tab (in Terminal) You will see 
 
 
-![alt text](https://github.com/bcgov/startup-sample-project-aws-containers-1/blob/main/docs/images/ports.png)
-
-
-
-
+![alt text](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/images/ports.png)
 
 
 Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
@@ -182,8 +178,5 @@ limitations under the License.
 
 ## Testing Thanks
 
-<<<<<<< HEAD
 Thanks to BrowserStack for Testing Tool support via OpenSource Licensing ![BrowserStack](docs/images/browserstack-logo-white-small.png)
-=======
-Thanks to BrowserStack for Testing Tool support via OpenSource Licensing ![BrowserStack](docs/images/browserstack-logo-white-small.png)
->>>>>>> upstream2/main
+
