@@ -9,7 +9,7 @@ on:
 
 jobs:
   pr:
-    name: pr
+    name: pr_sandbox
     runs-on: ubuntu-20.04
 
     steps:

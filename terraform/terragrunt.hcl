@@ -1,7 +1,7 @@
 locals {
   tfc_hostname     = "app.terraform.io"
   tfc_organization = "bcgov"
-  project          = "tnfhhm"
+  project          = "td5cou"
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
   app_image        = get_env("app_image", "")
 }
@@ -37,7 +37,6 @@ generate "provider" {
   contents  = <<EOF
 provider "aws" {
   region  = var.aws_region
-
   assume_role {
     role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
   }

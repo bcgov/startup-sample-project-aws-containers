@@ -45,6 +45,7 @@ const RenderSearchField = ({
               className={classes.iconButton}
               color="inherit"
               type="submit"
+              id="submitGreeting"
             >
               <SearchIcon className={classes.searchIcon} />
             </IconButton>

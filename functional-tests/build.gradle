@@ -1,0 +1,148 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id "idea"
+    id "groovy"
+    id "com.energizedwork.webdriver-binaries" version "1.4"
+    id "com.energizedwork.idea-base" version "1.2"
+    id 'java'
+}
+
+
+
+ext {
+    // The drivers we want to use
+    //drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless","ie","edge","safari"]
+    drivers = ["firefox", "firefoxHeadless", "chrome", "remoteChrome","chromeHeadless"]
+    ext {
+
+    
+    //-----------------------------------------------------------------------
+    //The following settings work fine and will run the test when executing
+    // ./gradlew chromeTest --tests="FirstTest"    
+    //-----------------------------------------------------------------------
+    //   groovyVersion = '2.5.4'        
+    //   gebVersion = '2.3'        
+    //   spockVersion='2.0-groovy-2.5'        
+    //   spockCore='1.1-groovy-2.4'
+    //   spockReportsVersion='2.0-groovy-2.5'
+
+    //-----------------------------------------------------------------------
+    //The following settings require the line 
+    //       useJUnitPlatform()
+    //in the section
+    //       tasks.withType(Test) {
+    //Otherwise, running  ./gradlew chromeTest --tests="FirstTest"  generates the error 
+    //       Execution failed for task ':chromeTest'.  
+    //-----------------------------------------------------------------------
+    groovyVersion = '3.0.6'
+    gebVersion = '5.1'
+    spockVersion='2.0-groovy-3.0'
+    spockCore='2.0-groovy-3.0'
+    spockReportsVersion='2.0-groovy-3.0'
+
+
+    seleniumVersion = '3.141.59'
+    chromeDriverVersion = '99.0.4844.51'
+    geckoDriverVersion = '0.24.0'
+    ieDriverVersion = '3.6'
+    edgeDriverVersion = seleniumVersion
+    safariDriverVersion = seleniumVersion
+    }
+}
+
+apply from: "gradle/osSpecificDownloads.gradle"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+
+    // If using Spock, need to depend on geb-spock
+    implementation "org.gebish:geb-spock:$gebVersion"
+    testCompile ("org.spockframework:spock-core:$spockCore") {
+        exclude group: "org.codehaus.groovy"
+    }
+    testCompile( "com.athaydes:spock-reports:$spockReportsVersion" ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+        }
+  
+
+    // If using JUnit, need to depend on geb-junit (3 or 4)
+     implementation "org.gebish:geb-junit4:$gebVersion"
+  
+    //Support
+    implementation "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
+    // Drivers
+    implementation "org.seleniumhq.selenium:selenium-safari-driver:$seleniumVersion"
+    implementation "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    implementation "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    implementation "org.seleniumhq.selenium:selenium-ie-driver:$seleniumVersion"
+    implementation "org.seleniumhq.selenium:selenium-edge-driver:$seleniumVersion"
+
+
+    // recommended for logging 
+    implementation 'org.slf4j:slf4j-api:1.7.3'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+
+    }
+
+webdriverBinaries {
+    chromedriver chromeDriverVersion
+    geckodriver geckoDriverVersion
+    //iedriver ieDriverVersion
+}
+
+drivers.each { driver ->
+    task "${driver}Test"(type: Test) {
+        group JavaBasePlugin.VERIFICATION_GROUP
+
+        outputs.upToDateWhen { false }  // Always run tests
+
+        systemProperty "geb.build.reportsDir", reporting.file("geb/$name")
+        systemProperty "geb.env", driver
+    }
+}
+/*
+ieTest {
+    dependsOn unzipIeDriver
+
+    def iedriverFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "IEDriverServer.exe" : "IEDriverServer"
+    systemProperty "webdriver.ie.driver", new File(unzipIeDriver.outputs.files.singleFile, iedriverFilename).absolutePath
+}
+edgeTest {
+    dependsOn unzipEdgeDriver
+
+    def edgedriverFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "MicrosoftWebDriver.exe" : "MicrosoftWebDriver.exe"
+    systemProperty "webdriver.edge.driver", new File(unzipEdgeDriver.outputs.files.singleFile,edgedriverFilename).absolutePath
+}
+*/
+test {
+    dependsOn drivers.collect { tasks["${it}Test"] }
+    testLogging.showStandardStreams = true
+    enabled = false
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+
+    maxHeapSize = "1g"
+    jvmArgs '-XX:MaxMetaspaceSize=128m'
+    testLogging {
+        exceptionFormat = 'full'
+        events 'started', 'passed'
+    }
+
+
+systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
+systemProperty 'com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss', false
+systemProperty 'com.athaydes.spockframework.report.projectName',"SEA_TEST"
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.forkOptions.memoryMaximumSize = '256m'
+}

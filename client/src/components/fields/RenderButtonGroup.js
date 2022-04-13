@@ -44,6 +44,7 @@ const RenderButtonGroup = ({
             variant={(option.value === field.value) ? 'contained' : 'outlined'}
             color={(option.value === field.value) ? option.color : 'primary'}
             text={option.label}
+            id="submitGreetingButton"
           />
         ))}
       </ButtonGroup>

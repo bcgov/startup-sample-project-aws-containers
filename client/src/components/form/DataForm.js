@@ -43,7 +43,7 @@ class CustomDataForm extends React.Component {
     <FieldArray
     name="latest_greetings"
     render={arrayHelpers => (
-      <table>
+      <table id="previousGreetings">
         <tbody>
           {Object.values(this.state.data).map((greeting_entry, index) => (
             <tr key={index}>
