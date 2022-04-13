@@ -6,6 +6,10 @@ include {
   path = find_in_parent_folders()
 }
 
+locals {
+  project = get_env("MY_LICENSE_PLATE")
+}
+
 generate "dev_tfvars" {
   path              = "dev.auto.tfvars"
   if_exists         = "overwrite"
@@ -13,7 +17,7 @@ generate "dev_tfvars" {
   contents          = <<-EOF
     alb_name = "default"
     cloudfront = true
-    cloudfront_origin_domain = "startup-sample-project.td5cou-dev.nimbus.cloud.gov.bc.ca"
+    cloudfront_origin_domain = "startup-sample-project.${local.project}-dev.nimbus.cloud.gov.bc.ca"
     service_names = ["startup-sample-project"]
   EOF
 }
