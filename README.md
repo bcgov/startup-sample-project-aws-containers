@@ -22,6 +22,7 @@ Currently, only AWS is supported, but support for other cloud targets may be add
 In order to develop or run the app locally, you will need the following:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Microsoft Visual Studio Code](https://code.visualstudio.com/)
+    - Extension: [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 
 
