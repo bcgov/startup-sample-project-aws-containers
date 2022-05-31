@@ -9,7 +9,7 @@ locals {
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
   read_principals  = get_env("AWS_ACCOUNTS_ECR_READ_ACCESS", "")
 }
-
+# Documentation is good code
 
 generate "tfvars" {
   path              = "terragrunt.${local.environment}.auto.tfvars"
