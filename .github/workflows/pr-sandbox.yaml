@@ -6,6 +6,7 @@ on:
       - ".github/workflows/pr-sandbox.yaml"
       - ".github/workflows/tf-plan-sandbox.yaml"
       - "terraform/sandbox/**"
+      - "README.md"
 
 jobs:
   pr:
