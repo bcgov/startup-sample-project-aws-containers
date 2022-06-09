@@ -39,12 +39,13 @@ jobs:
       - name: generate pwd
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
-     
-         
-          echo randomPWD=$ranPWD >> $GITHUB_ENV
-          echo LINE 43 ${{ env.randomPWD }}
-          echo ${{ env.randomPWD }}
-          echo ${{ env.randomPWD }}
+          echo randomPWD1=$ranPWD >> $GITHUB_ENV
+          echo randomPWD2=echo $ranPWD >> $GITHUB_ENV
+          echo randomPWD3=$(echo $ranPWD) >> $GITHUB_ENV
+          # echo randomPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g'))  >> $GITHUB_ENV
+          echo LINE 43 ${{ env.randomPWD1 }}
+          echo ${{ env.randomPWD2 }}
+          echo ${{ env.randomPWD3 }}
           echo Line 47 $ranPWD
           echo Line 48 $ranPWD
           echo Line 49 ${{ env.REGION }}
