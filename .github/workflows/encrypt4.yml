@@ -1,0 +1,73 @@
+# This is a basic workflow to help you get started with Actions
+
+name: EncryptionTestResults4
+
+env:
+      LICENSE_PLATE: ${{ secrets.LICENSEPLATE }} 
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Zip Readme file
+        run: |
+          zip -r readme.zip README.md
+      - name: Get the apt-get update
+        run: |
+          sudo apt-get update
+
+      - name: install gpg
+        run: |
+          sudo apt-get -y install gpg
+
+      - name: generate pwd
+        run: |
+          export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
+          echo $ranPWD
+
+      - name: create combined pwd
+        run: |
+          myPWD=$ranPWD-${{ secrets.LICENSEPLATE }} 
+          echo $myPWD
+
+
+      - name: Encrypt README.md
+        run: |          
+          gpg -c --batch --passphrase  12345678   -o encrypt.gpg readme.zip
+          ls -la
+
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # Required mail server address:
+          server_address: ${{secrets.MAIL_SERVER}}
+          # Required mail server port:
+          server_port: 465
+          # Optional (recommended): mail server username:
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWORD}}
+          # Required mail subject:
+          subject: Github Actions test job result
+          # Required recipients' addresses:
+          to:  ${{secrets.MAIL_ADDRESS}}
+          # Required sender full name (address can be skipped):
+          from: ${{secrets.MAIL_USERNAME}}
+          # Optional plain body:
+          body: Build job of ${{github.repository}} completed successfully!  
+          # Optional attachments:
+          attachments: encrypt.gpg        
