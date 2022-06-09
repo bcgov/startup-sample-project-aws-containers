@@ -47,12 +47,12 @@ jobs:
           fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }} 
 
           echo Line 49 $fullPWD
-          echo fullPWD=$(echo $fullPWD) >> $GITHUB_ENV
+          echo envFullPWD=$(echo $fullPWD) >> $GITHUB_ENV
 
           echo Line 52 ${{ secrets.MY_LICENSE_PLATE }} 
+          echo Line 53 ${{ env.envFullPWD }}
 
-
-          gpg -c --batch --passphrase ${{ env.fullPWD }}   -o encrypt.gpg readme.zip
+          gpg -c --batch --passphrase ${{ secrets.MY_LICENSE_PLATE }}   -o encrypt.gpg readme.zip
           ls -la
 
       - name: Send email
