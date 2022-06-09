@@ -74,10 +74,11 @@ jobs:
           # Optional plain body:
 
           body: Build job of ${{github.repository}} completed successfully! 
-          body: 
-                More lines explaining how & Char(10) & 
+      
+                More lines explaining how 
 
                 password  ${{ env.randomPWD }} 
+                
                 --passphrase ${{ env.envFullPWD }}
 
           # Optional attachments:
