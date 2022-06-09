@@ -21,6 +21,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+      
     - name: Add key
       run: |
            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -44,32 +45,32 @@ jobs:
     - name: Zip results folder
       run: |
             zip -r testResults.zip ./functional-tests/build/reports
-
+    
     - name: Get the apt-get update
       run: |
             sudo apt-get update
-
-      - name: install gpg
-        run: |
+    
+    - name: install gpg
+      run: |
             sudo apt-get -y install gpg
 
-      - name: generate random pwd and save it as env variable
-        run: |
+    - name: generate random pwd and save it as env variable
+      run: |
             export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
             echo randomPWD=$(echo $ranPWD) >> $GITHUB_ENV
 
-      - name: create combined pwd  and Encrypt README.md
-        run: |
+    - name: create combined pwd  and Encrypt README.md
+      run: |
             fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }} 
             echo envFullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }}  >> $GITHUB_ENV
 
-      - name: Encrypt README.md
-        run: | 
+    - name: Encrypt README.md
+      run: | 
             gpg -c --batch --passphrase ${{ env.envFullPWD }} -o encryptFolder.gpg testResults.zip
     
-      - name: Send email with encrypted results
-        uses: dawidd6/action-send-mail@v3
-        with:
+    - name: Send email with encrypted results
+      uses: dawidd6/action-send-mail@v3
+      with:
           # Required mail server address:
           server_address: ${{secrets.MAIL_SERVER}}
           # Required mail server port:
@@ -109,9 +110,9 @@ jobs:
 
 
 
-      - name: Send email with password
-        uses: dawidd6/action-send-mail@v3
-        with:
+    - name: Send email with password
+      uses: dawidd6/action-send-mail@v3
+      with:
           # Required mail server address:
           server_address: ${{secrets.MAIL_SERVER}}
           # Required mail server port:
