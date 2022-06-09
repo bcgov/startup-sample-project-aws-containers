@@ -39,17 +39,15 @@ jobs:
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
           echo $ranPWD
 
-      - name: create combined pwd
-        run: |
-          myPWD=$ranPWD-${{ secrets.LICENSEPLATE }} 
-          echo $myPWD
+    #  - name: create combined pwd
+    #    run: |
+    #      myPWD=$ranPWD-${{ secrets.LICENSEPLATE }} 
+    #      echo $myPWD
 
 
       - name: Encrypt README.md
         run: |          
-
-          gpg -c --batch --passphrase $ranPWD  -o encrypt.gpg readme.zip
-
+          gpg -c --batch --passphrase 12345678  -o encrypt.gpg readme.zip
           ls -la
 
       - name: Send email
@@ -73,7 +71,7 @@ jobs:
 
           body: Build job of ${{github.repository}} completed successfully! 
                 More lines explaining how
-                password $myPWD
+                password ${{myPWD}}
 
           # Optional attachments:
           attachments: encrypt.gpg        
