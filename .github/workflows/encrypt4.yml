@@ -39,12 +39,12 @@ jobs:
       - name: generate pwd
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
-          echo randomPWD1=$ranPWD >> $GITHUB_ENV
-          echo randomPWD2=echo $ranPWD >> $GITHUB_ENV
+          # echo randomPWD1=$ranPWD >> $GITHUB_ENV
+          # echo randomPWD2=echo $ranPWD >> $GITHUB_ENV
           echo randomPWD3=$(echo $ranPWD) >> $GITHUB_ENV
           # echo randomPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g'))  >> $GITHUB_ENV
-          echo LINE 43 ${{ env.randomPWD1 }}
-          echo ${{ env.randomPWD2 }}
+          #vecho LINE 43 ${{ env.randomPWD1 }}
+          #vecho ${{ env.randomPWD2 }}
           echo ${{ env.randomPWD3 }}
           echo Line 47 $ranPWD
           echo Line 48 $ranPWD
@@ -54,9 +54,9 @@ jobs:
 
       - name: create combined pwd
         run: |
-          fullPWD=$ranPWD-${{ secrets.MY_LICENSE_PLATE }} 
+          fullPWD=${{ env.randomPWD3 }}-${{ secrets.MY_LICENSE_PLATE }} 
           echo Line 56 $fullPWD
-          echo Line 57 $ranPWD
+          echo Line 57 ${{ env.randomPWD3 }}
 
       - name: Encrypt README.md
         run: |          
