@@ -47,7 +47,7 @@ jobs:
 
       - name: Encrypt README.md
         run: |          
-          gpg -c --batch --passphrase  12345678   -o encrypt.gpg readme.zip
+          gpg -c --batch --passphrase  $myPWD  -o encrypt.gpg readme.zip
           ls -la
 
       - name: Send email
@@ -68,6 +68,8 @@ jobs:
           # Required sender full name (address can be skipped):
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
-          body: Build job of ${{github.repository}} completed successfully!  
+          body: Build job of ${{github.repository}} completed successfully! 
+                More lines explaining how
+                password $myPWD
           # Optional attachments:
           attachments: encrypt.gpg        

@@ -43,7 +43,8 @@ ext {
 
 
     seleniumVersion = '3.141.59'
-    chromeDriverVersion = '99.0.4844.51'
+    chromeDriverVersion = '100.0.4896.60'
+    //chromeDriverVersion = '99.0.4844.51'
     geckoDriverVersion = '0.24.0'
     ieDriverVersion = '3.6'
     edgeDriverVersion = seleniumVersion
