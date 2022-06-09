@@ -4,6 +4,7 @@ name: EncryptionTestResults4
 
 env:
       LICENSE_PLATE: ${{ secrets.LICENSEPLATE }} 
+      REGION: ${{ secrets.AWS_REGION }} 
       randomPWD: $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g') 
 
 # Controls when the workflow will run
@@ -40,10 +41,12 @@ jobs:
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
      
           echo randomPWD=$ranPWD >> $GITHUB_ENV
+          echo LINE 43 ${{env.randomPWD}}
           echo ${{env.randomPWD}}
           echo ${{env.randomPWD}}
-          echo ${{env.randomPWD}}
-
+          echo Line 47 $ranPWD
+          echo Line 48 $ranPWD
+          echo Line 49 ${{ env.REGION }}
 
     #  - name: create combined pwd
     #    run: |
