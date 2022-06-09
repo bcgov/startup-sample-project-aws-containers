@@ -48,7 +48,7 @@ jobs:
       - name: Encrypt README.md
         run: |          
 
-          gpg -c --batch --passphrase  $myPWD  -o encrypt.gpg readme.zip
+          gpg -c --batch --passphrase $ranPWD  -o encrypt.gpg readme.zip
 
           ls -la
 

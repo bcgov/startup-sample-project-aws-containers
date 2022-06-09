@@ -1,5 +1,7 @@
 import geb.spock.GebReportingSpec
 
+import modules.CheckboxModule
+
 import pages.app.EntryPage
 import pages.app.ConfirmationPage
                  
@@ -11,9 +13,14 @@ import org.junit.Test
 //import org.junit.jupiter.api.Test
 
 
+
+
+
 @Narrative('''Basic functionality test''')
 
 @Title("Load the Containers Sample application, check some elements, interact with the DB")
+
+
 class FirstTest extends GebReportingSpec {
 
 
@@ -21,6 +28,7 @@ class FirstTest extends GebReportingSpec {
     given: "Starting from the Entry Page"
         waitFor {to EntryPage}
         assert Header1.text() == "Simple Demo App"   //Check the title
+
 
     when: "Click on the Drop down to expand the drop down options, select #Greeting  and click Submit button"
         GreetingDropdown.click()
