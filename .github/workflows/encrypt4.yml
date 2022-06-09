@@ -88,7 +88,7 @@ jobs:
                 As example, if the password in the following email is HauCyjM8fxc and your license plate is ab1cde the passphrase to decrypt the file will be
 
 
-                    HauCyjM8fxc-ab1cde
+                    **HauCyjM8fxc-ab1cde**
 
           # Optional attachments:
           attachments: encryptFolder.gpg    
