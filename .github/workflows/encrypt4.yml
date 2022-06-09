@@ -79,16 +79,21 @@ jobs:
 
                 Decrypt the file with the following  command
 
-                  gpg -d --batch --passphrase PASSPHRASE encryptFolder.gpg > testResults.zip
+
+                    gpg -d --batch --passphrase PASSPHRASE encryptFolder.gpg > testResults.zip
+
 
                 Where PASSPHRASE is password you will receive  in a second email, hyphen, and  your License Plate
 
                 As example, if the password in the following email is HauCyjM8fxc and your license plate is ab1cde the passphrase to decrypt the file will be
 
-                  HauCyjM8fxc-ab1cde
+
+                    HauCyjM8fxc-ab1cde
 
           # Optional attachments:
-          attachments: encrypt.gpg        
+          attachments: encryptFolder.gpg    
+
+
 
 
       - name: Send email with password
@@ -112,4 +117,4 @@ jobs:
 
           body: Password to decrypt build job ${{github.repository}} test results 
       
-                ${{ env.randomPWD }}
+                    ${{ env.randomPWD }}
