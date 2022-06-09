@@ -54,7 +54,7 @@ jobs:
         run: |
           fullPWD=$ranPWD-${{ secrets.MY_LICENSE_PLATE }} 
           echo Line 56 $fullPWD
-
+          echo Line 57 $ranPWD
 
       - name: Encrypt README.md
         run: |          
