@@ -36,7 +36,7 @@ jobs:
         run: |
           sudo apt-get -y install gpg
 
-      - name: generate pwd
+      - name: generate random pwd and save it as env variable
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
           echo randomPWD=$(echo $ranPWD) >> $GITHUB_ENV
@@ -45,9 +45,10 @@ jobs:
       - name: create combined pwd  and Encrypt README.md
         run: |
           fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }} 
+          # fullPWD=${{ env.randomPWD }}
           echo Line 56 $fullPWD
           echo Line 57 ${{ env.randomPWD }}        
-          gpg -c --batch --passphrase ${{ env.randomPWD }} -o encrypt.gpg readme.zip
+          gpg -c --batch --passphrase $fullPWD -o encrypt.gpg readme.zip
           ls -la
 
       - name: Send email
