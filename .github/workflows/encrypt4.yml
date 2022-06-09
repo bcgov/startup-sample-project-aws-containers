@@ -4,7 +4,6 @@ name: EncryptionTestResults4
 
 env:
       LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }} 
-      REGION: ${{ secrets.AWS_REGION }} 
       randomPWD: $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g') 
 
 # Controls when the workflow will run
@@ -47,7 +46,7 @@ jobs:
           fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }} 
 
           echo Line 49 $fullPWD
-          echo envFullPWD=$(echo $fullPWD) >> $GITHUB_ENV
+          echo envFullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }}  >> $GITHUB_ENV
 
           echo Line 52 ${{ secrets.MY_LICENSE_PLATE }} 
           echo Line 53 ${{ env.envFullPWD }}
@@ -74,8 +73,8 @@ jobs:
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
 
-          body: Build job of ${{github.repository}} completed successfully! %0D%0A
-                More lines explaining how %0D%0A
+          body: Build job of ${{github.repository}} completed successfully! & Char(10) & 
+                More lines explaining how & Char(10) & 
 
                 password  ${{ env.randomPWD }} 
                 --passphrase ${{ env.fullPWD }}
