@@ -39,7 +39,7 @@ jobs:
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
      
-          echo randomPWD=$(echo $ranPWD) >> $GITHUB_ENV
+          echo randomPWD=$ranPWD >> $GITHUB_ENV
           echo ${{env.randomPWD}}
           echo ${{env.randomPWD}}
           echo ${{env.randomPWD}}
