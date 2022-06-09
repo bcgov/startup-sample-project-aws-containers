@@ -38,9 +38,11 @@ jobs:
       - name: generate pwd
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
-          echo LINE 41 $ranPWD
+     
           echo randomPWD=$(echo $ranPWD) >> $GITHUB_ENV
-          echo LINE 43 ${{env.randomPWD}}
+          echo ${{env.randomPWD}}
+          echo ${{env.randomPWD}}
+          echo ${{env.randomPWD}}
 
 
     #  - name: create combined pwd
