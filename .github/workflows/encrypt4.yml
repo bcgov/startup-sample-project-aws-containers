@@ -4,6 +4,7 @@ name: EncryptionTestResults4
 
 env:
       LICENSE_PLATE: ${{ secrets.LICENSEPLATE }} 
+      randomPWD: $(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
 
 # Controls when the workflow will run
 on:
@@ -71,7 +72,9 @@ jobs:
 
           body: Build job of ${{github.repository}} completed successfully! 
                 More lines explaining how
-                password ${{env.myPWD}}
+                password1 ${{env.myPWD}}
+                password2  ${{env.LICENSE_PLATE}}
+                password3  ${{env.randomPWD}}
 
           # Optional attachments:
           attachments: encrypt.gpg        
