@@ -58,3 +58,8 @@ override.tf.json
 terraform.rc
 
 .terragrunt-cache
+schema.json
+schema2.json
+.gitignore
+functional-tests/src/test/groovy/FirstTest.groovy
+schema3.json
