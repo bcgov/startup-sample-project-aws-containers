@@ -39,28 +39,15 @@ jobs:
       - name: generate pwd
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
-          # echo randomPWD1=$ranPWD >> $GITHUB_ENV
-          # echo randomPWD2=echo $ranPWD >> $GITHUB_ENV
-          echo randomPWD3=$(echo $ranPWD) >> $GITHUB_ENV
-          # echo randomPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g'))  >> $GITHUB_ENV
-          #vecho LINE 43 ${{ env.randomPWD1 }}
-          #vecho ${{ env.randomPWD2 }}
-          echo ${{ env.randomPWD3 }}
-          echo Line 47 $ranPWD
-          echo Line 48 $ranPWD
-          echo Line 49 ${{ env.REGION }}
-          echo Line 50 ${{ env.LICENSE_PLATE }}
-          echo Line 51 ${{ secrets.MY_LICENSE_PLATE }}
+          echo randomPWD=$(echo $ranPWD) >> $GITHUB_ENV
 
-      - name: create combined pwd
+
+      - name: create combined pwd  and Encrypt README.md
         run: |
-          fullPWD=${{ env.randomPWD3 }}-${{ secrets.MY_LICENSE_PLATE }} 
+          fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }} 
           echo Line 56 $fullPWD
-          echo Line 57 ${{ env.randomPWD3 }}
-
-      - name: Encrypt README.md
-        run: |          
-          gpg -c --batch --passphrase 12345678  -o encrypt.gpg readme.zip
+          echo Line 57 ${{ env.randomPWD }}        
+          gpg -c --batch --passphrase ${{ env.randomPWD }} -o encrypt.gpg readme.zip
           ls -la
 
       - name: Send email
@@ -84,9 +71,8 @@ jobs:
 
           body: Build job of ${{github.repository}} completed successfully! 
                 More lines explaining how
-                password1 ${{env.myPWD}}
-                password2  ${{env.LICENSE_PLATE}}
-                password3  ${{env.randomPWD}}
+
+                password  ${{ env.randomPWD }} 
 
           # Optional attachments:
           attachments: encrypt.gpg        
