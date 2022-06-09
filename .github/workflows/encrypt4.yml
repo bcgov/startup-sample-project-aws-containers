@@ -3,7 +3,7 @@
 name: EncryptionTestResults4
 
 env:
-      LICENSE_PLATE: ${{ secrets.LICENSEPLATE }} 
+      LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }} 
       REGION: ${{ secrets.AWS_REGION }} 
       randomPWD: $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g') 
 
@@ -48,7 +48,7 @@ jobs:
           echo Line 48 $ranPWD
           echo Line 49 ${{ env.REGION }}
           echo Line 50 ${{ env.LICENSE_PLATE }}
-
+          echo Line 51 ${{ secrets.MY_LICENSE_PLATE }}
     #  - name: create combined pwd
     #    run: |
     #      myPWD=$ranPWD-${{ secrets.LICENSEPLATE }} 
