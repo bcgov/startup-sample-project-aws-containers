@@ -38,7 +38,7 @@ jobs:
         run: |
           export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
           echo $ranPWD
-
+          echo ${{env.ranPWD}}
     #  - name: create combined pwd
     #    run: |
     #      myPWD=$ranPWD-${{ secrets.LICENSEPLATE }} 
@@ -71,7 +71,7 @@ jobs:
 
           body: Build job of ${{github.repository}} completed successfully! 
                 More lines explaining how
-                password ${{myPWD}}
+                password ${{env.myPWD}}
 
           # Optional attachments:
           attachments: encrypt.gpg        
