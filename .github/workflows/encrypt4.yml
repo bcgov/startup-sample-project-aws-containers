@@ -45,10 +45,14 @@ jobs:
       - name: create combined pwd  and Encrypt README.md
         run: |
           fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }} 
-          # fullPWD=${{ env.randomPWD }}
+
           echo Line 56 $fullPWD
-          echo Line 57 ${{ env.randomPWD }}        
-          gpg -c --batch --passphrase ${{ secrets.MY_LICENSE_PLATE }}  -o encrypt.gpg readme.zip
+          echo fullPWD=$(echo $fullPWD) >> $GITHUB_ENV
+
+
+
+
+          gpg -c --batch --passphrase ${{ env.fullPWD }}  -o encrypt.gpg readme.zip
           ls -la
 
       - name: Send email
@@ -70,10 +74,11 @@ jobs:
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
 
-          body: Build job of ${{github.repository}} completed successfully! 
-                More lines explaining how
+          body: Build job of ${{github.repository}} completed successfully! %0D%0A
+                More lines explaining how %0D%0A
 
                 password  ${{ env.randomPWD }} 
+                --passphrase ${{ env.fullPWD }}
 
           # Optional attachments:
           attachments: encrypt.gpg        
