@@ -11,6 +11,9 @@ To run the test, open terminal and navigate to `.../functional-test` and execute
 `./gradlew chromeTest --tests="FirstTest"`
 
 
+Note: the ChromeDriver version set in `build.gradle` needs to match the Chrome version you are using. Same for other browsers you may use
+
+
 ## Run the test locally with your app running in AWS and using BrowserStack
 In this case the app has been successfully deployed in AWS (check the Readme file at the root of this project). The test scripts are running locally in your machine firing a remote browser, in this case on the BrowserStack cloud, and the browser is opening the containers app page stored in AWS
 
@@ -59,9 +62,23 @@ The following secrets need to be set to mail the test results to the account of 
 - MAIL_SERVER
 - MAIL_USERNAME
 
+## Run the test scripts on GitHub CI/CD pipeline (not using BrowseStack)
+The GitHub action `startup-sample-project-aws-containers/.github/workflows/AutomationTestUbuntu.yml` will run the tests in GitHub. This is similar to running the test in your local machine, the caveat is that in your local machine you have full control of the Browser version. Using this GitHub action, you instantiate the latest Ubuntu Docker image, so probably you will need to adjust the ChromeDriver version to match the Chrome version used by the Docker image.
 
+So, if the tests fail with the following error 
 
+`org.openqa.selenium.SessionNotCreatedException: session not created: This version of ChromeDriver only supports Chrome version 100`
 
+it means you need to update the ChromeDriver version. This is set in the file `build.gradle`. As example
+`chromeDriverVersion = '102.0.5005.61'`
+
+  Note: Same approach applies to other browsers.
+
+As currently configured, you need to set the same github secrets as the previous section excluding the BrowserStack specific ones.
+
+The results of the test will be zipped, encrypted and emailed to the address set in ${{secrets.MAIL_ADDRESS}}.
+
+Decrypting and unzipping the file will create a folder named `functional-tests` that contains the test reports (see `Reports` section below)
 
 
 ## Running using other browsers
@@ -90,11 +107,11 @@ The following secrets need to be set to mail the test results to the account of 
 ## Reports
 After every run, you will find two useful reports at
 
-`startup-sample-project-aws-containers/functional-tests/build/reports/spock`
+`~/functional-tests/build/reports/spock`
 
 and at 
-`startup-sample-project-aws-containers/functional-tests/build/reports/tests/chromeTest`
-(there is a folder for each environment)
+`~/functional-tests/build/reports/tests/chromeTest`
+(there is a folder for each environment defined in `GebConfig.groovy`)
 
 The information provided by both reports overlaps, however there are some details. Visually, I find the spock report more pleasant, however, the reports under test allows to view logs messages you may have `println` to terminal, very useful in debugging mode.  
 
