@@ -8,6 +8,7 @@ The app is written in groovy using the geb/spock framework. This framework makes
 By locally we mean that you have the containers app running on a container on your machine at the address `baseUrl = "http://localhost:4000/"`.
 
 To run the test, open terminal and navigate to `.../functional-test` and execute 
+
 `./gradlew chromeTest --tests="FirstTest"`
 
 
@@ -16,6 +17,7 @@ Note: the ChromeDriver version set in `build.gradle` needs to match the Chrome v
 
 ## Run the test locally with your app running in AWS and using BrowserStack
 In this case the app has been successfully deployed in AWS (check the Readme file at the root of this project). The test scripts are running locally in your machine firing a remote browser, in this case on the BrowserStack cloud, and the browser is opening the containers app page stored in AWS
+n
 
 For this configuration you need 
 - The sample containers app installed in AWS. You also need the license plate (check `startup-sample-project-aws-containers/functional-tests/Readme.md` for more information)
@@ -62,6 +64,7 @@ The following secrets need to be set to mail the test results to the account of 
 - MAIL_SERVER
 - MAIL_USERNAME
 
+
 ## Run the test scripts on GitHub CI/CD pipeline (not using BrowseStack)
 The GitHub action `startup-sample-project-aws-containers/.github/workflows/AutomationTestUbuntu.yml` will run the tests in GitHub. This is similar to running the test in your local machine, the caveat is that in your local machine you have full control of the Browser version. Using this GitHub action, you instantiate the latest Ubuntu Docker image, so probably you will need to adjust the ChromeDriver version to match the Chrome version used by the Docker image.
 
@@ -79,6 +82,7 @@ As currently configured, you need to set the same github secrets as the previous
 The results of the test will be zipped, encrypted and emailed to the address set in ${{secrets.MAIL_ADDRESS}}.
 
 Decrypting and unzipping the file will create a folder named `functional-tests` that contains the test reports (see `Reports` section below)
+
 
 
 ## Running using other browsers
@@ -106,6 +110,7 @@ Decrypting and unzipping the file will create a folder named `functional-tests` 
 
 ## Reports
 After every run, you will find two useful reports at
+
 
 `~/functional-tests/build/reports/spock`
 

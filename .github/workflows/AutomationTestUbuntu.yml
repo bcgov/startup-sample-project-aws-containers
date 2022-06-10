@@ -21,11 +21,10 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-      
+
     - name: Add key
       run: |
            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-
     - name: Set repo
       run: |
            echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
@@ -138,3 +137,4 @@ jobs:
           body: Password to decrypt the file containing build job ${{github.repository}} test results 
       
                     **${{ env.randomPWD }}**
+

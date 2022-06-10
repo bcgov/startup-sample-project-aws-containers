@@ -1,6 +1,8 @@
 import geb.spock.GebReportingSpec
 
+
 import modules.CheckboxModule
+
 
 import pages.app.EntryPage
 import pages.app.ConfirmationPage
@@ -14,12 +16,9 @@ import org.junit.Test
 
 
 
-
-
 @Narrative('''Basic functionality test''')
 
 @Title("Load the Containers Sample application, check some elements, interact with the DB")
-
 
 class FirstTest extends GebReportingSpec {
 
