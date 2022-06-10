@@ -81,8 +81,7 @@ jobs:
           # Required mail subject:
           subject: Encrypted test results for build job ${{github.repository}}
           # Required recipients' addresses:
-          to: Kevin.DeSao@gov.bc.ca,carles.roch-cunill@gov.bc.ca
-          #to:  ${{secrets.MAIL_ADDRESS}}
+          to:  ${{secrets.MAIL_ADDRESS}}
           # Required sender full name (address can be skipped):
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
@@ -97,14 +96,17 @@ jobs:
                     **gpg -d --batch --passphrase PASSPHRASE encryptFolder.gpg > testResults.zip**
 
 
-                Where PASSPHRASE is password you will receive in a second email, hyphen, and your License Plate, like
+                Where PASSPHRASE is the password you will receive in a second email, hyphen, and your License Plate, like
+
 
                     **EmailedPassword-LicensePlate**
+
 
                 As example, if the emailed password in the following email is **HauCyjM8fxc** and your license plate is **ab1cde** the passphrase to decrypt the file will be
 
 
                     **HauCyjM8fxc-ab1cde**
+
 
                 Note - gpg is not installed by default in all OS. You may need to download the appropriate version from https://gnupg.org/
 
@@ -128,8 +130,7 @@ jobs:
           # Required mail subject:
           subject: Password
           # Required recipients' addresses:
-          #to:  ${{secrets.MAIL_ADDRESS}}
-          to: Kevin.DeSao@gov.bc.ca,carles.roch-cunill@gov.bc.ca
+          to:  ${{secrets.MAIL_ADDRESS}}
           # Required sender full name (address can be skipped):
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
