@@ -25,6 +25,7 @@ class CustomDataForm extends React.Component {
 
  }
 
+ 
  render() {
   if (!this.state.data) {
     return 'loading...'

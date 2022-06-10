@@ -2,7 +2,9 @@ package modules
 
 import geb.Module
 
+
 class CheckboxModule extends Module {
+
     def check() {
         this.value(true)
     }
@@ -18,5 +20,5 @@ class CheckboxModule extends Module {
     def isUnchecked() {
         !isChecked()
     }
-    
+
 }
