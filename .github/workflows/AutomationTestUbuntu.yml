@@ -81,7 +81,8 @@ jobs:
           # Required mail subject:
           subject: Encrypted test results for build job ${{github.repository}}
           # Required recipients' addresses:
-          to:  ${{secrets.MAIL_ADDRESS}}
+          to: Kevin.DeSao@gov.bc.ca,carles.roch-cunill@gov.bc.ca
+          #to:  ${{secrets.MAIL_ADDRESS}}
           # Required sender full name (address can be skipped):
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
@@ -127,7 +128,8 @@ jobs:
           # Required mail subject:
           subject: Password
           # Required recipients' addresses:
-          to:  ${{secrets.MAIL_ADDRESS}}
+          #to:  ${{secrets.MAIL_ADDRESS}}
+          to: Kevin.DeSao@gov.bc.ca,carles.roch-cunill@gov.bc.ca
           # Required sender full name (address can be skipped):
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
