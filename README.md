@@ -95,7 +95,7 @@ These credentials, necessary to access AWS Cloud, are send to Terraform cloud by
 The required Secrets are:
 - `AWS_ACCESS_KEY_ID` - credentials for you service account
 - `AWS_SECRET_ACCESS_KEY` - credentials for you service account
-- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials. Follows the pattern `arn:aws:iam::############:role/PBMMOps-BCGOV_sandbox_Project_Role_ecr_read_write` where `############` is your AWS account number.
+- `AWS_ROLE_TO_ASSUME` - ARN of the role to assume with your credentials. Follows the pattern `arn:aws:iam::############:role/PBMMOps-BCGOV_tools_Project_Role_ecr_read_write` where `############` is your AWS account number.
 
 - `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format `arn:aws:iam::############:root` where `############` is your AWS account number. For exmple: 
 
@@ -119,7 +119,7 @@ In the forked version of the code, you will need to:
 
 - replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
 - replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
-- replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
+- replace the project variable with your License Plate (line 8 of _./terraform/tools/terragrunt.hcl_ file)
 
 Note: License plate is one of the access keys provided by the Cloud Pathfinder group to allow access to BCGov SEA - AWS
 
@@ -144,7 +144,7 @@ and instantiated using `./terraform/terragrunt.hcl` file.
 
 Properly speaking, the Terraform scripts will create an infrastructure plan in the Terraform Cloud, and a second script will apply the plan and deploy the planned infrastructure in AWS Cloud.
 
-During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
+During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the tools service account and authorize read access from other AWS service accounts (dev, tools).
 
 Inside this container, three containers are created that will host the client, server and DB components of the app.
 
@@ -160,7 +160,7 @@ Properly speaking, the Terraform scripts will create an infrastructure plan in t
 
 
 
-During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
+During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the tools service account and authorize read access from other AWS service accounts (dev, tools).
 
 
 

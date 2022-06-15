@@ -1,18 +1,18 @@
-name: Deploy Sandbox
+name: Deploy tools
 
 on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/deploy-sandbox.yaml"
+      - ".github/workflows/deploy-tools.yaml"
       - "terraform/terragrunt.hcl"
-      - "terraform/sandbox/**"
+      - "terraform/tools/**"
 
 env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
-  TFC_WORKSPACE: sandbox
+  TFC_WORKSPACE: tools
 
 jobs:
   cd:
