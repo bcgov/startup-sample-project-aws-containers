@@ -160,6 +160,7 @@ jobs:
 
   terraform_apply:
     name: terraform apply production
+    environment: prod
     runs-on: ubuntu-22.04
     needs: [terraform_plan, tag, manual_approval]
 

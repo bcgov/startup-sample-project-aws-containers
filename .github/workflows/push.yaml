@@ -82,9 +82,10 @@ jobs:
           tags: ${{ env.IMAGE_ID }}:${{ github.sha }}
 
   terraform_apply:
-    needs: docker_push
     name: terraform apply Dev
+    environment: dev
     runs-on: ubuntu-22.04
+    needs: docker_push
 
     steps:
       - name: Check out the repo
