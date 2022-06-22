@@ -1,0 +1,48 @@
+name: Destroy environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: select the environment to destroy
+        type: environment
+        required: true
+
+env:
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform
+
+jobs:
+  tf_destroy:
+    name: Destroy the selected environment
+    environment: ${{ inputs.env }}
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt destroy
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
+        env:
+          job_env: "${{ inputs.env }}"
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+        run: |
+          if [ "$job_env" == "tools" ];then export job_env="sandbox";fi
+          cd $job_env
+          terragrunt run-all destroy --terragrunt-non-interactive
+
+
