@@ -13,8 +13,8 @@ on:
       - "!**/README.md"
 
 jobs:
-  pr:
-    name: pr
+  docker_build:
+    name: docker build
     runs-on: ubuntu-22.04
 
     steps:
