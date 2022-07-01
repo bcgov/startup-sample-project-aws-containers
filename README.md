@@ -173,7 +173,12 @@ You will be able to access the client using the address set for the variable clo
 
 [license plate-dev] will take, for example, the following form `bc1dae-dev`
 
+## Contributing
 
+Be aware that pull request from fork will fail due to the lack of access of the secrets variables.  
+You are still welcome to participe but for the plan to work before merge it has to be done from within the repository.
+
+:warning: The terraform plan stage will fail in cross account pr workflow :warning:
 
 ## License
 ```text
