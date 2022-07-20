@@ -1,13 +1,9 @@
 name: Deploy Test
 
 on:
-  workflow_run:
-    workflows:
-      - Tag
-    branches:
+  push:
+    tags:
       - "v[0-9].[0-9]+.[0-9]+-rc*"
-    types:
-      - completed
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
@@ -18,10 +14,39 @@ env:
   TFC_WORKSPACE: test
 
 jobs:
-  cd:
-    name: cd
+  tag:
+    name: Tagging the Docker image
     runs-on: ubuntu-22.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 900
+          role-session-name: startup-sample-project-github-action
+          role-skip-session-tagging: true
+          
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Create Docker Tag
+        run: |
+          docker pull ${{ env.IMAGE_ID }}:${GITHUB_SHA}
+          docker tag ${{ env.IMAGE_ID }}:${GITHUB_SHA} ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/}
+          docker push ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/}
+
+  terraform_apply:
+    name: terraform apply test
+    environment: test
+    runs-on: ubuntu-22.04
+    needs: tag
 
     steps:
       - name: Check out the repo

@@ -1,5 +1,5 @@
 
-name: BrowserStack Test
+name: Test BrowserStack
 
 env:  
      LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
@@ -12,7 +12,7 @@ on:
 jobs:
   ubuntu-job:
 
-    name: BrowserStack Test on Ubuntu
+    name: Test BrowserStack on Ubuntu
     runs-on: ubuntu-latest 
     
     steps:

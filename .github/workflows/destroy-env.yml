@@ -1,25 +1,23 @@
-name: Deploy Dev
-# change to trigger a PR
+name: Destroy environment
+
 on:
-  workflow_run:
-    workflows:
-      - Push
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      env:
+        description: select the environment to destroy
+        type: environment
+        required: true
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
-  
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
-  TFC_WORKSPACE: dev
 
 jobs:
-  cd:
-    name: cd
-    runs-on: ubuntu-22.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  tf_destroy:
+    name: Destroy the selected environment
+    environment: ${{ inputs.env }}
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Check out the repo
@@ -36,9 +34,15 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Terragrunt Apply
+      - name: Terragrunt destroy
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
+          job_env: "${{ inputs.env }}"
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
           LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
-        run: terragrunt run-all apply --terragrunt-non-interactive
+        run: |
+          if [ "$job_env" == "tools" ];then export job_env="sandbox";fi
+          cd $job_env
+          terragrunt run-all destroy --terragrunt-non-interactive
+
+
