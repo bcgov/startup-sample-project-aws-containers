@@ -56,5 +56,9 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-
 .terragrunt-cache
+schema.json
+schema2.json
+.gitignore
+schema3.json
+.gitignore
