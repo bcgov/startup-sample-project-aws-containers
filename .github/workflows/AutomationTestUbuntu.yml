@@ -21,12 +21,14 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+
     - name: Add key
       run: |
            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
     - name: Set repo
       run: |
            echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
     - name: Install Chrome
       run: |
            sudo apt-get update 
@@ -35,39 +37,104 @@ jobs:
     - name: Run the test
       continue-on-error: true
       run: |
-          echo $BASEURL
-          cd functional-tests
-          ./gradlew chromeHeadlessTest --tests="FirstTest"
-          
- #   - name: Install email
- #     run: |
- #       sudo apt-get install mailutils
+            echo $BASEURL
+            cd functional-tests
+            ./gradlew chromeHeadlessTest --tests="FirstTest"
         
     - name: Zip results folder
       run: |
-          zip -r testResults.zip ./functional-tests/build/reports
- #        echo "this is from the echo line" | mail -s "Automated test results" crochcunill@gmail.com -A ./testResults.zip 
+            zip -r testResults.zip ./functional-tests/build/reports
+    
+    - name: Get the apt-get update
+      run: |
+            sudo apt-get update
+    
+    - name: install gpg
+      run: |
+            sudo apt-get -y install gpg
 
-    - name: Send email
+    - name: generate random pwd and save it as env variable
+      run: |
+            export ranPWD=$(echo $(gpg --gen-random --armor 1 8 | sed 's/[^[:alnum:]]//g')) 
+            echo randomPWD=$(echo $ranPWD) >> $GITHUB_ENV
+
+    - name: create combined pwd  and Encrypt README.md
+      run: |
+            echo fullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }}  >> $GITHUB_ENV
+
+    - name: Encrypt README.md
+      run: | 
+            gpg -c --batch --passphrase ${{ env.fullPWD }} -o encryptFolder.gpg testResults.zip
+    
+    - name: Send email with encrypted results
       uses: dawidd6/action-send-mail@v3
       with:
-        # Required mail server address:
-        server_address: ${{secrets.MAIL_SERVER}}
-        # Required mail server port:
-        server_port: 465
-        # Optional (recommended): mail server username:
-        username: ${{secrets.MAIL_USERNAME}}
-        # Optional (recommended) mail server password:
-        password: ${{secrets.MAIL_PASSWORD}}
-        # Required mail subject:
-        subject: Github Actions test job result
-        # Required recipients' addresses:
-        to:  ${{secrets.MAIL_ADDRESS}}
-        # Required sender full name (address can be skipped):
-        from: ${{secrets.MAIL_USERNAME}}
-        # Optional plain body:
-        body: Build job of ${{github.repository}} completed successfully!  
-        # Optional attachments:
-        attachments: testResults.zip 
-    
+          # Required mail server address:
+          server_address: ${{secrets.MAIL_SERVER}}
+          # Required mail server port:
+          server_port: 465
+          # Optional (recommended): mail server username:
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWORD}}
+          # Required mail subject:
+          subject: Encrypted test results for build job ${{github.repository}}
+          # Required recipients' addresses:
+          to:  ${{secrets.MAIL_ADDRESS}}
+          # Required sender full name (address can be skipped):
+          from: ${{secrets.MAIL_USERNAME}}
+          # Optional plain body:
+
+          body: Encrypted test results for build job ${{github.repository}} 
+      
+                The encryptFolder.gpg attachment contains the test results. To view them you need  to
+
+                Decrypt the file with the following command
+
+
+                    **gpg -d --batch --passphrase PASSPHRASE encryptFolder.gpg > testResults.zip**
+
+
+                Where PASSPHRASE is the password you will receive in a second email, hyphen, and your License Plate, like
+
+
+                    **EmailedPassword-LicensePlate**
+
+
+                As example, if the emailed password in the following email is **HauCyjM8fxc** and your license plate is **ab1cde** the passphrase to decrypt the file will be
+
+
+                    **HauCyjM8fxc-ab1cde**
+
+
+                Note - gpg is not installed by default in all OS. You may need to download the appropriate version from https://gnupg.org/
+
+          # Optional attachments:
+          attachments: encryptFolder.gpg    
+
+
+
+
+    - name: Send email with password
+      uses: dawidd6/action-send-mail@v3
+      with:
+          # Required mail server address:
+          server_address: ${{secrets.MAIL_SERVER}}
+          # Required mail server port:
+          server_port: 465
+          # Optional (recommended): mail server username:
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWORD}}
+          # Required mail subject:
+          subject: Password
+          # Required recipients' addresses:
+          to:  ${{secrets.MAIL_ADDRESS}}
+          # Required sender full name (address can be skipped):
+          from: ${{secrets.MAIL_USERNAME}}
+          # Optional plain body:
+
+          body: Password to decrypt the file containing build job ${{github.repository}} test results 
+      
+                    **${{ env.randomPWD }}**
 

@@ -2,6 +2,7 @@ package modules
 
 import geb.Module
 
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.JavascriptExecutor;
@@ -15,10 +16,6 @@ import org.openqa.selenium.chrome.ChromeOptions
 
 import org.openqa.selenium.remote.DesiredCapabilities
 import org.openqa.selenium.remote.LocalFileDetector
-
-
-
-
 
 
 remoteChrome {
@@ -44,12 +41,6 @@ remoteChrome {
     }
 class CheckboxModule extends Module {
 
-
-
-
-
-
-
     def check() {
         this.value(true)
     }
@@ -66,9 +57,11 @@ class CheckboxModule extends Module {
         !isChecked()
     }
 
+
     def annotate(String data, String level, WebDriver driver) {
         final JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript("browserstack_executor: {\"action\": \"annotate\", \"arguments\": {\"data\": \""+ data + "\", \"level\": \"" + level + "\"}}");
     }
+
 
 }

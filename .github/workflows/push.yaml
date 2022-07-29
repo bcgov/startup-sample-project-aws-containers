@@ -1,6 +1,6 @@
 name: Push
 
-# change to trigger a PR
+
 on:
   push:
     branches: [main]
@@ -19,7 +19,7 @@ env:
 jobs:
   ci:
     name: ci
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out the repo

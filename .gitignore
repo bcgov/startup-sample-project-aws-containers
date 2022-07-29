@@ -59,6 +59,5 @@ terraform.rc
 .terragrunt-cache
 schema.json
 schema2.json
-.gitignore
 schema3.json
 .gitignore

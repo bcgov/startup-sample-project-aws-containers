@@ -1,6 +1,5 @@
 name: Pull Request
 
-# change to trigger a PR
 on:
   pull_request:
     paths:
@@ -16,7 +15,7 @@ on:
 jobs:
   pr:
     name: pr
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out the repo
