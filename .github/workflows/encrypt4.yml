@@ -44,10 +44,12 @@ jobs:
           echo envFullPWD=${{ env.randomPWD }}-${{ secrets.MY_LICENSE_PLATE }}  >> $GITHUB_ENV
 
       - name: Encrypt README.md
+
         run: | 
           gpg -c --batch --passphrase ${{ env.envFullPWD }} -o encryptFolder.gpg readme.zip
     
       - name: Send email with encrypted results
+
         uses: dawidd6/action-send-mail@v3
         with:
           # Required mail server address:
@@ -66,6 +68,7 @@ jobs:
           from: ${{secrets.MAIL_USERNAME}}
           # Optional plain body:
 
+
           body: Encrypted test results for build job ${{github.repository}} 
       
                 The encryptFolder.gpg attachment contains the test results. To view them you need  to
@@ -82,6 +85,7 @@ jobs:
 
 
                     **HauCyjM8fxc-ab1cde**
+
 
           # Optional attachments:
           attachments: encryptFolder.gpg    

@@ -25,6 +25,8 @@ if (System.getenv('LICENSE_PLATE') == null) {// LICENSE_PLATE is se as env varia
 else {
 	baseUrl= "https://startup-sample-project.${env['LICENSE_PLATE']}-dev.nimbus.cloud.gov.bc.ca/"
 
+	//baseUrl= "https://d38zvtqpo438f4.cloudfront.net"
+
 }
 
 println "BaseURL ===> $baseUrl" //printing the baseUrl used by the test

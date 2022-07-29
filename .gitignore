@@ -56,10 +56,8 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-
 .terragrunt-cache
 schema.json
 schema2.json
-.gitignore
-functional-tests/src/test/groovy/FirstTest.groovy
 schema3.json
+.gitignore
