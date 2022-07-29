@@ -6,7 +6,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/push.yaml"
-      - ".github/workflows/deploy-*.yaml"
+      - ".github/workflows/deploy-*.yaml"         # I'm not sure this line is usefull? I don't see the usecase
+      - ".github/workflows/deploy-sandbox.yaml"   # But I think this one is important if the way of deploying the Docker change
       - "client/**"
       - "server/**"
       - "terraform/**"
@@ -16,9 +17,15 @@ on:
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
 
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform
+  TFC_WORKSPACE: dev
+
+
 jobs:
-  ci:
-    name: ci
+  docker_push:
+    name: docker push
     runs-on: ubuntu-22.04
 
     steps:
@@ -73,3 +80,31 @@ jobs:
           target: runtime
           push: true
           tags: ${{ env.IMAGE_ID }}:${{ github.sha }}
+
+  terraform_apply:
+    name: terraform apply Dev
+    environment: dev
+    runs-on: ubuntu-22.04
+    needs: docker_push
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
+        env:
+          app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
+          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+        run: terragrunt run-all apply --terragrunt-non-interactive

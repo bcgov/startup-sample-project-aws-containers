@@ -3,6 +3,7 @@ package modules
 import geb.Module
 
 
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.JavascriptExecutor;
@@ -39,6 +40,7 @@ remoteChrome {
             //drvr.setFileDetector(new LocalFileDetector())  //this option allows to tranfers files from local to BrowserStack
         }
     }
+
 class CheckboxModule extends Module {
 
     def check() {
@@ -62,6 +64,7 @@ class CheckboxModule extends Module {
         final JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript("browserstack_executor: {\"action\": \"annotate\", \"arguments\": {\"data\": \""+ data + "\", \"level\": \"" + level + "\"}}");
     }
+
 
 
 }
