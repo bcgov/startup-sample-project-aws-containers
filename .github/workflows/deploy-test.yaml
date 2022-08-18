@@ -54,6 +54,9 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
+      - name: set environment
+        run: echo "${GITHUB_REF#refs/tags/}" >> $APP_TAG
+        
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
@@ -66,6 +69,6 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          app_image: ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/}
+          app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
           LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}          
         run: terragrunt run-all apply --terragrunt-non-interactive
