@@ -1,6 +1,5 @@
 name: Push
 
-
 on:
   push:
     branches: [main]
@@ -21,7 +20,6 @@ env:
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: dev
-
 
 jobs:
   docker_push:
@@ -105,6 +103,6 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
+          app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
           LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive
