@@ -20,12 +20,15 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+      - name: set environment
+        run: echo "${GITHUB_REF#refs/tags/}" >> $APP_TAG
+        
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
           approvers: ${{ github.actor }}
           minimum-approvals: 1
-          issue-title: "Approval for deployment on production environment. Tag: ${{ github.ref }}"
+          issue-title: "Approval for deployment on production environment. Tag: ${{ env.APP_TAG }}"
   
   terraform_plan:
     name: Terraform plan production
@@ -51,7 +54,7 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           TF_CLI_ARGS: -no-color
-          app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
+          app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
           LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
         run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
@@ -179,6 +182,6 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          app_image: ${{ env.IMAGE_ID }}:${GITHUB_REF#refs/tags/}
+          app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
           LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive
