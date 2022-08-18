@@ -55,7 +55,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: set environment
-        run: echo "${GITHUB_REF#refs/tags/}" >> $APP_TAG
+        run: echo "APP_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
         
       - uses: hashicorp/setup-terraform@v1
         with:
