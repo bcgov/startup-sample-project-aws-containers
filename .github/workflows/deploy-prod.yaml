@@ -34,7 +34,7 @@ jobs:
     name: Terraform plan production
     runs-on: ubuntu-22.04
 
-    steps
+    steps:
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
