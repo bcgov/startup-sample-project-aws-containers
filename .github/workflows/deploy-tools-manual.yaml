@@ -3,12 +3,6 @@ name: Deploy tools manual
 on:
   workflow_dispatch:
 
-  push:
-    branches: [main]
-      paths:
-        - "terraform/terragrunt.hcl"
-        - "terraform/tools/**"
-
 env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
