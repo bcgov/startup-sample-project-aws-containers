@@ -6,7 +6,7 @@ on:
     paths:
       - ".github/workflows/push.yaml"
       - ".github/workflows/deploy-*.yaml"         # I'm not sure this line is usefull? I don't see the usecase
-      - ".github/workflows/deploy-sandbox.yaml"   # But I think this one is important if the way of deploying the Docker change
+      - ".github/workflows/deploy-tools.yaml"   # But I think this one is important if the way of deploying the Docker change
       - "client/**"
       - "server/**"
       - "terraform/**"
