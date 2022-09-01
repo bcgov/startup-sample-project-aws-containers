@@ -43,7 +43,7 @@ jobs:
           AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
           LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
         run: |
-          if [ "$job_env" == "tools" ];then export job_env="sandbox";fi
+          if [ "$job_env" == "tools" ];then export job_env="sanbox";fi
           cd $job_env
           terragrunt run-all destroy --terragrunt-non-interactive
 
