@@ -1,6 +1,7 @@
 name: Deploy Sandbox
 
 on:
+  workflow_dispatch:
 
   push:
     branches: [main]
@@ -17,8 +18,8 @@ env:
 
 jobs:
   tf_apply:
-    name: Deploy sandbox AWS ECR
-    environment: sandbox
+    name: Deploy tools AWS ECR
+    environment: tools
     runs-on: ubuntu-22.04
 
     steps:
