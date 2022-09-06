@@ -1,10 +1,10 @@
-name: Terraform Plan Sandbox
+name: Terraform Plan tools
 
 
 on:
   workflow_run:
     workflows:
-      - Pull Request Sandbox
+      - Pull Request tools
     types:
       - completed
 
@@ -12,7 +12,7 @@ env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
-  TFC_WORKSPACE: sandbox
+  TFC_WORKSPACE: tools
 
 jobs:
   plan:

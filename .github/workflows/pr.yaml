@@ -9,7 +9,7 @@ on:
       - "client/**"
       - "server/**"
       - "terraform/**"
-      - "!terraform/sandbox/**"
+      - "!terraform/tools/**"
       - "Dockerfile"
       - "!**/README.md"
 
