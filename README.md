@@ -110,20 +110,6 @@ A more target approach is possible, it is not necessary to authorize entire acco
 - `AWS_REGION` - should be `ca-central-1`
 - `TFC_TEAM_TOKEN` - Terraform Cloud team token with access to Terraform workspaces used to deploy the app and infrastructure to AWS.
 
-
-### Customizing the code
-
-To install the app on the Cloud you will need access to BCGov-SEA Cloud in AWS
-
-In the forked version of the code, you will need to:
-
-
-- replace the project variable with your License Plate (line 4 of _./terraform/terragrunt.hcl_ file)
-- replace the cloud_origin_domain with your license plate value (line 17 _./terraform/dev/terragrunt.hcl_ file)
-- replace the project variable with your License Plate (line 8 of _./terraform/sandbox/terragrunt.hcl_ file)
-
-Note: License plate is one of the access keys provided by the Cloud Pathfinder group to allow access to BCGov SEA - AWS
-
 ### Deployment
 
 The deployment of the sample containers app to the AWS Cloud uses several steps.
@@ -162,7 +148,6 @@ Properly speaking, the Terraform scripts will create an infrastructure plan in t
 
 
 During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
-
 
 
 Inside this container, three containers are created that will host the client, server and DB components of the app.
