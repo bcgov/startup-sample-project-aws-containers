@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/BCDevOps/terraform-octk-aws-workload-ecr.git//.?ref=v0.0.3"
+  source = "git::https://github.com/kdesao-devops/terraform-octk-aws-workload-ecr.git//.?ref=OIDC_integration"
 }
 
 include {
