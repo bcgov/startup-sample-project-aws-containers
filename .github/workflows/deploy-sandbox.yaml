@@ -16,6 +16,10 @@ env:
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: sandbox
 
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
 jobs:
   tf_apply:
     name: Deploy sandbox AWS ECR
@@ -28,10 +32,15 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ca-central-1
+
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:
