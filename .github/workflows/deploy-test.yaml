@@ -13,25 +13,25 @@ env:
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: test
 
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
 jobs:
   tag:
     name: Tagging the Docker image
+    environment: tools
     runs-on: ubuntu-22.04
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-duration-seconds: 900
-          role-session-name: startup-sample-project-github-action
-          role-skip-session-tagging: true
+          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ca-central-1
           
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -56,11 +56,16 @@ jobs:
 
       - name: set environment
         run: echo "APP_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ca-central-1
         
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - uses: peter-murray/terragrunt-github-action@v1.0.0
         with:

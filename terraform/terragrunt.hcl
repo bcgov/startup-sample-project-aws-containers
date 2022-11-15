@@ -1,9 +1,8 @@
 locals {
-  tfc_hostname     = "app.terraform.io"
-  tfc_organization = "bcgov"
-  project          = get_env("LICENSE_PLATE")
-  environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  app_image        = get_env("app_image", "")
+  tfc_hostname        = "app.terraform.io"
+  project             = get_env("LICENSE_PLATE")
+  environment         = reverse(split("/", get_terragrunt_dir()))[0]
+  app_image           = get_env("app_image", "")
 }
 
 generate "remote_state" {
@@ -11,12 +10,10 @@ generate "remote_state" {
   if_exists = "overwrite"
   contents  = <<EOF
 terraform {
-  backend "remote" {
-    hostname = "${local.tfc_hostname}"
-    organization = "${local.tfc_organization}"
-    workspaces {
-      name = "${local.project}-${local.environment}"
-    }
+  backend "s3" {
+    bucket         = "terraform-remote-state-${ local.project }-${ local.environment }"
+    key            = "${ local.project }/${ local.environment }/containers-app.tfstate"
+    dynamodb_table = "terraform-remote-state-lock-${ local.project }"
   }
 }
 EOF
@@ -28,6 +25,7 @@ generate "tfvars" {
   disable_signature = true
   contents          = <<-EOF
 app_image = "${local.app_image}"
+target_env = "${local.environment}"
 EOF
 }
 
@@ -37,9 +35,6 @@ generate "provider" {
   contents  = <<EOF
 provider "aws" {
   region  = var.aws_region
-  assume_role {
-    role_arn = "arn:aws:iam::$${var.target_aws_account_id}:role/BCGOV_$${var.target_env}_Automation_Admin_Role"
-  }
 }
 EOF
 }
