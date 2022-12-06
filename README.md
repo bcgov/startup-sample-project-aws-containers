@@ -92,9 +92,11 @@ These roles ARN, necessary to access AWS Cloud, are set for every Github environ
 
 
 The required environment Secrets are:
-  - `TERRAFORM_DEPLOY_ROLE_ARN` This is the ARN of IAM Role used to deploy resources through the Github action authenticate with the GitHub OpenID Connect. You also need to link that role to the correct IAM Policy.
-  - - To access the `TERRAFORM_DEPLOY_ROLE_ARN` you need to create it beforehand manually in each account. Then you have to add the right arn for each Github environment.
-  To create it you need can use this example of thrust relationship :
+  - `TERRAFORM_DEPLOY_ROLE_ARN` This is the ARN of IAM Role used to deploy resources through the Github action authenticate with the GitHub OpenID Connect. 
+  - - Create the IAM Policy for `tools` or `Sandbox`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/Registry_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
+  - - Create the IAM Policy for `dev` `test` and `prod`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/App_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
+  - - To access the `TERRAFORM_DEPLOY_ROLE_ARN` you need to create the role beforehand and link them to the previously created policies in each account. Then you have to add the right arn for each Github environment.      
+  To create the role trust relationship you can use this example:
   ```
   {
     "Version": "2012-10-17",
