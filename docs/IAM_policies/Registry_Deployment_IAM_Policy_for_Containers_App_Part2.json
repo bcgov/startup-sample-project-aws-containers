@@ -15,8 +15,8 @@
                 "cloudwatch:ListTagsForResource"
             ],
             "Resource": [
-                "arn:aws:cloudwatch:ca-central-1:543383467875:alarm:sample_cpu_utilization_*",
-                "arn:aws:cloudwatch:ca-central-1:543383467875:insight-rule/*"
+                "arn:aws:cloudwatch:ca-central-1:381594649727:alarm:sample_cpu_utilization_*",
+                "arn:aws:cloudwatch:ca-central-1:381594649727:insight-rule/*"
             ]
         },
         {
@@ -35,9 +35,9 @@
                 "dynamodb:ListTagsOfResource"
             ],
             "Resource": [
-                "arn:aws:dynamodb:ca-central-1:543383467875:table/ssp-greetings"
+                "arn:aws:dynamodb:ca-central-1:381594649727:table/ssp-greetings"
             ]
-        }, 
+        },
         {
             "Sid": "Cloudfront",
             "Effect": "Allow",
@@ -54,9 +54,9 @@
                 "cloudfront:DeleteDistribution"
             ],
             "Resource": [
-                "arn:aws:cloudfront::543383467875:cache-policy/*",
-                "arn:aws:cloudfront::543383467875:streaming-distribution/*",
-                "arn:aws:cloudfront::543383467875:distribution/*"
+                "arn:aws:cloudfront::381594649727:cache-policy/*",
+                "arn:aws:cloudfront::381594649727:streaming-distribution/*",
+                "arn:aws:cloudfront::381594649727:distribution/*"
             ]
         },
         {
@@ -71,7 +71,7 @@
                 "SNS:SetTopicAttributes"
             ],
             "Resource": [
-                "arn:aws:sns:ca-central-1:543383467875:startup-sample-billing-alert-topic"
+                "arn:aws:sns:ca-central-1:381594649727:startup-sample-billing-alert-topic"
             ]
         },
         {
@@ -89,13 +89,13 @@
                 "ecs:UpdateService"
             ],
             "Resource": [
-                "arn:aws:ecs:ca-central-1:543383467875:task-set/sample-cluster/sample-service/*",
-                "arn:aws:ecs:ca-central-1:543383467875:cluster/sample-cluster",
-                "arn:aws:ecs:ca-central-1:543383467875:task/sample-cluster/*",
-                "arn:aws:ecs:ca-central-1:543383467875:container-instance/sample-cluster/*",
-                "arn:aws:ecs:ca-central-1:543383467875:task-definition/sample-app-task:*",
-                "arn:aws:ecs:ca-central-1:543383467875:service/sample-cluster/sample-service",
-                "arn:aws:ecs:ca-central-1:543383467875:capacity-provider/FARGATE_SPOT"
+                "arn:aws:ecs:ca-central-1:381594649727:task-set/sample-cluster/sample-service/*",
+                "arn:aws:ecs:ca-central-1:381594649727:cluster/sample-cluster",
+                "arn:aws:ecs:ca-central-1:381594649727:task/sample-cluster/*",
+                "arn:aws:ecs:ca-central-1:381594649727:container-instance/sample-cluster/*",
+                "arn:aws:ecs:ca-central-1:381594649727:task-definition/sample-app-task:*",
+                "arn:aws:ecs:ca-central-1:381594649727:service/sample-cluster/sample-service",
+                "arn:aws:ecs:ca-central-1:381594649727:capacity-provider/FARGATE_SPOT"
             ]
         },
         {
@@ -115,8 +115,34 @@
                 "ec2:DeleteTags"
             ],
             "Resource": [
-                "arn:aws:ec2:ca-central-1:543383467875:security-group/*",
-                "arn:aws:ec2:ca-central-1:543383467875:vpc/*"
+                "arn:aws:ec2:ca-central-1:381594649727:security-group/*",
+                "arn:aws:ec2:ca-central-1:381594649727:vpc/*"
+            ]
+        },
+        {
+            "Sid": "ECR",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchImportUpstreamImage",
+                "ecr:CreateRepository",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:CompleteLayerUpload",
+                "ecr:GetAuthorizationToken",
+                "ecr:PutRegistryScanningConfiguration",
+                "ecr:BatchGetRepositoryScanningConfiguration",
+                "ecr:DeletePullThroughCacheRule",
+                "ecr:InitiateLayerUpload",
+                "ecr:DeleteRepository",
+                "ecr:PutImage",
+                "ecr:DescribeRepositories",
+                "ecr:ListTagsForResource",
+                "ecr:GetRepositoryPolicy",
+                "ecr:DeleteRepositoryPolicy",
+                "ecr:SetRepositoryPolicy"
+            ],
+            "Resource": [
+                "*"
             ]
         }
     ]
