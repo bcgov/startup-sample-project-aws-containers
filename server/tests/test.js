@@ -1,14 +1,12 @@
-const request = require('supertest');
-
 describe('Example Tests', () => {
 
-  it('Test 1', async (done) => {
+  it('Test 1', function (done) {
     expect(true).toEqual(true);
-    done();
+    return done();
   });
 
-  it('Test 2', async (done) => {
+  it('Test 2', function (done) {
     expect(false).toEqual(false);
-    done();
+    return done();
   });
 });

@@ -3,24 +3,25 @@ const favicon = require("serve-favicon");
 const bodyParser = require("body-parser");
 const path = require("path");
 const { randomBytes } = require("crypto");
-const { passport } = require("./auth.js");
 const requireHttps = require("./require-https.js");
 const { validate, GreetingSchema } = require("./validation.js");
 const multer = require("multer");
-const cors = require("cors");
-const { uploadFile, getFileStream } = require("./s3");
-let dbClient = null;
-let collections = null;
-let dynamodbClient = null;
-if ("development" === process.env.NODE_ENV) dbClient = require("./db").dbClient;
-if ("development" === process.env.NODE_ENV)
-  collections = require("./db").collections;
-if ("development" !== process.env.NODE_ENV)
-  dynamodbClient = require("./db").dynamodbClient;
+const uploadFile = require("./s3");
 const { errorHandler, asyncMiddleware } = require("./error-handler.js");
 const logger = require("./logger.js");
 const util = require("util");
 const fs = require("fs");
+
+let dbClient = null;
+let collections = null;
+let dynamodbClient = null;
+if ("development" === process.env.NODE_ENV)
+  dbClient = require("./db").dbClient;
+if ("development" === process.env.NODE_ENV)
+  collections = require("./db").collections;
+if ("development" !== process.env.NODE_ENV)
+  dynamodbClient = require("./db").dynamodbClient;
+
 const unlinkFile = util.promisify(fs.unlink);
 
 const apiBaseUrl = "/api/v1";
@@ -66,13 +67,8 @@ app.use((req, res, next) => {
 });
 app.post(`${apiBaseUrl}/images`, upload.single('image'), async (req, res) => {
   const file = req.file
-  console.log(file)
-  // apply filter
-  // resize 
   const result = await uploadFile(file)
   await unlinkFile(file.path)
-  console.log(result)
-  const description = req.body.description
   res.send({imagePath: `/images/${result.Key}`})
 })
 

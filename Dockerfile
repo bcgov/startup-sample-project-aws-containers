@@ -1,5 +1,5 @@
 # Client
-FROM node:12-alpine AS client
+FROM node:14-alpine AS client
 
 # Install build deps
 RUN apk add python3 make g++
