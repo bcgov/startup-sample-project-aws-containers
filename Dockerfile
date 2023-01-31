@@ -13,7 +13,7 @@ COPY client/. .
 RUN npm run build
 
 # Server
-FROM node:12-alpine AS server
+FROM node:14-alpine AS server
 
 # Run server
 COPY --from=client /client/build /client/build/.
