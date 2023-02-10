@@ -27,12 +27,11 @@
                 "s3:ListBucket",
                 "s3:DeleteBucket",
                 "s3:PutBucketAcl",
-                "s3:PutBucketPolicy"
+                "s3:PutBucketPolicy",
+                "s3:GetBucketPolicy",
+                "s3:*"
             ],
-            "Resource": [
-                "arn:aws:s3:::upload-bucket*",
-                "arn:aws:s3:::terraform-remote-state-s7g5b4-tools"
-            ]
+            "Resource": "*"
         },
         {
             "Sid": "S3AppRights",
@@ -43,11 +42,10 @@
                 "s3:GetObject",
                 "s3:PutObjectTagging",
                 "s3:DeleteObject",
-                "s3:PutObjectAcl"
+                "s3:PutObjectAcl",
+                "s3:GetObjectAcl"
             ],
-            "Resource": [
-                "arn:aws:s3:::upload-bucket*/*"
-            ]
+            "Resource": "*"
         },
         {
             "Sid": "S3TerraformBackend",
@@ -57,7 +55,7 @@
                 "s3:PutObject",
                 "s3:DeleteObject"
             ],
-            "Resource": "arn:aws:s3:::terraform-remote-state-s7g5b4-tools/s7g5b4/tools/containers-app.tfstate"
+            "Resource": "*"
         },
         {
             "Sid": "DynamoDBTerraformLock",
@@ -68,7 +66,7 @@
                 "dynamodb:PutItem",
                 "dynamodb:DeleteItem"
             ],
-            "Resource": "arn:aws:dynamodb:ca-central-1:381594649727:table/terraform-remote-state-lock-s7g5b4"
+            "Resource": "*"
         },
         {
             "Sid": "ELB",
@@ -94,11 +92,7 @@
                 "elasticloadbalancing:DeleteTargetGroup",
                 "elasticloadbalancing:CreateRule"
             ],
-            "Resource": [
-                "arn:aws:elasticloadbalancing:ca-central-1:381594649727:listener-rule/app/default/*/*/*",
-                "arn:aws:elasticloadbalancing:ca-central-1:381594649727:targetgroup/sample-target-group/*",
-                "arn:aws:elasticloadbalancing:ca-central-1:381594649727:listener/app/default/*"
-            ]
+            "Resource": "*"
         },
         {
             "Sid": "IAM",
@@ -121,14 +115,7 @@
                 "iam:PutRolePolicy",
                 "iam:PassRole"
             ],
-            "Resource": [
-                "arn:aws:iam::381594649727:policy/ecs_task_execution_cwlogs",
-                "arn:aws:iam::381594649727:policy/sample_app_container_cwlogs",
-                "arn:aws:iam::381594649727:policy/upload_bucket_policy",
-                "arn:aws:iam::381594649727:policy/sample_app_dynamodb",
-                "arn:aws:iam::381594649727:role/startupSampleEcsTaskExecutionRole",
-                "arn:aws:iam::381594649727:role/sample_app_container_role"
-            ]
+            "Resource": "*"
         },
         {
             "Sid": "Budgets",
@@ -138,10 +125,7 @@
                 "budgets:DescribeBudgetAction",
                 "budgets:ModifyBudget"
             ],
-            "Resource": [
-                "arn:aws:budgets::381594649727:budget/startup-sample-monthly/action/*",
-                "arn:aws:budgets::381594649727:budget/startup-sample-monthly"
-            ]
+            "Resource": "*"
         }
     ]
 }
