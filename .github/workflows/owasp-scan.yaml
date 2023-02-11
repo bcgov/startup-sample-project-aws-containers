@@ -50,7 +50,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: zap_scan
-          path: public/zapß
+          path: public/zap
       - name: Rename Markdown
         if: ${{ inputs.ZAP_GCP_PUBLISH }}
         run: |
