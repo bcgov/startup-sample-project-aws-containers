@@ -6,7 +6,7 @@ env:
     ZAP_SCAN_TYPE: 'base'
     ZAP_DURATION: '2'
     ZAP_MAX_DURATION: '5'
-    ZAP_GCP_PUBLISH: true
+    ZAP_GCP_PUBLISH: false
 
 jobs:
   owasp-scan:
