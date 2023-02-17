@@ -18,7 +18,7 @@ generate "dev_tfvars" {
     alb_name = "default"
     cloudfront = true
 
-    cloudfront_origin_domain = "startup-sample-project.${local.project}-dev.lz1.nimbus.cloud.gov.bc.ca"
+    cloudfront_origin_domain = "startup-sample-project.${local.project}-dev.lz0.nimbus.cloud.gov.bc.ca"
 
     service_names = ["startup-sample-project"]
   EOF
