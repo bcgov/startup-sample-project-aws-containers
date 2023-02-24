@@ -124,9 +124,7 @@
                 "ecr:DeleteRepositoryPolicy",
                 "ecr:SetRepositoryPolicy"
             ],
-            "Resource": [
-                "arn:aws:ecr:ca-central-1:102080501222:*"
-            ]
+            "Resource": "*"
         }
     ]
 }
