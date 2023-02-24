@@ -15,7 +15,7 @@
                 "cloudwatch:ListTagsForResource"
             ],
             "Resource": [
-                "arn:aws:cloudwatch:ca-central-1:094518233030:*"
+                "arn:aws:cloudwatch:ca-central-1:102080501222:*"
             ]
         },
         {
@@ -34,7 +34,7 @@
                 "cloudfront:DeleteDistribution"
             ],
             "Resource": [
-                "arn:aws:cloudfront::094518233030:*"
+                "arn:aws:cloudfront::102080501222:*"
             ]
         },
         {
@@ -49,7 +49,7 @@
                 "SNS:SetTopicAttributes"
             ],
             "Resource": [
-                "arn:aws:sns:ca-central-1:094518233030:*"
+                "arn:aws:sns:ca-central-1:102080501222:*"
             ]
         },
         {
@@ -67,7 +67,7 @@
                 "ecs:UpdateService"
             ],
             "Resource": [
-                "arn:aws:ecs:ca-central-1:094518233030:*"
+                "arn:aws:ecs:ca-central-1:102080501222:*"
             ]
         },
         {
@@ -87,8 +87,8 @@
                 "ec2:DeleteTags"
             ],
             "Resource": [
-                "arn:aws:ec2:ca-central-1:094518233030:security-group/*",
-                "arn:aws:ec2:ca-central-1:094518233030:vpc/*"
+                "arn:aws:ec2:ca-central-1:102080501222:security-group/*",
+                "arn:aws:ec2:ca-central-1:102080501222:vpc/*"
             ]
         },
         {
@@ -125,7 +125,7 @@
                 "ecr:SetRepositoryPolicy"
             ],
             "Resource": [
-                "arn:aws:ec2:ca-central-1:094518233030:*"
+                "arn:aws:ecr:ca-central-1:102080501222:*"
             ]
         }
     ]
