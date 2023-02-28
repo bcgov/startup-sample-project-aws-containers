@@ -15,7 +15,8 @@
                 "ecs:DeregisterTaskDefinition",
                 "ecs:RegisterTaskDefinition",
                 "elasticloadbalancing:Describe*",
-                "ec2:Describe*"
+                "ec2:Describe*",
+                "sts:AssumeRole"
             ],
             "Resource": "*"
         },
