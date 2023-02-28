@@ -15,7 +15,7 @@
                 "cloudwatch:ListTagsForResource"
             ],
             "Resource": [
-                "arn:aws:cloudwatch:ca-central-1:102080501222:*"
+                "arn:aws:cloudwatch:ca-central-1:480473078511:*"
             ]
         },
         {
@@ -34,7 +34,7 @@
                 "cloudfront:DeleteDistribution"
             ],
             "Resource": [
-                "arn:aws:cloudfront::102080501222:*"
+                "arn:aws:cloudfront::480473078511:*"
             ]
         },
         {
@@ -49,7 +49,7 @@
                 "SNS:SetTopicAttributes"
             ],
             "Resource": [
-                "arn:aws:sns:ca-central-1:102080501222:*"
+                "arn:aws:sns:ca-central-1:480473078511:*"
             ]
         },
         {
@@ -67,7 +67,7 @@
                 "ecs:UpdateService"
             ],
             "Resource": [
-                "arn:aws:ecs:ca-central-1:102080501222:*"
+                "arn:aws:ecs:ca-central-1:480473078511:*"
             ]
         },
         {
@@ -87,8 +87,8 @@
                 "ec2:DeleteTags"
             ],
             "Resource": [
-                "arn:aws:ec2:ca-central-1:102080501222:security-group/*",
-                "arn:aws:ec2:ca-central-1:102080501222:vpc/*"
+                "arn:aws:ec2:ca-central-1:480473078511:security-group/*",
+                "arn:aws:ec2:ca-central-1:480473078511:vpc/*"
             ]
         },
         {

@@ -16,7 +16,8 @@
                 "ecs:RegisterTaskDefinition",
                 "elasticloadbalancing:Describe*",
                 "ec2:Describe*",
-                "sts:AssumeRole"
+                "sts:AssumeRole",
+                "sts:AssumeRoleWithWebIdentity"
             ],
             "Resource": "*"
         },
@@ -38,7 +39,7 @@
                 "dynamodb:*"
             ],
             "Resource": [
-                "arn:aws:dynamodb:ca-central-1:102080501222:table/*"
+                "arn:aws:dynamodb:ca-central-1:480473078511:table/*"
             ]
         },
         {
@@ -66,9 +67,9 @@
                 "elasticloadbalancing:CreateRule"
             ],
             "Resource": [
-                "arn:aws:elasticloadbalancing:ca-central-1:102080501222:listener-rule/app/default/*/*/*",
-                "arn:aws:elasticloadbalancing:ca-central-1:102080501222:targetgroup/sample-target-group/*",
-                "arn:aws:elasticloadbalancing:ca-central-1:102080501222:listener/app/default/*"
+                "arn:aws:elasticloadbalancing:ca-central-1:480473078511:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:480473078511:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:480473078511:listener/app/default/*"
             ]
         },
         {
@@ -93,12 +94,12 @@
                 "iam:PassRole"
             ],
             "Resource": [
-                "arn:aws:iam::102080501222:policy/ecs_task_execution_cwlogs",
-                "arn:aws:iam::102080501222:policy/sample_app_container_cwlogs",
-                "arn:aws:iam::102080501222:policy/upload_bucket_policy",
-                "arn:aws:iam::102080501222:policy/sample_app_dynamodb",
-                "arn:aws:iam::102080501222:role/startupSampleEcsTaskExecutionRole",
-                "arn:aws:iam::102080501222:role/sample_app_container_role"
+                "arn:aws:iam::480473078511:policy/ecs_task_execution_cwlogs",
+                "arn:aws:iam::480473078511:policy/sample_app_container_cwlogs",
+                "arn:aws:iam::480473078511:policy/upload_bucket_policy",
+                "arn:aws:iam::480473078511:policy/sample_app_dynamodb",
+                "arn:aws:iam::480473078511:role/startupSampleEcsTaskExecutionRole",
+                "arn:aws:iam::480473078511:role/sample_app_container_role"
             ]
         },
         {
@@ -110,8 +111,8 @@
                 "budgets:ModifyBudget"
             ],
             "Resource": [
-                "arn:aws:budgets::102080501222:budget/startup-sample-monthly/action/*",
-                "arn:aws:budgets::102080501222:budget/startup-sample-monthly"
+                "arn:aws:budgets::480473078511:budget/startup-sample-monthly/action/*",
+                "arn:aws:budgets::480473078511:budget/startup-sample-monthly"
             ]
         }
     ]
