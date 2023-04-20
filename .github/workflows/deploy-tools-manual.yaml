@@ -25,10 +25,16 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
+      - name: Show vars4
+        run: echo ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN}}
+      
+      - name: Show vars5
+        run: echo ${{ vars.LICENSEPLATE }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v1
@@ -42,6 +48,6 @@ jobs:
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ vars.LICENSEPLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive

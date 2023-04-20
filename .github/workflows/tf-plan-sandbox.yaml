@@ -41,7 +41,7 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ secrets.LICENSPLATE }}
         run: terragrunt plan-all --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 

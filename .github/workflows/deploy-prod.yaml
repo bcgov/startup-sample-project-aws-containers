@@ -1,13 +1,11 @@
 name: Deploy Prod
 
 on:
-  push:
-    tags:
-      - "v[0-9].[0-9]+.[0-9]+"
+  workflow_dispatch:
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
-  LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+  IMAGE_ID: ${{ vars.AWS_ECR_URI }}
+  LICENSE_PLATE: ${{ vars.LICENSEPLATE }}
 
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -51,7 +49,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v1
@@ -68,7 +66,7 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.LICENSEPLATE }}
         run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
@@ -88,7 +86,7 @@ jobs:
       - name: Upload inframap
         id: inframap
         run: |
-          IMGBBURL=$(curl -s -L -X POST "https://api.imgbb.com/1/upload?key=${{ secrets.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
+          IMGBBURL=$(curl -s -L -X POST "https://api.imgbb.com/1/upload?key=${{ vars.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
           echo "::set-output name=imgurl::$IMGBBURL"
 
       - name: Get Terraform Plan Output
@@ -111,7 +109,7 @@ jobs:
           FAILURE: '\u274C'
           INFRAMAP_URL: ${{ steps.inframap.outputs.imgurl }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ vars.GITHUB_TOKEN }}
           script: |
             var fs = require('fs');
             var ev = JSON.stringify(${{ steps.issue_number.outputs['data'] }});
@@ -155,7 +153,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
           
       - name: Login to Amazon ECR
@@ -185,7 +183,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v1
@@ -200,5 +198,5 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.LICENSEPLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive

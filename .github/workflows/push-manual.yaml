@@ -5,7 +5,7 @@ on:
 
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
+  IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -26,10 +26,13 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+      - name: Show TERRAFORM_DEPLOY_ROLE_ARN - I think is for tools env
+        run: echo ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN}}   
+
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - name: Login to Amazon ECR
@@ -45,10 +48,10 @@ jobs:
             
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Test
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -57,9 +60,12 @@ jobs:
           file: ./Dockerfile
           target: test
 
+      - name: Show TERRAFORM_DEPLOY_ROLE_ARN - I think is for tools env
+        run: echo ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN}}
+
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -82,10 +88,13 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
+      - name: Show TERRAFORM_DEPLOY_ROLE_ARN - I think is for dev env
+        run: echo ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN}}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v1
@@ -100,5 +109,5 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.LICENSEPLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive

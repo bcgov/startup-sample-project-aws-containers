@@ -38,31 +38,30 @@ once set, navigate to `../functional-test` and execute run the following command
 Note: You need to set LICENSE_PLATE as an env variable, as it is part of the URL of the containers app when the app is running in AWS. If the app is running locally on your machine (see section `Run the test locally with containers app running locally`), then GebConfig.groovy will default to "http://localhost:4000/"`  (it assumes that LICENSE_PLATE has not been set as env variable and is therefore null)
 
 Note: The specific capabilities of the browser that you are firing in BrowserStack are defined in GebConfig.groovy in the remoteChrome environment. The BrowserStack username and Access key are not hardcoded but retrieved through environmental variables
+
 ## Run the test scripts on GitHub CI/CD pipeline using actions firing a browser in BrowserStack cloud 
 Currently the GitHub action `startup-sample-project-aws-containers/.github/workflows/browserStackTest.yml` will run the tests in GitHub controlling the browser hosted on Browser stack and connecting to the containers app stored in AWS.
 
-To run it you will nee to set the following secrets in GitHib
+To run it you will nee to set the following repository variables in GitHub. They are the same ones that are required to install the app in AWS (check `startup-sample-project-aws-containers/functional-tests/Readme.md` for more information)
 
-The following secrets are the same that are required to install the app in AWS (check `startup-sample-project-aws-containers/functional-tests/Readme.md` for more information)
-- AWS_ACCESS_KEY_ID
+- LICENSEPLATE
 - AWS_ACCOUNTS_ECR_READ_ACCESS
 - AWS_ECR_URI
-- AWS_REGION
-- AWS_ROLE_TO_ASSUME
-- AWS_SECRET_ACCESS_KEY
 
-- MY_LICENSE_PLATE
-- TFC_TEAM_TOKEN
+And the following environmental variables
+- TERRAFORM_DEPLOY_ROLE_ARN for the dev environment.
+- TERRAFORM_DEPLOY_ROLE_ARN for the test environment.
 
-The following secrets need to be set to run the test using BrowserStack servers
+You will need also to set up GitHub secrets to run the test using BrowserStack servers (workflow TestBrowserStack.yml)
 - BROWSERSTACK_ACCESS_KEY
 - BROWSERSTACK_USERNAME
-
-The following secrets need to be set to mail the test results to the account of your choice
 - MAIL_ADDRESS
 - MAIL_PASSWORD
 - MAIL_SERVER
 - MAIL_USERNAME
+
+
+The last four secrets need to be set to email the test results to the account of your choice.
 
 
 ## Run the test scripts on GitHub CI/CD pipeline (not using BrowseStack)
@@ -77,7 +76,13 @@ it means you need to update the ChromeDriver version. This is set in the file `b
 
   Note: Same approach applies to other browsers.
 
-As currently configured, you need to set the same github secrets as the previous section excluding the BrowserStack specific ones.
+As currently configured, to successfully run this workflow you need to set the following github secrets 
+
+- MAIL_ADDRESS
+- MAIL_PASSWORD
+- MAIL_SERVER
+- MAIL_USERNAME
+
 
 The results of the test will be zipped, encrypted and emailed to the address set in ${{secrets.MAIL_ADDRESS}}.
 

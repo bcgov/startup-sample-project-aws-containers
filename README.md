@@ -88,10 +88,10 @@ This code assumes that you have access to AWS Cloud and that you have created IA
 
 Once the project set is created, it will have one or more service accounts associated each of them with different IAM Roles ARN.
 
-These roles ARN, necessary to access AWS Cloud, are set for every Github environment. The values themselves are stored as GitHub environment _Secrets_
+These roles ARN, necessary to access AWS Cloud, are set for every Github environment. The values themselves are stored as GitHub environment _Variables_
 
 
-The required environment Secrets are:
+The required environment Variables are:
   - `TERRAFORM_DEPLOY_ROLE_ARN` This is the ARN of IAM Role used to deploy resources through the Github action authenticate with the GitHub OpenID Connect. 
   - - Create the IAM Policy for `tools` or `Sandbox`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/Registry_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
   - - Create the IAM Policy for `dev` `test` and `prod`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/App_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
@@ -121,7 +121,7 @@ The required environment Secrets are:
 }
   ```
 
-For the following secret they are global for every account so you can put them as Github repository _Secrets_
+For the following secret they are global for every account so you can put them as Github repository _Variables_
 
 - `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format `arn:aws:iam::############:root` where `############` is your AWS account number. For exmple: 
 
@@ -135,7 +135,7 @@ For the following secret they are global for every account so you can put them a
 
 The deployment of the sample containers app to the AWS Cloud uses several steps.
 
-- Configure the _Secrets_ in your GitHub repository
+- Configure the _Variables_ in your GitHub repository
 - Execute a _Pull Request_ to the GitHub repository that includes the changes described in the previous section
 
 
@@ -183,15 +183,16 @@ You will be able to access the client using the address set for the variable clo
 
 ## Contributing
 
-Be aware that pull request from fork will fail due to the lack of access of the secrets variables.  
-You are still welcome to participe but for the plan to work before merge it has to be done from within the repository.
+Be aware that pull request from fork will fail due to the lack of access to the Variables.  
+
+You are welcome to contribute but for the plan to work before merge it has to be done from within the repository.
 
 :warning: The terraform plan stage will fail in cross account pr workflow :warning:
 
 
 ## License
 ```text
-Copyright 2021 Province of British Columbia
+Copyright 2023 Province of British Columbia
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

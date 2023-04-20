@@ -1,11 +1,7 @@
 name: Pull Request Sandbox
 # change to trigger a PR
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/pr-sandbox.yaml"
-      - ".github/workflows/tf-plan-sandbox.yaml"
-      - "terraform/sandbox/**"
+  workflow_dispatch:
 
 jobs:
   pr:

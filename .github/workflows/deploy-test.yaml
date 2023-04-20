@@ -1,9 +1,7 @@
 name: Deploy Test
 
 on:
-  push:
-    tags:
-      - "v[0-9].[0-9]+.[0-9]+-rc*"
+  workflow_dispatch:
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
@@ -75,5 +73,5 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}          
+          LICENSE_PLATE: ${{ secrets.LICENSEPLATE }}          
         run: terragrunt run-all apply --terragrunt-non-interactive
