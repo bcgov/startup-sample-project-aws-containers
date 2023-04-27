@@ -1,7 +1,9 @@
 name: Deploy Test
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - "v[0-9].[0-9]+.[0-9]+-rc*"
 
 env:
   IMAGE_ID: ${{ secrets.AWS_ECR_URI }}

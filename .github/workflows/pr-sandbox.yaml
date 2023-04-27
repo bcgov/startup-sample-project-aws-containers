@@ -1,14 +1,17 @@
 name: Pull Request Sandbox
 # change to trigger a PR
 on:
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/pr-sandbox.yaml"
+      - ".github/workflows/tf-plan-sandbox.yaml"
+      - "terraform/sandbox/**"
 
 jobs:
   pr:
     name: pr_sandbox
 
     runs-on: ubuntu-22.04
-
 
     steps:
       - name: Save PR number
