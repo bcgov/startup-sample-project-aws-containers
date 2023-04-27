@@ -27,18 +27,17 @@ In order to develop or run the app locally, you will need the following:
 
 1. Fork the app repository to your GitHub repository
 2. Clone the repository to your local machine and open it in VS Code.
-3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`
+3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`. It will build and launch the container defined by _./.devcontainer/DockerFile_
 4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
-5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by _./.devcontainer/DockerFile_
-6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like:
+5. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like:
       `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
-7. Type:
+6. Type:
     `docker-compose -f docker-compose.dev.yml build`
 to build the client, server and mongo containers (inside the main container)
-8. Type:
+7. Type:
     `docker-compose -f docker-compose.dev.yml up -d`
 to run the containers (inside the main container)
-9. Clicking on the PORTS tab (in Terminal) You will see
+8. Clicking on the PORTS tab (in Terminal) You will see
 
 
 ![alt text](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/images/ports.png)
