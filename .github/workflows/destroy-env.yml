@@ -27,21 +27,21 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - uses: peter-murray/terragrunt-github-action@v1.0.0
+      - uses: autero1/action-terragrunt@v1.3.1
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
@@ -49,8 +49,8 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           job_env: "${{ inputs.env }}"
-          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ vars.MY_LICENSE_PLATE }}
         run: |
           # if [ "$job_env" == "tools" ];then export job_env="sandbox";fi
           cd $job_env

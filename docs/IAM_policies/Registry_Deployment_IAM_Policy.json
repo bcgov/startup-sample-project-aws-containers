@@ -2,79 +2,46 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "ECRGeneral",
+            "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
                 "ecr:GetRegistryPolicy",
-                "ecr:BatchImportUpstreamImage",
+                "dynamodb:ListTables",
                 "ecr:CreateRepository",
                 "ecr:DescribeRegistry",
+                "ecr:DescribePullThroughCacheRules",
                 "ecr:GetAuthorizationToken",
+                "ecr:PutRegistryScanningConfiguration",
+                "ecr:CreatePullThroughCacheRule",
+                "ecr:DeletePullThroughCacheRule",
+                "ecr:PutRegistryPolicy",
                 "ecr:GetRegistryScanningConfiguration",
+                "ecr:BatchImportUpstreamImage",
+                "ecr:DeleteRegistryPolicy",
                 "ecr:PutReplicationConfiguration"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "ECR",
-            "Effect": "Allow",
-            "Action": [
-                "ecr:PutImageTagMutability",
-                "ecr:ListTagsForResource",
-                "ecr:UploadLayerPart",
-                "ecr:BatchDeleteImage",
-                "ecr:ListImages",
-                "ecr:DeleteRepository",
-                "ecr:CompleteLayerUpload",
-                "ecr:TagResource",
-                "ecr:DescribeRepositories",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetLifecyclePolicy",
-                "ecr:PutLifecyclePolicy",
-                "ecr:DeleteLifecyclePolicy",
-                "ecr:PutImage",
-                "ecr:UntagResource",
-                "ecr:BatchGetImage",
-                "ecr:DescribeImages",
-                "ecr:InitiateLayerUpload",
-                "ecr:GetRepositoryPolicy",
-                "ecr:DeleteRepositoryPolicy",
-                "ecr:SetRepositoryPolicy"
-            ],
-            "Resource": "arn:aws:ecr:ca-central-1:<Account_ID>:repository/ssp"
-        },
-        {
-            "Sid": "DynamoDB",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-                "dynamodb:GetItem"
-            ],
-            "Resource": [
-                "arn:aws:dynamodb:ca-central-1:<Account_ID>:table/terraform-remote-state-lock-<Licence_Plate>"
-            ]
-        },
-        {
-            "Sid": "S3",
-            "Effect": "Allow",
-            "Action": [
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::terraform-remote-state-<Licence_Plate>-<Environment>"
-            ]
-        },
-        {
-            "Sid": "s3BackendAccess",
+            "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
                 "s3:PutObject",
                 "s3:GetObject",
+                "dynamodb:PutItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "ecr:*",
+                "s3:ListBucket",
                 "s3:DeleteObject"
             ],
-            "Resource": "arn:aws:s3:::terraform-remote-state-<Licence_Plate>-<Environment>/<Licence_Plate>/<Environment>/containers-app.tfstate"
+            "Resource": [
+                "arn:aws:dynamodb:ca-central-1:<Account-ID>:table/terraform-remote-state-lock*",
+                "arn:aws:ecr:ca-central-1:<Account-ID>:repository/ssp",
+                "arn:aws:s3:::terraform-remote-state-tnfhhm-tools",
+                "arn:aws:s3:::terraform-remote-state-tnfhhm-tools/*"
+            ]
         }
     ]
 }

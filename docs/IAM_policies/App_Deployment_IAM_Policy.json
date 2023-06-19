@@ -2,263 +2,276 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "General",
+            "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "ecs:DeregisterTaskDefinition",
+                "ec2:Describe*",
                 "application-autoscaling:*",
                 "ecs:CreateCluster",
                 "cloudwatch:DescribeAlarmsForMetric",
+                "ecs:RegisterTaskDefinition",
                 "sns:Unsubscribe",
+                "elasticloadbalancing:Describe*",
                 "sns:GetSubscriptionAttributes",
                 "cloudwatch:ListMetrics",
-                "ecs:DescribeTaskDefinition",
-                "ecs:DeregisterTaskDefinition",
-                "ecs:RegisterTaskDefinition",
-                "elasticloadbalancing:Describe*",
-                "ec2:Describe*"
+                "ecs:DescribeTaskDefinition"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "S3",
+            "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
-                "s3:CreateBucket",
-                "s3:ListBucket",
-                "s3:DeleteBucket",
-                "s3:PutBucketAcl",
-                "s3:PutBucketPolicy"
-            ],
-            "Resource": [
-                "arn:aws:s3:::upload-bucket*",
-                "arn:aws:s3:::terraform-remote-state-<Licence_plate>-<Environment>"
-            ]
-        },
-        {
-            "Sid": "S3AppRights",
-            "Effect": "Allow",
-            "Action": [
-                "s3:DeleteObjectTagging",
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:PutObjectTagging",
-                "s3:DeleteObject",
-                "s3:PutObjectAcl"
-            ],
-            "Resource": [
-                "arn:aws:s3:::upload-bucket*/*"
-            ]
-        },
-        {
-            "Sid": "S3TerraformBackend",
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": "arn:aws:s3:::terraform-remote-state-<Licence_plate>-<Environment>/<Licence_plate>/<Environment>/containers-app.tfstate"
-        },
-        {
-            "Sid": "DynamoDBTerraformLock",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:DescribeTable",
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem"
-            ],
-            "Resource": "arn:aws:dynamodb:ca-central-1:<Account_ID>:table/terraform-remote-state-lock-<Licence_plate>"
-        },
-        {
-            "Sid": "ELB",
-            "Effect": "Allow",
-            "Action": [
-                "elasticloadbalancing:CreateLoadBalancer",
-                "elasticloadbalancing:DeleteLoadBalancer",
-                "elasticloadbalancing:RemoveTags",
-                "elasticloadbalancing:AddTags",
-                "elasticloadbalancing:ModifyLoadBalancerAttributes",
-                "elasticloadbalancing:RegisterTargets",
-                "elasticloadbalancing:CreateTargetGroup",
-                "elasticloadbalancing:DeregisterTargets",
-                "elasticloadbalancing:DeleteTargetGroup",
-                "elasticloadbalancing:CreateListener",
-                "elasticloadbalancing:ModifyRule",
-                "elasticloadbalancing:CreateRule",
-                "elasticloadbalancing:SetSecurityGroups",
-                "elasticloadbalancing:ModifyTargetGroupAttributes",
-                "elasticloadbalancing:DeleteRule",
-                "elasticloadbalancing:ModifyTargetGroup",
-                "elasticloadbalancing:DeleteListener",
-                "elasticloadbalancing:DeleteTargetGroup",
-                "elasticloadbalancing:CreateRule"
-            ],
-            "Resource": [
-                "arn:aws:elasticloadbalancing:ca-central-1:<Account_ID>:listener-rule/app/default/*/*/*",
-                "arn:aws:elasticloadbalancing:ca-central-1:<Account_ID>:targetgroup/sample-target-group/*",
-                "arn:aws:elasticloadbalancing:ca-central-1:<Account_ID>:listener/app/default/*"
-            ]
-        },
-        {
-            "Sid": "IAM",
-            "Effect": "Allow",
-            "Action": [
-                "iam:CreateRole",
-                "iam:AttachRolePolicy",
-                "iam:DetachRolePolicy",
-                "iam:GetRole",
-                "iam:GetPolicy",
-                "iam:DeleteRole",
-                "iam:GetRolePolicy",
-                "iam:TagRole",
-                "iam:DeleteRolePolicy",
-                "iam:UpdateRole",
-                "iam:ListRolePolicies",
-                "iam:ListRolePolicies",
-                "iam:ListAttachedRolePolicies",
-                "iam:ListInstanceProfilesForRole",
-                "iam:PutRolePolicy",
-                "iam:PassRole"
-            ],
-            "Resource": [
-                "arn:aws:iam::<Account_ID>:policy/ecs_task_execution_cwlogs",
-                "arn:aws:iam::<Account_ID>:policy/sample_app_container_cwlogs",
-                "arn:aws:iam::<Account_ID>:policy/upload_bucket_policy",
-                "arn:aws:iam::<Account_ID>:policy/sample_app_dynamodb",
-                "arn:aws:iam::<Account_ID>:role/startupSampleEcsTaskExecutionRole",
-                "arn:aws:iam::<Account_ID>:role/sample_app_container_role"
-            ]
-        },
-        {
-            "Sid": "Budgets",
-            "Effect": "Allow",
-            "Action": [
+                "ec2:AuthorizeSecurityGroupIngress",
                 "budgets:ViewBudget",
-                "budgets:DescribeBudgetAction",
-                "budgets:ModifyBudget"
-            ],
-            "Resource": [
-                "arn:aws:budgets::<Account_ID>:budget/startup-sample-monthly/action/*",
-                "arn:aws:budgets::<Account_ID>:budget/startup-sample-monthly"
-            ]
-        },
-        {
-            "Sid": "Cloudwatch",
-            "Effect": "Allow",
-            "Action": [
                 "cloudwatch:DeleteAlarms",
+                "dynamodb:DeleteTable",
+                "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
+                "cloudfront:CreateCachePolicy",
+                "ecs:UpdateService",
+                "cloudfront:GetDistribution",
                 "cloudwatch:UntagResource",
+                "dynamodb:DescribeTable",
+                "ec2:RevokeSecurityGroupEgress",
+                "cloudwatch:ListTagsForResource",
+                "dynamodb:DescribeContinuousBackups",
+                "SNS:SetTopicAttributes",
+                "cloudfront:GetDistributionConfig",
+                "ecs:TagResource",
+                "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
+                "ec2:CreateTags",
+                "cloudfront:TagResource",
+                "ecs:DeleteService",
+                "ecs:DeleteCluster",
+                "ec2:ModifySecurityGroupRules",
+                "ecs:DescribeClusters",
+                "ec2:RevokeSecurityGroupIngress",
+                "dynamodb:CreateTable",
+                "cloudfront:ListTagsForResource",
+                "elasticloadbalancing:AddTags",
                 "cloudwatch:DescribeAlarms",
+                "dynamodb:UpdateTable",
+                "ec2:DeleteTags",
+                "dynamodb:DeleteItem",
+                "dynamodb:ListTagsOfResource",
+                "elasticloadbalancing:RemoveTags",
+                "ecs:CreateService",
+                "dynamodb:TagResource",
                 "cloudwatch:DisableAlarmActions",
+                "ec2:CreateSecurityGroup",
+                "ecs:DescribeServices",
+                "cloudfront:UpdateDistribution",
+                "ecs:DescribeTasks",
+                "ecs:UntagResource",
+                "ecs:PutClusterCapacityProviders",
+                "cloudfront:UntagResource",
+                "ec2:AuthorizeSecurityGroupEgress",
+                "dynamodb:UntagResource",
+                "budgets:DescribeBudgetAction",
+                "cloudfront:CreateDistribution",
+                "dynamodb:DescribeTimeToLive",
                 "cloudwatch:PutMetricAlarm",
                 "cloudwatch:TagResource",
                 "cloudwatch:EnableAlarmActions",
-                "cloudwatch:ListTagsForResource"
-            ],
-            "Resource": [
-                "arn:aws:cloudwatch:ca-central-1:<Account_ID>:alarm:sample_cpu_utilization_*",
-                "arn:aws:cloudwatch:ca-central-1:<Account_ID>:insight-rule/*"
-            ]
-        },
-        {
-            "Sid": "Dynamodb",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:DeleteTable",
-                "dynamodb:DescribeTable",
-                "dynamodb:CreateTable",
-                "dynamodb:UpdateTable",
-                "dynamodb:DeleteItem",
-                "dynamodb:TagResource",
-                "dynamodb:UntagResource",
-                "dynamodb:DescribeContinuousBackups",
-                "dynamodb:DescribeTimeToLive",
-                "dynamodb:ListTagsOfResource"
-            ],
-            "Resource": [
-                "arn:aws:dynamodb:ca-central-1:<Account_ID>:table/ssp-greetings"
-            ]
-        },
-        {
-            "Sid": "Cloudfront",
-            "Effect": "Allow",
-            "Action": [
-                "cloudfront:CreateCachePolicy",
-                "cloudfront:GetDistribution",
-                "cloudfront:GetDistributionConfig",
-                "cloudfront:TagResource",
-                "cloudfront:UpdateDistribution",
-                "cloudfront:ListTagsForResource",
-                "cloudfront:UntagResource",
-                "cloudfront:CreateDistribution",
+                "ec2:DeleteSecurityGroup",
                 "cloudfront:DeleteCachePolicy",
-                "cloudfront:DeleteDistribution"
+                "cloudfront:DeleteDistribution",
+                "budgets:ModifyBudget"
             ],
             "Resource": [
-                "arn:aws:cloudfront::<Account_ID>:cache-policy/*",
-                "arn:aws:cloudfront::<Account_ID>:streaming-distribution/*",
-                "arn:aws:cloudfront::<Account_ID>:distribution/*"
+                "arn:aws:ec2:ca-central-1:<Account-ID>:security-group/*",
+                "arn:aws:ec2:ca-central-1:<Account-ID>:vpc/*",
+                "arn:aws:budgets::<Account-ID>:budget/startup-sample-monthly/action/*",
+                "arn:aws:budgets::<Account-ID>:budget/startup-sample-monthly",
+                "arn:aws:sns:ca-central-1:<Account-ID>:startup-sample-billing-alert-topic",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:task-set/sample-cluster/sample-service/*",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:cluster/sample-cluster",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:task/sample-cluster/*",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:container-instance/sample-cluster/*",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:task-definition/sample-app-task:*",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:service/sample-cluster/sample-service",
+                "arn:aws:ecs:ca-central-1:<Account-ID>:capacity-provider/FARGATE_SPOT",
+                "arn:aws:dynamodb:ca-central-1:<Account-ID>:table/ssp-greetings",
+                "arn:aws:cloudwatch:ca-central-1:<Account-ID>:alarm:sample_cpu_utilization_*",
+                "arn:aws:cloudwatch:ca-central-1:<Account-ID>:insight-rule/*",
+                "arn:aws:cloudfront::<Account-ID>:cache-policy/*",
+                "arn:aws:cloudfront::<Account-ID>:streaming-distribution/*",
+                "arn:aws:cloudfront::<Account-ID>:distribution/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
             ]
         },
         {
-            "Sid": "SNS",
+            "Sid": "VisualEditor2",
             "Effect": "Allow",
             "Action": [
+                "sns:DeleteTopic",
+                "dynamodb:DeleteItem",
+                "iam:TagRole",
+                "iam:CreateRole",
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:ListInstanceProfilesForRole",
+                "iam:PassRole",
+                "elasticloadbalancing:RemoveTags",
+                "iam:DetachRolePolicy",
+                "dynamodb:DescribeTable",
+                "iam:ListAttachedRolePolicies",
+                "iam:DeleteRolePolicy",
+                "dynamodb:GetItem",
                 "sns:Subscribe",
+                "iam:ListRolePolicies",
+                "sns:ListTagsForResource",
+                "iam:GetRole",
+                "iam:GetPolicy",
+                "dynamodb:PutItem",
                 "sns:GetTopicAttributes",
                 "sns:CreateTopic",
-                "sns:DeleteTopic",
-                "sns:ListTagsForResource",
-                "SNS:SetTopicAttributes"
+                "iam:DeleteRole",
+                "elasticloadbalancing:AddTags",
+                "iam:UpdateRole",
+                "iam:GetRolePolicy"
             ],
             "Resource": [
-                "arn:aws:sns:ca-central-1:<Account_ID>:startup-sample-billing-alert-topic"
+                "arn:aws:iam::<Account-ID>:policy/ecs_task_execution_cwlogs",
+                "arn:aws:iam::<Account-ID>:policy/sample_app_container_cwlogs",
+                "arn:aws:iam::<Account-ID>:policy/upload_bucket_policy",
+                "arn:aws:iam::<Account-ID>:policy/sample_app_dynamodb",
+                "arn:aws:iam::<Account-ID>:role/startupSampleEcsTaskExecutionRole",
+                "arn:aws:iam::<Account-ID>:role/sample_app_container_role",
+                "arn:aws:dynamodb:ca-central-1:<Account-ID>:table/terraform-remote-state-lock-tnfhhm",
+                "arn:aws:sns:ca-central-1:<Account-ID>:startup-sample-billing-alert-topic",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
             ]
         },
         {
-            "Sid": "ecs",
+            "Sid": "VisualEditor3",
             "Effect": "Allow",
             "Action": [
-                "ecs:TagResource",
-                "ecs:DeleteService",
-                "ecs:DeleteCluster",
-                "ecs:DescribeClusters",
-                "ecs:CreateService",
-                "ecs:DescribeServices",
-                "ecs:DescribeTasks",
-                "ecs:UntagResource",
-                "ecs:UpdateService"
+                "elasticloadbalancing:RemoveTags",
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:ModifyRule",
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:CreateRule",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteRule",
+                "elasticloadbalancing:ModifyTargetGroup",
+                "elasticloadbalancing:DeleteListener"
             ],
             "Resource": [
-                "arn:aws:ecs:ca-central-1:<Account_ID>:task-set/sample-cluster/sample-service/*",
-                "arn:aws:ecs:ca-central-1:<Account_ID>:cluster/sample-cluster",
-                "arn:aws:ecs:ca-central-1:<Account_ID>:task/sample-cluster/*",
-                "arn:aws:ecs:ca-central-1:<Account_ID>:container-instance/sample-cluster/*",
-                "arn:aws:ecs:ca-central-1:<Account_ID>:task-definition/sample-app-task:*",
-                "arn:aws:ecs:ca-central-1:<Account_ID>:service/sample-cluster/sample-service",
-                "arn:aws:ecs:ca-central-1:<Account_ID>:capacity-provider/FARGATE_SPOT"
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
             ]
         },
         {
-            "Sid": "ec2",
+            "Sid": "VisualEditor4",
             "Effect": "Allow",
             "Action": [
-                "ec2:DeleteSecurityGroup",
-                "ec2:CreateSecurityGroup",
-                "ec2:ModifySecurityGroupRules",
-                "ec2:RevokeSecurityGroupEgress",
-                "ec2:RevokeSecurityGroupIngress",
-                "ec2:AuthorizeSecurityGroupEgress",
-                "ec2:AuthorizeSecurityGroupIngress",
-                "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
-                "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
-                "ec2:CreateTags",
-                "ec2:DeleteTags"
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:ModifyRule",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:CreateRule",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteRule",
+                "elasticloadbalancing:ModifyTargetGroup",
+                "elasticloadbalancing:DeleteListener"
             ],
             "Resource": [
-                "arn:aws:ec2:ca-central-1:<Account_ID>:security-group/*",
-                "arn:aws:ec2:ca-central-1:<Account_ID>:vpc/*"
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor5",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:RemoveTags",
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:ModifyLoadBalancerAttributes"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor6",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:RemoveTags",
+                "elasticloadbalancing:AddTags"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor7",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::<s3-state-bucket>*/*",
+                "arn:aws:s3:::upload-bucket*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor8",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:ModifyRule",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:CreateRule",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteRule",
+                "elasticloadbalancing:ModifyTargetGroup",
+                "elasticloadbalancing:DeleteListener"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor9",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:ModifyRule",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:CreateRule",
+                "elasticloadbalancing:SetSecurityGroups",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteRule",
+                "elasticloadbalancing:ModifyTargetGroup",
+                "elasticloadbalancing:DeleteListener"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener-rule/app/default/*/*/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:targetgroup/sample-target-group/*",
+                "arn:aws:elasticloadbalancing:ca-central-1:<Account-ID>:listener/app/default/*"
             ]
         }
     ]

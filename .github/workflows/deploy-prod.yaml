@@ -6,8 +6,8 @@ on:
       - "v[0-9].[0-9]+.[0-9]+"
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
-  LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+  IMAGE_ID: ${{ vars.AWS_ECR_URI }}
+  LICENSE_PLATE: ${{ vars.MY_LICENSE_PLATE }}
 
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
@@ -49,16 +49,16 @@ jobs:
         run: echo "APP_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
         
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - uses: peter-murray/terragrunt-github-action@v1.0.0
+      - uses: autero1/action-terragrunt@v1.3.1
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
@@ -68,7 +68,7 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.MY_LICENSE_PLATE }}
         run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
         continue-on-error: true
 
@@ -88,7 +88,7 @@ jobs:
       - name: Upload inframap
         id: inframap
         run: |
-          IMGBBURL=$(curl -s -L -X POST "https://api.imgbb.com/1/upload?key=${{ secrets.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
+          IMGBBURL=$(curl -s -L -X POST "https://api.imgbb.com/1/upload?key=${{ vars.IMGBB_API_TOKEN }}" --form "image=@/tmp/inframap.png" | jq -r '.data.url')
           echo "::set-output name=imgurl::$IMGBBURL"
 
       - name: Get Terraform Plan Output
@@ -105,13 +105,13 @@ jobs:
           method: 'GET'
 
       - name: Update Pull Request
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         env:
           SUCCESS: '\u2705'
           FAILURE: '\u274C'
           INFRAMAP_URL: ${{ steps.inframap.outputs.imgurl }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           script: |
             var fs = require('fs');
             var ev = JSON.stringify(${{ steps.issue_number.outputs['data'] }});
@@ -150,12 +150,12 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
           
       - name: Login to Amazon ECR
@@ -175,7 +175,7 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
           
@@ -183,16 +183,16 @@ jobs:
         run: echo "APP_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - uses: peter-murray/terragrunt-github-action@v1.0.0
+      - uses: autero1/action-terragrunt@v1.3.1
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
@@ -200,5 +200,5 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.MY_LICENSE_PLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive
