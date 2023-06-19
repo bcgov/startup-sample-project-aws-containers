@@ -13,6 +13,12 @@ env:
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: tools
+  
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read
+  issues: write # This is required for actions/checkout
+  pull-requests: write  
 
 jobs:
   plan:
@@ -79,7 +85,7 @@ jobs:
           SUCCESS: '\u2705'
           FAILURE: '\u274C'
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             var fs = require('fs');
             var issue_number = Number(fs.readFileSync('./NR'));
