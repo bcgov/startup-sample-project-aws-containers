@@ -25,6 +25,7 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read
   issues: write # This is required for actions/checkout
+  pull-requests: write
 
 jobs:
   docker_build:
