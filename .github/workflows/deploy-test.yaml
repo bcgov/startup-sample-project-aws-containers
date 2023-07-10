@@ -31,7 +31,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
-          aws-region: ca-central-1
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -61,7 +61,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
-          aws-region: ca-central-1
+          aws-region: ${{ vars.AWS_REGION }}
 
       - uses: hashicorp/setup-terraform@v2
         with:

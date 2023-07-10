@@ -16,12 +16,19 @@ jobs:
   plan:
     name: terraform-plan
     runs-on: ubuntu-22.04
+    environment: tools
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - uses: hashicorp/setup-terraform@v2
         with:
