@@ -6,7 +6,7 @@ on:
       - "v[0-9].[0-9]+.[0-9]+-rc*"
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
+  IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -15,7 +15,7 @@ env:
 
 permissions:
   id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
+  contents: read # This is required for actions/checkout
 
 jobs:
   tag:
@@ -25,14 +25,14 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
-          aws-region: ca-central-1
-          
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
@@ -58,16 +58,16 @@ jobs:
         run: echo "APP_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
-          aws-region: ca-central-1
-        
-      - uses: hashicorp/setup-terraform@v1
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - uses: peter-murray/terragrunt-github-action@v1.0.0
+      - uses: autero1/action-terragrunt@v1.3.1
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
@@ -75,5 +75,5 @@ jobs:
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
           app_image: ${{ env.IMAGE_ID }}:${{ env.APP_TAG }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}          
+          LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive

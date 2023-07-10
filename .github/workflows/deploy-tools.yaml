@@ -1,4 +1,4 @@
-name: Deploy Sandbox
+name: Deploy Tools
 
 on:
   workflow_dispatch:
@@ -6,49 +6,49 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/deploy-sandbox.yaml"
+      - ".github/workflows/deploy-tools.yaml"
       - "terraform/terragrunt.hcl"
-      - "terraform/sandbox/**"
+      - "terraform/tools/**"
 
 env:
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
   TG_SRC_PATH: terraform
-  TFC_WORKSPACE: sandbox
+  TFC_WORKSPACE: tools
 
 permissions:
   id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
+  contents: read # This is required for actions/checkout
 
 jobs:
   tf_apply:
-    name: Deploy sandbox AWS ECR
-    environment: sandbox
+    name: Deploy tools AWS ECR
+    environment: tools
     runs-on: ubuntu-22.04
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
-          aws-region: ca-central-1
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - uses: peter-murray/terragrunt-github-action@v1.0.0
+      - uses: autero1/action-terragrunt@v1.3.1
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
       - name: Terragrunt Apply
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
         run: terragrunt run-all apply --terragrunt-non-interactive
