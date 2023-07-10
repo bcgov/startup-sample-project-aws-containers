@@ -4,16 +4,15 @@ on:
   pull_request:
     paths:
       - ".github/workflows/pr.yaml"
-      - ".github/workflows/tf-plan.yaml"
       - "client/**"
       - "server/**"
       - "terraform/**"
-      - "!terraform/sandbox/**"
+      - "!terraform/tools/**"
       - "Dockerfile"
       - "!**/README.md"
 
 env:
-  IMAGE_ID: ${{ secrets.AWS_ECR_URI }}
+  IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
   TF_VERSION: 1.2.2
   TG_VERSION: 0.37.1
@@ -79,7 +78,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v1
@@ -96,5 +95,5 @@ jobs:
         env:
           TF_CLI_ARGS: -no-color
           app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
         run: terragrunt run-all plan --terragrunt-non-interactive

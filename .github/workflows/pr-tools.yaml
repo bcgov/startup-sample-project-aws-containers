@@ -1,0 +1,42 @@
+name: Pull Request Tools
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/pr-tools.yaml"
+      - "terraform/tools/**"
+
+env:
+  TF_VERSION: 1.2.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: terraform
+  TFC_WORKSPACE: tools
+
+jobs:
+  plan:
+    name: terraform-plan
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Plan
+        id: tg_plan
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
+        env:
+          TF_CLI_ARGS: -no-color
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
+        run: terragrunt plan-all --terragrunt-non-interactive

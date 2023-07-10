@@ -1,6 +1,4 @@
-
 name: Destroy environment
-
 
 on:
   workflow_dispatch:
@@ -17,7 +15,7 @@ env:
 
 permissions:
   id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
+  contents: read # This is required for actions/checkout
 
 jobs:
   tf_destroy:
@@ -34,7 +32,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.TERRAFORM_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ca-central-1
 
       - uses: hashicorp/setup-terraform@v1
@@ -50,10 +48,7 @@ jobs:
         env:
           job_env: "${{ inputs.env }}"
           AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
-          LICENSE_PLATE: ${{ secrets.MY_LICENSE_PLATE }}
+          LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
         run: |
-          # if [ "$job_env" == "tools" ];then export job_env="sandbox";fi
           cd $job_env
           terragrunt run-all destroy --terragrunt-non-interactive
-
-
