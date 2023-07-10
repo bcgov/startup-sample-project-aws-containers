@@ -33,7 +33,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
 
       - uses: autero1/action-terragrunt@v1.3.1
         with:
@@ -43,7 +42,6 @@ jobs:
         id: tg_plan
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          TF_CLI_ARGS: -no-color
           AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
           LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
         run: terragrunt run-all plan --terragrunt-non-interactive

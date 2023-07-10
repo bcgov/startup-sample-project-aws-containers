@@ -93,7 +93,6 @@ jobs:
         id: tg_plan
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
-          TF_CLI_ARGS: -no-color
           app_image: ${{ env.IMAGE_ID }}:${{ github.event.workflow_run.head_sha }}
           LICENSE_PLATE: ${{ vars.LICENSE_PLATE }}
         run: terragrunt run-all plan --terragrunt-non-interactive
