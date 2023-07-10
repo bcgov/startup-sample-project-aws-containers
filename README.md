@@ -4,7 +4,6 @@
 
 ---
 
-
 ## Introduction
 
 Welcome to your new project. This is a basic BC Gov AWS "Hello World" starter project to get you started in your cloud journey.  It is a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running the application either
@@ -40,9 +39,7 @@ to build the client, server and mongo containers (inside the main container)
 to run the containers (inside the main container)
 9. Clicking on the PORTS tab (in Terminal) You will see
 
-
 ![alt text](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/images/ports.png)
-
 
 Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
 
@@ -70,15 +67,12 @@ in this example will only run mongodb container
 `docker exec -it $(PROJECT)-server sh`  
 `docker exec -it $(PROJECT)-mongodb bash`  
 
-
 - Runs scripts in the server container:
 `docker exec -it $(PROJECT)-server npm run db:seed`  
 `docker exec -it $(PROJECT)-server npm run db:migration`  
 `docker exec -it $(PROJECT)-server npm test`  
 
-Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  _./.devcontainer/Dockerfile_ you will see that at the end of the file, these variables are set as the container environmental variables 
-
-
+Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  _./.devcontainer/Dockerfile_ you will see that at the end of the file, these variables are set as the container environmental variables
 
 ## Deploy Application on the AWS Cloud
 
@@ -88,45 +82,46 @@ This code assumes that you have access to AWS Cloud and that you have created IA
 
 Once the project set is created, it will have one or more service accounts associated each of them with different IAM Roles ARN.
 
-These roles ARN, necessary to access AWS Cloud, are set for every Github environment. The values themselves are stored as GitHub environment _Secrets_
+These roles ARN, necessary to access AWS Cloud, are set for every Github environment. The values themselves are stored as GitHub environment _Variables_
 
+The required environment Variables are:
 
-The required environment Secrets are:
-  - `TERRAFORM_DEPLOY_ROLE_ARN` This is the ARN of IAM Role used to deploy resources through the Github action authenticate with the GitHub OpenID Connect. 
-  - - Create the IAM Policy for `tools` or `Sandbox`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/Registry_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
-  - - Create the IAM Policy for `dev` `test` and `prod`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/App_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
-  - - To access the `TERRAFORM_DEPLOY_ROLE_ARN` you need to create the role beforehand and link them to the previously created policies in each account. Then you have to add the right arn for each Github environment.      
+- `TERRAFORM_DEPLOY_ROLE_ARN` This is the ARN of IAM Role used to deploy resources through the Github action authenticate with the GitHub OpenID Connect.
+  - Create the IAM Policy for `tools` with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/Registry_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
+  - Create the IAM Policy for `dev` `test` and `prod`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/App_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
+  - To access the `TERRAFORM_DEPLOY_ROLE_ARN` you need to create the role beforehand and link them to the previously created policies in each account. Then you have to add the right arn for each Github environment.
   To create the role trust relationship you can use this example:
-  ```
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Federated": "arn:aws:iam::<accound_id>:oidc-provider/token.actions.githubusercontent.com"
-            },
-            "Action": "sts:AssumeRoleWithWebIdentity",
-            "Condition": {
-                "StringLike": {
-                    "token.actions.githubusercontent.com:sub": "repo:<Github_organization>/<repo_name>:ref:refs/heads/<Your_branch>"
+
+  ```json
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Federated": "arn:aws:iam::<accound_id>:oidc-provider/token.actions.githubusercontent.com"
                 },
-                "ForAllValues:StringEquals": {
-                    "token.actions.githubusercontent.com:iss": "https://token.actions.githubusercontent.com",
-                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                "Action": "sts:AssumeRoleWithWebIdentity",
+                "Condition": {
+                    "StringLike": {
+                        "token.actions.githubusercontent.com:sub": "repo:<Github_organization>/<repo_name>:ref:refs/heads/<Your_branch>"
+                    },
+                    "ForAllValues:StringEquals": {
+                        "token.actions.githubusercontent.com:iss": "https://token.actions.githubusercontent.com",
+                        "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                    }
                 }
             }
-        }
-    ]
-}
-  ```
+        ]
+    }
 
-For the following secret they are global for every account so you can put them as Github repository _Secrets_
+    ```
 
-- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format `arn:aws:iam::############:root` where `############` is your AWS account number. For exmple: 
+For the following secret they are global for every account so you can put them as Github repository _Variables_
+
+- `AWS_ACCOUNTS_ECR_READ_ACCESS` - is used to authorize the read access to the ECS from the other AWS accounts (dev, test, prod). It is an array where the individual elemens take the format  follows the format `arn:aws:iam::############:root` where `############` is your AWS account number. For exmple:
 
     AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'
-
 
 - `AWS_ECR_URI` - ECR repository URI. Follows the format `############.dkr.ecr.ca-central-1.amazonaws.com/ssp` where `############` is your AWS account number.
 - `AWS_REGION` - should be `ca-central-1`
@@ -135,14 +130,12 @@ For the following secret they are global for every account so you can put them a
 
 The deployment of the sample containers app to the AWS Cloud uses several steps.
 
-- Configure the _Secrets_ in your GitHub repository
+- Configure the _Variables_ in your GitHub repository
 - Execute a _Pull Request_ to the GitHub repository that includes the changes described in the previous section
-
 
 The PR triggers several GitHub Action workflows in `.github/workflows`. They are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
 
 ![alt text](docs/images/workflows.png "GitHub Action workflows")
-
 
 The Actions will run Terraform scripts that will deploy the infrastructure for the app. This infrastructure is defined in the terraform module linked below
 
@@ -158,28 +151,7 @@ Inside this container, three containers are created that will host the client, s
 
 ### Connecting to the client
 
-You will be able to access the client using the address set for the variable cloudfront_origin_domain in line 17 of _./terraform/dev/terragrunt.hcl_ file. The format is the following:
-    `cloudfront_origin_domain = "startup-sample-project.[license plate-dev].nimbus.cloud.gov.bc.ca"`
-
-[license plate-dev] will take, for example, the following form `bc1dae-dev`
-
-
-Properly speaking, the Terraform scripts will create an infrastructure plan, and a second script will apply the plan and deploy the planned infrastructure in AWS Cloud.
-
-
-
-During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
-
-
-Inside this container, three containers are created that will host the client, server and DB components of the app.
-
-
-### Connecting to the client
-You will be able to access the client using the address set for the variable cloudfront_origin_domain in line 17 of _./terraform/dev/terragrunt.hcl_ file. The format is the following:
-    `cloudfront_origin_domain = "startup-sample-project.[license plate-dev].nimbus.cloud.gov.bc.ca"`
-
-[license plate-dev] will take, for example, the following form `bc1dae-dev`
-
+You will be able to access the client using the address for the cloudfront distribution. You can find it in the output of the terraform script. It will be something like this: `https://d1q2w3e4r5t6y7.cloudfront.net/`
 
 ## Contributing
 
@@ -188,8 +160,8 @@ You are still welcome to participe but for the plan to work before merge it has 
 
 :warning: The terraform plan stage will fail in cross account pr workflow :warning:
 
-
 ## License
+
 ```text
 Copyright 2021 Province of British Columbia
 
@@ -205,8 +177,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
-## Testing Thanks
-
-Thanks to BrowserStack for Testing Tool support via OpenSource Licensing ![BrowserStack](docs/images/browserstack-logo-white-small.png)
-
