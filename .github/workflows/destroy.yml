@@ -16,7 +16,8 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
-  build:
+  destroy_app:
+    name: Destroy the app
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.env }}
