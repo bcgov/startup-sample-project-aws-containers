@@ -41,7 +41,7 @@ jobs:
           cd src/terraform/ecr
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
-          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers-ecr.tfstate"
+          key = "startup-sample-app-aws-containers-ecr.tfstate"
           dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
           EOF
 
@@ -49,7 +49,7 @@ jobs:
           terraform apply -auto-approve
 
   docker_push:
-    name: docker push
+    name: docker build and push
     environment: tools
     runs-on: ubuntu-22.04
     needs: terraform_apply_ecr
@@ -103,7 +103,7 @@ jobs:
           tags: ${{ env.IMAGE_ID }}:${{ github.sha }}
 
   terraform_apply_app:
-    name: terraform apply
+    name: terraform apply app
     environment: dev
     runs-on: ubuntu-22.04
     needs: docker_push
@@ -127,7 +127,7 @@ jobs:
           cd src/terraform/ecr
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
-          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers-ecr.tfstate"
+          key = startup-sample-app-aws-containers-ecr.tfstate"
           dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
           EOF
 
@@ -141,7 +141,7 @@ jobs:
           cd src/terraform/app
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
-          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers.tfstate"
+          key = "startup-sample-app-aws-containers.tfstate"
           dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
           EOF
 

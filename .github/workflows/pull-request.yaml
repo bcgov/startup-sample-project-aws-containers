@@ -1,12 +1,11 @@
 name: Pull Request
 
 on:
-  #workflow_dispatch:
   pull_request:
     branches: [main]
 
 env:
-  TF_VERSION: 1.5.6
+  TF_VERSION: 1.5.7
   environment: dev
   IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
@@ -39,7 +38,7 @@ jobs:
           cd src/terraform/ecr
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
-          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers-ecr.tfstate"
+          key = "startup-sample-app-aws-containers-ecr.tfstate"
           dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
           EOF
 
@@ -76,6 +75,7 @@ jobs:
           push: false
 
   terraform_plan_app:
+    name: terraform plan app
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -105,7 +105,7 @@ jobs:
           cd src/terraform/app
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
-          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers.tfstate"
+          key = "startup-sample-app-aws-containers.tfstate"
           dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
           EOF
 
