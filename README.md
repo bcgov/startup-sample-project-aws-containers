@@ -6,73 +6,45 @@
 
 ## Introduction
 
-Welcome to your new project. This is a basic BC Gov AWS "Hello World" starter project to get you started in your cloud journey.  It is a NodeJS app connected to a database for you to modify and expand to fit your needs. It provides scripts for developing and running the application either
+Welcome to your new project. This is a basic BC Gov AWS "Hello World" starter project to get you started in your cloud journey. It is a NodeJS app connected to a database for you to modify and expand to fit your needs.
 
-- Locally: it runs in your local machine. It will create a Docker container that will run in any OS (Mac, Linux, Windows), inside this Docker container, there will be other docker containers (Docker-in-Docker) that are the ones that will serve the application
-- On the AWS Cloud. It uses Terraform/Terragrunt scripts that allow  "Infrastructure-as-Code". They allow the app to be easily deployed to any public cloud environments.
-Currently, only AWS is supported, but support for other cloud targets may be added in the future.
+The code can be run:
 
-## Build Application Locally
+- Locally on your machine
+- On the AWS Cloud using GitHub Actions workflows and Terraform scripts
 
-### Prerequisites for building locally
+## Running Locally
 
-In order to develop or run the app locally, you will need the following:
+To run the application locally, you will need:
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Microsoft Visual Studio Code](https://code.visualstudio.com/)
-  - Extension: [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+- [Node.js](https://nodejs.org/) installed
+- [Localstack](https://github.com/localstack/localstack) installed and running
 
-### Launch DevContainer locally, and then Build and Run Docker-in-Docker containers
+### Run the API
 
-1. Fork the app repository to your GitHub repository
-2. Clone the repository to your local machine and open it in VS Code.
-3. Using the Command Palette (Windows: `Ctrl+Shift+P` | Mac: `⇧ ⌘ P`), enter the command: `Rebuild Containers: Reopen in Container`
-4. VS Code will now display the project in a `Dev Container: Docker in Docker` (look at the label at the bottom right)
-5. Using the Command Palette again, enter the command `Remote Containers: Rebuild and Reopen in Containers`. It will build and launch the container defined by _./.devcontainer/DockerFile_
-6. Using VS Code, you can connect to this second VS Code project (with the name _startup-sample-project-aws-containers [Dev Container]_). In this project, open a terminal session (in VS Code interface). This session is actually in the docker container. The prompt looks like:
-      `vscode ➜ /workspaces/startup-sample-project-aws-containers ([branch name]  ) $`
-7. Type:
-    `docker-compose -f docker-compose.dev.yml build`
-to build the client, server and mongo containers (inside the main container)
-8. Type:
-    `docker-compose -f docker-compose.dev.yml up -d`
-to run the containers (inside the main container)
-9. Clicking on the PORTS tab (in Terminal) You will see
+Create a `.env` file in the `src/api` folder with the following contents:
 
-![alt text](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/images/ports.png)
+```bash
+LOCALSTACK_ENDPOINT=<localstack or remote mongodb url>
+DYNAMODB_TABLE_NAME=<dynamodb table name>
+```
 
-Opening  the file `./client/Dockerfile.dev` we see the port 4000 is the one that exposing the client side ot the application.
+```bash
+cd src/api 
+npm install
+```
 
-10- Connect to <http://localhost:4000>, you will be able to access the application running on your local machine
+The API will run on <http://localhost:5000>.
 
-### Other Useful Commands (locally, when using Docker-in-Docker)
+### Run the Frontend
 
-The following commands are executed locally inside your main container: Docker in Docker
+```bash
+cd src/web
+npm install
+npm start 
+```
 
-- If you want to run only one of the containers defined in docker-compose.dev.yml, then type:  
-`docker-compose -f docker-compose.dev.yml up mongodb`
-in this example will only run mongodb container
-
-- Closes all the containers:
-`docker-compose -f docker-compose.dev.yml down`
-
-- Restarts the local development containers:
-`docker-compose -f docker-compose.dev.yml restart`
-
-- Tail logs from local development containers:  
-`docker-compose -f docker-compose.dev.yml logs -f`
-
-- Opens a session in the containers:
-`docker exec -it $(PROJECT)-client sh`  
-`docker exec -it $(PROJECT)-server sh`  
-`docker exec -it $(PROJECT)-mongodb bash`  
-
-- Runs scripts in the server container:
-`docker exec -it $(PROJECT)-server npm run db:seed`  
-`docker exec -it $(PROJECT)-server npm run db:migration`  
-`docker exec -it $(PROJECT)-server npm test`  
-
-Note: The above commands will work when executed from the container defined in _./devcontainer_ If you open the  _./.devcontainer/Dockerfile_ you will see that at the end of the file, these variables are set as the container environmental variables
+The frontend will run on <http://localhost:3000>  
 
 ## Deploy Application on the AWS Cloud
 
@@ -87,8 +59,8 @@ These roles ARN, necessary to access AWS Cloud, are set for every Github environ
 The required environment Variables are:
 
 - `TERRAFORM_DEPLOY_ROLE_ARN` This is the ARN of IAM Role used to deploy resources through the Github action authenticate with the GitHub OpenID Connect.
-  - Create the IAM Policy for `tools` with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/Registry_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
-  - Create the IAM Policy for `dev` `test` and `prod`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/App_Deployment_IAM_Policy.json) (Be Careful to replace `<Licence_plate>` `<Environment>` and `<Environment>`)
+  - Create the IAM Policy for `tools` with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/Registry_Deployment_IAM_Policy.json)
+  - Create the IAM Policy for `dev` `test` and `prod`  with this [policy](https://github.com/bcgov/startup-sample-project-aws-containers/blob/main/docs/IAM_policies/App_Deployment_IAM_Policy.json)
   - To access the `TERRAFORM_DEPLOY_ROLE_ARN` you need to create the role beforehand and link them to the previously created policies in each account. Then you have to add the right arn for each Github environment.
   To create the role trust relationship you can use this example:
 
@@ -123,7 +95,7 @@ For the following secret they are global for every account so you can put them a
 
     AWS_ACCOUNTS_ECR_READ_ACCESS='["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]'
 
-- `AWS_ECR_URI` - ECR repository URI. Follows the format `############.dkr.ecr.ca-central-1.amazonaws.com/ssp` where `############` is your AWS account number.
+- `AWS_ECR_URI` - ECR repository URI. Follows the format `############.dkr.ecr.ca-central-1.amazonaws.com/startup-sample-app` where `############` is your AWS account number.
 - `AWS_REGION` - should be `ca-central-1`
 
 ### Deployment
@@ -137,18 +109,6 @@ The PR triggers several GitHub Action workflows in `.github/workflows`. They are
 
 ![alt text](docs/images/workflows.png "GitHub Action workflows")
 
-The Actions will run Terraform scripts that will deploy the infrastructure for the app. This infrastructure is defined in the terraform module linked below
-
-[startup-sample-project-terraform-modules](https://github.com/bcgov/startup-sample-project-terraform-modules)
-
-and instantiated using `./terraform/terragrunt.hcl` file.
-
-Properly speaking, the Terraform scripts will create an infrastructure plan, and a second script will apply the plan and deploy the planned infrastructure in AWS Cloud.
-
-During the deployment process, Terraform script will create in the AWS Cloud an Elastic Container Registry (ECR) repository in the sandbox service account and authorize read access from other AWS service accounts (dev, sandbox).
-
-Inside this container, three containers are created that will host the client, server and DB components of the app.
-
 ### Connecting to the client
 
 You will be able to access the client using the address for the cloudfront distribution. You can find it in the output of the terraform script. It will be something like this: `https://d1q2w3e4r5t6y7.cloudfront.net/`
@@ -156,7 +116,7 @@ You will be able to access the client using the address for the cloudfront distr
 ## Contributing
 
 Be aware that pull request from fork will fail due to the lack of access of the secrets variables.  
-You are still welcome to participe but for the plan to work before merge it has to be done from within the repository.
+You are still welcome to participle but for the plan to work before merge it has to be done from within the repository.
 
 :warning: The terraform plan stage will fail in cross account pr workflow :warning:
 
