@@ -97,20 +97,6 @@ jobs:
           role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: terraform plan ecr
-        env:
-          TF_VAR_read_principals: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
-        run: |
-          cd src/terraform/ecr
-          cat <<EOF > backend.hcl
-          bucket = "${{ vars.S3_BACKEND_NAME }}"
-          key = startup-sample-app-aws-containers-ecr.tfstate"
-          dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
-          EOF
-
-          terraform init -backend-config=backend.hcl
-          terraform plan
-
       - name: terraform apply app
         env:
           TF_VAR_target_env: ${{ env.environment }}
