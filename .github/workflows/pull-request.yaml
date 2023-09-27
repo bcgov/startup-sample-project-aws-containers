@@ -71,8 +71,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-          context: src/web
-          file: ./src/web/Dockerfile
+          context: src/api
+          file: src/api/Dockerfile
           push: false
 
   terraform_plan_app:
