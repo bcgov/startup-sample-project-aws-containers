@@ -4,11 +4,28 @@ const crypto = require("crypto");
 
 const AWS = require("aws-sdk");
 
-AWS.config.update({
-  region:
-    process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "ca-central-1",
-  endpoint: process.env. || "http://localhost:4566",
-});
+var aws_config = {};
+
+if (process.env.LOCALSTACK_ENDPOINT) {
+  aws_config = {
+    region:
+      process.env.AWS_REGION ||
+      process.env.AWS_DEFAULT_REGION ||
+      "ca-central-1",
+    endpoint: process.env.LOCALSTACK_ENDPOINT,
+  };
+} else {
+  aws_config = {
+    region:
+      process.env.AWS_REGION ||
+      process.env.AWS_DEFAULT_REGION ||
+      "ca-central-1",
+  };
+}
+
+console.log("aws_config", aws_config);
+
+AWS.config.update(aws_config);
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -44,7 +61,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET /api/v1/greetings
+// GET /api/v1/greetings/latest
 router.get("/latest", async (req, res) => {
   try {
     const result = await dynamodb
@@ -52,10 +69,6 @@ router.get("/latest", async (req, res) => {
         TableName: process.env.DYNAMODB_TABLE_NAME,
       })
       .promise();
-
-    if (!result.Items) {
-      return res.status(500).json({ message: "No items found" });
-    }
 
     const greetings = result.Items.map((item) => ({
       id: item.id,

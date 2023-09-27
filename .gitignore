@@ -1,15 +1,6 @@
 # Dependencies
 node_modules
 
-# Client
-client/.pnp
-client/.pnp.js
-client/build
-
-# Server
-server/*.pdf
-server/pdfs/*
-
 # Misc.
 audit-report.*
 .DS_Store
@@ -57,8 +48,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 .terragrunt-cache
-schema.json
-schema2.json
-schema3.json
-.gitignore
+
+# Ignore lock files (this should normally be committed)
+.terraform.lock.hcl
 

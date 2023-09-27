@@ -1,0 +1,44 @@
+name: Destroy environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: select the environment to destroy
+        type: environment
+        required: true
+env:
+  TF_VERSION: 1.5.7
+  environment: ${{ inputs.env }}
+
+permissions:
+  id-token: write # This is required for requesting the JWT and AWS credentials using AssumeRoleWithWebIdentity
+  contents: read # This is required for actions/checkout
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.env }}
+
+    steps:
+      - name: checkout the repo and building the Backend
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ca-central-1
+
+      - name: terraform destroy
+        run: |
+          cd src/terraform
+          cat <<EOF > backend.hcl
+          bucket = "${{ vars.S3_BACKEND_NAME }}"
+          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers.tfstate"
+          dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
+          EOF
+
+          terraform init -backend-config=backend.hcl
+          terraform destroy -auto-approve

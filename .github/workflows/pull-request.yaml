@@ -1,0 +1,119 @@
+name: Pull Request
+
+on:
+  #workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+env:
+  TF_VERSION: 1.5.6
+  environment: dev
+  IMAGE_ID: ${{ vars.AWS_ECR_URI }}
+
+permissions:
+  id-token: write # This is required for requesting the JWT and AWS credentials using AssumeRoleWithWebIdentity
+  contents: read # This is required for actions/checkout
+
+jobs:
+  terraform_plan_ecr:
+    name: terraform apply ecr
+    environment: tools
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: terraform plan ecr
+        env:
+          TF_VAR_read_principals: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+        run: |
+          cd src/terraform/ecr
+          cat <<EOF > backend.hcl
+          bucket = "${{ vars.S3_BACKEND_NAME }}"
+          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers-ecr.tfstate"
+          dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
+          EOF
+
+          terraform init -backend-config=backend.hcl
+          terraform apply -auto-approve
+
+  docker_build:
+    name: docker build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          context: src/web
+          file: ./src/web/Dockerfile
+          push: false
+
+  terraform_plan_app:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+
+    steps:
+      - name: checkout the repo and building the Backend
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.TERRAFORM_DEPLOY_ROLE_ARN }}
+          aws-region: ca-central-1
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: terraform plan app
+        env:
+          TF_VAR_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
+        run: |
+          cd src/terraform/app
+          cat <<EOF > backend.hcl
+          bucket = "${{ vars.S3_BACKEND_NAME }}"
+          key = "${{ vars.LICENSEPLATE }}/${{ env.environment }}/startup-sample-app-aws-containers.tfstate"
+          dynamodb_table = "${{ vars.DYNAMO_DB_TABLE_NAME }}"
+          EOF
+
+          terraform init -backend-config=backend.hcl
+          terraform plan
+
+      - name: Build the front-end
+        run: |
+          cd src/web
+          npm install
+          npm run build
