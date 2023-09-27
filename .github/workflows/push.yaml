@@ -124,7 +124,7 @@ jobs:
 
       - name: Build and deploy the front-end
         run: |
-          cd src/ui
+          cd src/web
           echo "REACT_APP_API_BASE_URL=$API_GW_URL" > .env
           npm install
           npm run build
