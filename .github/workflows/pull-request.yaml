@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   terraform_plan_ecr:
-    name: terraform apply ecr
+    name: terraform plan ecr
     environment: tools
     runs-on: ubuntu-22.04
 
