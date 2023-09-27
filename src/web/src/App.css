@@ -1,0 +1,204 @@
+/* App.css */
+
+:root {
+  --font-family: "BCSans";
+  --primary-color: #014166;
+  background-color: #f2f2f2;
+}
+
+.App {
+  margin-top: 8rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--padding);
+  padding: 1rem;
+  width: 50%;
+  margin: 2% auto;
+  background-color: white;
+}
+
+.pagination {
+  display: flex;
+}
+
+body {
+  font-family: "BCSans", sans-serif;
+  gap: var(--padding);
+  padding: var(--padding);
+}
+
+h1,
+h2 {
+  color: var(--primary-color);
+}
+
+h3 {
+  border-bottom: 2px solid #fcba19;
+}
+
+a {
+  color: var(--primary-color);
+}
+
+p {
+  max-width: 60ch;
+}
+
+li {
+  list-style-type: none;
+  background-color: #f2f2f2;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem; /* round corners */
+  margin: 2% auto;
+  max-width: 60ch;
+}
+
+button {
+  margin-right: 10px;
+}
+
+button:last-child {
+  margin-right: 0;
+}
+
+.bc-gov-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bc-gov-dropdown-label {
+  margin-bottom: 10px;
+}
+
+.bc-gov-dropdown {
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  font-size: 1rem;
+  color: #313132;
+  background: white;
+  box-shadow: none;
+  border: 2px solid #606060;
+  min-width: 200px;
+  padding: 8px 45px 8px 15px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.fa-chevron-down {
+  pointer-events: none;
+  position: absolute;
+  top: calc(1em - 4px);
+  right: 1em;
+  color: #003366;
+}
+
+.bc-gov-dropdown-wrapper {
+  position: relative;
+  display: inline;
+}
+
+:focus {
+  outline: 4px solid #3b99fc;
+  outline-offset: 1px;
+}
+
+.BC-Gov-PrimaryButton {
+  background-color: #003366;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  padding: 12px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 18px;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.BC-Gov-PrimaryButton:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+:focus {
+  outline: 4px solid #3b99fc;
+  outline-offset: 1px;
+}
+
+.BC-Gov-PrimaryButton:active {
+  opacity: 1;
+}
+
+.BC-Gov-PrimaryButton-disabled {
+  background-color: #003366;
+  opacity: 0.3;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  padding: 12px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 18px;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: not-allowed;
+}
+
+.BC-Gov-SecondaryButton {
+  background: none;
+  border-radius: 4px;
+  border: 2px solid #003366;
+  padding: 10px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 18px;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  color: #003366;
+}
+
+.BC-Gov-SecondaryButton:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+  background-color: #003366;
+  color: #ffffff;
+}
+
+:focus {
+  outline-offset: 1px;
+  outline: 4px solid #3b99fc;
+}
+
+.BC-Gov-SecondaryButton:active {
+  opacity: 1;
+}
+
+.BC-Gov-SecondaryButton-disabled {
+  background-color: white;
+  opacity: 0.3;
+  border: 2px solid #003366;
+  border-radius: 4px;
+  color: #003366;
+  padding: 10px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 18px;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: not-allowed;
+}
