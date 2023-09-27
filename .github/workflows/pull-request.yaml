@@ -43,7 +43,7 @@ jobs:
           EOF
 
           terraform init -backend-config=backend.hcl
-          terraform apply -auto-approve
+          terraform plan
 
   docker_build:
     name: docker build
