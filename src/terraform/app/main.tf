@@ -9,7 +9,7 @@ data "aws_caller_identity" "current" {}
 # Gather VPC information from the network module
 
 module "network" {
-  source      = "git::https://github.com/BCDevOps/terraform-octk-aws-sea-network-info.git//?ref=master"
+  source      = "git::https://github.com/BCDevOps/terraform-octk-aws-sea-network-info.git?ref=master"
   environment = var.target_env
 }
 
