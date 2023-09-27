@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 env:
-  TF_VERSION: 1.5.7
   environment: dev
+  TF_VERSION: 1.5.7
   IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
 permissions:
@@ -100,6 +100,7 @@ jobs:
 
       - name: terraform plan app
         env:
+          TF_VAR_target_env: ${{ env.environment }}
           TF_VAR_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         run: |
           cd src/terraform/app

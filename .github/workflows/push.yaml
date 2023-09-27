@@ -8,6 +8,7 @@ on:
       - "src/**"
 
 env:
+  environment: dev
   IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
   TF_VERSION: 1.5.7
@@ -136,6 +137,7 @@ jobs:
 
       - name: terraform apply app
         env:
+          TF_VAR_target_env: ${{ env.environment }}
           TF_VAR_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         run: |
           cd src/terraform/app
