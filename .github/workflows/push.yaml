@@ -115,8 +115,8 @@ jobs:
       - name: Extract outputs from Terraform
         id: tf-outputs
         run: |
-          cd src/terraform/app
           terraform output -json > outputs.json
+          cat outputs.json
           echo "S3_BUCKET_ARN=$(jq -r .s3_bucket_arn.value outputs.json)" >> $GITHUB_ENV
           echo "CF_DOMAIN=$(jq -r .cloudfront.value.domain_name outputs.json)" >> $GITHUB_ENV
           echo "CF_DISTRIBUTION_ID=$(jq -r .cloudfront.value.distribution_id outputs.json)" >> $GITHUB_ENV
