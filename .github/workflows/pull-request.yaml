@@ -34,8 +34,8 @@ jobs:
       - name: terraform plan ecr
         env:
           TF_VAR_read_principals: ${{ vars.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+        working-directory: src/terraform/ecr
         run: |
-          cd src/terraform/ecr
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
           key = "startup-sample-app-aws-containers-ecr.tfstate"
@@ -93,8 +93,8 @@ jobs:
         env:
           TF_VAR_target_env: ${{ env.environment }}
           TF_VAR_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
+        working-directory: src/terraform/app
         run: |
-          cd src/terraform/app
           cat <<EOF > backend.hcl
           bucket = "${{ vars.S3_BACKEND_NAME }}"
           key = "startup-sample-app-aws-containers.tfstate"
@@ -105,7 +105,7 @@ jobs:
           terraform plan
 
       - name: Build the front-end
+        working-directory: src/web
         run: |
-          cd src/web
           npm install
           npm run build
