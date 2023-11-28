@@ -98,16 +98,32 @@ For the following secret they are global for every account so you can put them a
 - `AWS_ECR_URI` - ECR repository URI. Follows the format `############.dkr.ecr.ca-central-1.amazonaws.com/startup-sample-app` where `############` is your AWS account number.
 - `AWS_REGION` - should be `ca-central-1`
 
-### Deployment
+### GitHub Actions
 
 The deployment of the sample containers app to the AWS Cloud uses several steps.
 
 - Configure the _Variables_ in your GitHub repository
 - Execute a _Pull Request_ to the GitHub repository that includes the changes described in the previous section
 
-The PR triggers several GitHub Action workflows in `.github/workflows`. They are used to build, test, and deploy the application. The diagram below illustrates the workflow architecture.
+#### Deploy
 
-![alt text](docs/images/workflows.png "GitHub Action workflows")
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml)
+
+The deploy workflow is triggered by manual dispatch. It will deploy the selected branch to the selected environment.
+
+>NOTE: For this sample application we chose a manual deploy workflow to keep the cost down. In a real world scenario you may want to use an automated workflow.
+
+#### Destroy
+
+[.github/workflows/destroy.yml](.github/workflows/destroy.yml)
+
+The destroy workflow is triggered by manual dispatch. It will destroy the selected branch from the selected environment.
+
+#### Pull Request
+
+[.github/workflows/pull_request.yml](.github/workflows/pull_request.yml)
+
+The pull request workflow is triggered by pull request to any of the `dev`, `test`, or `main` branches. It will run a `terraform plan` and build the frontend.
 
 ### Connecting to the client
 

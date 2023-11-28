@@ -1,10 +1,10 @@
-name: Destroy environment
+name: Destroy
 
 on:
   workflow_dispatch:
     inputs:
       env:
-        description: select the environment to destroy
+        description: select the environment
         type: environment
         required: true
 env:
@@ -16,7 +16,7 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
-  destroy_app:
+  destroy:
     name: Destroy the app
     runs-on: ubuntu-latest
     environment:

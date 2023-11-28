@@ -2,10 +2,9 @@ name: Pull Request
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, dev, test]
 
 env:
-  environment: dev
   TF_VERSION: 1.5.7
   IMAGE_ID: ${{ vars.AWS_ECR_URI }}
 
@@ -14,6 +13,18 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
+  env_selector:
+    runs-on: ubuntu-latest
+    steps:
+      - name: env selector
+        id: identify
+        run: |
+          if [ ${GITHUB_BASE_REF} = "main" ];then export github_env='prod'; else export github_env=${GITHUB_BASE_REF}; fi
+          echo "name=${github_env}" >> "$GITHUB_ENV"
+
+    outputs:
+      github_env: ${{ env.name }}
+
   terraform_plan_ecr:
     name: terraform plan ecr
     environment: tools
@@ -68,8 +79,8 @@ jobs:
   terraform_plan_app:
     name: terraform plan app
     runs-on: ubuntu-latest
-    environment:
-      name: dev
+    needs: env_selector
+    environment: ${{ needs.env_selector.outputs.github_env }}
 
     steps:
       - name: checkout the repo and building the Backend
@@ -91,7 +102,7 @@ jobs:
 
       - name: terraform plan app
         env:
-          TF_VAR_target_env: ${{ env.environment }}
+          TF_VAR_target_env: ${{ needs.env_selector.outputs.github_env }}
           TF_VAR_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         working-directory: src/terraform/app
         run: |

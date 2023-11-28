@@ -1,16 +1,15 @@
-name: Deploy Dev
+name: Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/**"
-      - "src/**"
+  workflow_dispatch:
+    inputs:
+      env:
+        description: select the environment
+        type: environment
+        required: true
 
 env:
-  environment: dev
   IMAGE_ID: ${{ vars.AWS_ECR_URI }}
-
   TF_VERSION: 1.5.7
 
 permissions:
@@ -81,15 +80,13 @@ jobs:
 
   terraform_apply_app:
     name: terraform apply app
-    environment: dev
+    environment: ${{ inputs.env }}
     runs-on: ubuntu-22.04
     needs: docker_push
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
