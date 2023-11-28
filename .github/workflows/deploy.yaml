@@ -96,7 +96,7 @@ jobs:
 
       - name: terraform apply app
         env:
-          TF_VAR_target_env: ${{ env.environment }}
+          TF_VAR_target_env: ${{ inputs.env }}}
           TF_VAR_app_image: ${{ env.IMAGE_ID }}:${{ github.sha }}
         working-directory: src/terraform/app
         run: |
