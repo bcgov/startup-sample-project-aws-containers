@@ -123,7 +123,7 @@ The destroy workflow is triggered by manual dispatch. It will destroy the select
 
 [.github/workflows/pull_request.yml](.github/workflows/pull_request.yml)
 
-The pull request workflow is triggered by pull request to any of the `dev`, `test`, or `main` branches. It will run a `terraform plan` and build the frontend.
+The pull request workflow is triggered by pull request to any of the `dev`, `test`, or `main` branches. It will run a `terraform plan` and build the container.
 
 ### Connecting to the client
 
